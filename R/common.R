@@ -136,12 +136,12 @@ normalize_street <- function(street) {
 categorize <- function(nm) {
   n <- str_to_lower(nm)
   case_when(
-    str_detect(n, "school|elementary|middle sch|high sch|\\bisd\\b|academy|montessori|childcare|child care|early childhood|kinder|daycare|day care|learning cent|learning experience|early learning|preschool|pre-school|head start|nursery|goddard|primrose|child development|university|college|dining hall") ~ "School & Childcare",
-    str_detect(n, "nursing|rehab|assisted living|senior living|hospital|clinic|medical cent|health cent|hospice|care cent") ~ "Healthcare",
+    str_detect(n, "school|elementary|middle sch|high sch|\\bisd\\b|academy|montessori|childcare|child care|early childhood|kinder|daycare|day care|learning cent|learning experience|early learning|preschool|pre-school|head start|nursery|goddard|primrose|child development|\\bcdc\\b|university|college|dining hall") ~ "School & Childcare",
+    str_detect(n, "nursing|rehab|assisted living|senior living|memory care|memory support|hospital|clinic|medical cent|health cent|hospice|care cent") ~ "Healthcare",
     # Contract and institutional feeders are not restaurants a reader can visit.
     str_detect(n, "aramark|sodexo|compass group|canteen|cafeteria|employee dining|corporate dining|break room|micro market|commissary|catering") ~ "Institutional & Catering",
-    str_detect(n, "7-eleven|7 eleven|food mart|\\bcvs\\b|walgreen|\\bpharmacy\\b|dollar gen|dollar tree|family dollar|circle k|\\bexxon\\b|\\bshell\\b|\\bvalero\\b|chevron|conoco|texaco|\\bquik|corner store|convenience|gas station") ~ "Convenience & Fuel",
-    str_detect(n, "h-e-b|\\bheb\\b|randalls|wal-?mart|\\btarget\\b|costco|sam's club|sprouts|whole foods|trader joe|fiesta mart|supermercado|grocery|central market") ~ "Grocery",
+    str_detect(n, "7-eleven|7 eleven|foods? mart|\\bcvs\\b|walgreen|\\bpharmacy\\b|dollar gen|dollar tree|family dollar|circle k|\\bexxon\\b|\\bshell\\b|\\bvalero\\b|chevron|conoco|texaco|\\bquik|corner store|convenience|gas station") ~ "Convenience & Fuel",
+    str_detect(n, "h-e-b|\\bheb\\b|randalls|wal-?mart|\\btarget\\b|costco|sam's club|sprouts|whole foods|trader joe|fiesta mart|supermercado|grocery|central market|world market") ~ "Grocery",
     # Stadium, arena and airport concession counters. Kept out of "Restaurant"
     # because a single venue can run dozens of separately-licensed stands that
     # are all inspected on the same day with the same score -- nine Q2 Stadium

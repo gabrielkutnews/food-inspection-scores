@@ -92,11 +92,19 @@ show <- function(title, df) {
 perfect_all  <- sum(eligible$mean_score == 100)
 perfect_rest <- sum(restaurants$mean_score == 100)
 
-show(sprintf("TOP 10 -- all establishments (%d of %d with a perfect record, most-inspected first)",
-             TOP_N, perfect_all), tables$all_top)
+top_label <- function(scope, perfect) {
+  if (perfect > TOP_N) {
+    sprintf("TOP %d -- %s (%d of %d with a perfect record, most-inspected first)",
+            TOP_N, scope, TOP_N, perfect)
+  } else {
+    sprintf("TOP %d -- %s (highest averages; %d hold a perfect record)",
+            TOP_N, scope, perfect)
+  }
+}
+
+show(top_label("all establishments", perfect_all), tables$all_top)
 show("BOTTOM 10 -- all establishments",    tables$all_bottom)
-show(sprintf("TOP 10 -- restaurants only (%d of %d with a perfect record, most-inspected first)",
-             TOP_N, perfect_rest), tables$restaurants_top)
+show(top_label("restaurants only", perfect_rest),  tables$restaurants_top)
 show("BOTTOM 10 -- restaurants only",      tables$restaurants_bottom)
 
 message("")

@@ -11,7 +11,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2803212,"Quarries of Hyde Park, The",11400 N Mopac Expy # Sb,Austin,3,100,100,100,2025-11-19,100,Restaurant & Food Service,"Quarries of Hyde Park, The"
 2803870,Wal-Mart #1185,1030 Norwood Park Blvd,Austin,3,100,100,100,2026-03-09,100,Grocery,Wal-Mart
 10008120,LW - Serene Hills Elementary School,3301 Serene Hills Ct,Lakeway,6,100,100,100,2026-05-08,100,School & Childcare,LW - Serene Hills Elementary School
-10260205,Longhorn Village - Memory Support Country Kitchen,12001 Longhorn Pkwy,Austin,3,100,100,100,2025-11-20,100,Restaurant & Food Service,Longhorn Village - Memory Support Country Kitchen
+10260205,Longhorn Village - Memory Support Country Kitchen,12001 Longhorn Pkwy,Austin,3,100,100,100,2025-11-20,100,Healthcare,Longhorn Village - Memory Support Country Kitchen
 10276728,River Ridge Elementary - Leander Elementary #23,12900 Tierra Grande Trl,Austin,6,100,100,100,2026-05-12,100,School & Childcare,River Ridge Elementary - Leander Elementary
 10326563,Gorzycki Middle School,7412 W Slaughter Ln,Austin,6,100,100,100,2026-05-04,100,School & Childcare,Gorzycki Middle School
 10333612,Del Valle ISD- Concession Stand #1 (Home),5201 Ross Rd,Del Valle,3,100,100,100,2026-03-23,100,School & Childcare,Del Valle ISD- Concession Stand #1 (Home)
@@ -24,7 +24,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 10744636,BC - Whole Foods Market - Retail,12601 Hill Country Blvd,Bee Cave,3,100,100,100,2026-05-07,100,Grocery,BC - Whole Foods Market - Retail
 10758576,Circle K Store #2704680,8947 FM 2244 Rd,Austin,3,100,100,100,2025-12-19,100,Convenience & Fuel,Circle K Store
 10795661,Anita Uphaus Early Childhood Center,5200 Freidrich Ln,Austin,6,100,100,100,2026-05-06,100,School & Childcare,Anita Uphaus Early Childhood Center
-10886197,MN - Mini Foods Mart,10400 E US 290 WB Hwy,Manor,3,100,100,100,2025-09-09,100,Restaurant & Food Service,MN - Mini Foods Mart
+10886197,MN - Mini Foods Mart,10400 E US 290 WB Hwy,Manor,3,100,100,100,2025-09-09,100,Convenience & Fuel,MN - Mini Foods Mart
 11055564,"Whole Foods Mkt. - Specialty(Cheese, Wine/Beer)",11920 Domain Dr,Austin,3,100,100,100,2025-05-28,100,Grocery,"Whole Foods Mkt. - Specialty(Cheese, Wine"
 11119596,See's Candy Shop,10710 Research SB Blvd,Austin,3,100,100,100,2026-05-01,100,Restaurant & Food Service,See's Candy Shop
 11166950,West Cypress Hills Elementary School,6112 Cypress Ranch Blvd,Spicewood,6,100,100,100,2026-04-28,100,School & Childcare,West Cypress Hills Elementary School
@@ -62,7 +62,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12396577,Canteen @ Great Texas Aggieland,12544 Riata Vista Cir,Austin,3,100,100,100,2026-05-20,100,Institutional & Catering,Canteen @ Great Texas Aggieland
 12397320,Aramark @ Capital Reyes,10095 E US 290 Hwy EB Service Rd,Manor,3,100,100,100,2025-12-17,100,Institutional & Catering,Aramark @ Capital Reyes
 12397353,Levy @ Q2 Stadium/ATXFC Shop,10414 Mc Kalla Pl,Austin,4,100,100,100,2025-02-27,100,Venue & Concessions,Levy @ Q2 Stadium
-12397671,SV - Cost Plus World Market,5601 Brodie Ln Ste 1100,Sunset Valley,3,100,100,100,2025-08-27,100,Restaurant & Food Service,SV - Cost Plus World Market
+12397671,SV - Cost Plus World Market,5601 Brodie Ln Ste 1100,Sunset Valley,3,100,100,100,2025-08-27,100,Grocery,SV - Cost Plus World Market
 12398864,"Sneha's Vegetarian Kitchen, LLC",1501 N FM 620 Rd,Lakeway,3,100,100,100,2025-08-29,100,Restaurant & Food Service,"Sneha's Vegetarian Kitchen, LLC"
 12399119,COTA - Rev Bar 1 Main Grand Stands,9201 Circuit of the Americas Blvd,Del Valle,5,100,100,100,2026-03-26,100,Venue & Concessions,COTA - Rev Bar 1 Main Grand Stands
 12399977,"MN - Learning Experience Manor, The",11924 Ring Dr Bldg 2,Manor,4,100,100,100,2026-03-24,100,School & Childcare,"MN - Learning Experience Manor, The"
@@ -70,7 +70,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2800680,Lake Travis High School,3322 S FM 620 Rd,Austin,6,99.83,99,100,2026-04-17,99,School & Childcare,Lake Travis High School
 2800942,LW - Lakeway Elementary School,1701 Lohmans Crossing Rd Bldg A,Lakeway,6,99.83,99,100,2026-04-30,100,School & Childcare,LW - Lakeway Elementary School
 2801092,Rodriguez Elementary School,4400 Franklin Park Dr,Austin,6,99.83,99,100,2026-05-06,100,School & Childcare,Rodriguez Elementary School
-2801873,Manchaca United Methodist CDC,1011 W FM 1626,Austin,6,99.83,99,100,2026-02-26,100,Restaurant & Food Service,Manchaca United Methodist CDC
+2801873,Manchaca United Methodist CDC,1011 W FM 1626,Austin,6,99.83,99,100,2026-02-26,100,School & Childcare,Manchaca United Methodist CDC
 2802396,Rutledge Elementary,11501 Staked Plains Dr,Austin,6,99.83,99,100,2026-02-27,100,School & Childcare,Rutledge Elementary
 11584275,Joe Lee Johnson Elem School,2800 Sauls Dr,Austin,6,99.83,99,100,2026-05-08,99,School & Childcare,Joe Lee Johnson Elem School
 11499700,Parmer Lane 5 Caffe Macs-Sushi,5505 W Parmer Ln Bldg 5,Austin,5,99.8,99,100,2025-12-18,99,Restaurant & Food Service,Parmer Lane 5 Caffe Macs-Sushi
@@ -347,7 +347,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12392974,BC - Total Wine,3925 Market St,Bee Cave,3,98.67,96,100,2025-11-26,96,Restaurant & Food Service,BC - Total Wine
 12393394,L. East Poultry Co.,2615 E 6th St,Austin,3,98.67,98,99,2026-04-01,98,Restaurant & Food Service,L. East Poultry Co.
 12397415,PF - Deshidra LLC,15812 Windermere Dr Ste 300A,Pflugerville,3,98.67,96,100,2026-02-03,96,Restaurant & Food Service,PF - Deshidra LLC
-12397672,BC - Cost Plus World Market,12700 Shops Pkwy Ste 200,Bee Cave,3,98.67,98,99,2025-12-08,99,Restaurant & Food Service,BC - Cost Plus World Market
+12397672,BC - Cost Plus World Market,12700 Shops Pkwy Ste 200,Bee Cave,3,98.67,98,99,2025-12-08,99,Grocery,BC - Cost Plus World Market
 12399272,Oumi Sushi @ Sprouts #162,1201 Barbara Jordan Blvd Ste 700,Austin,6,98.67,96,100,2026-03-31,96,Grocery,Oumi Sushi @ Sprouts
 12186362,Chipotle Mexican Grill #3328,1109 E 5th St Ste 130,Austin,5,98.6,96,100,2026-01-13,98,Restaurant & Food Service,Chipotle Mexican Grill
 12395339,"Learning Experience, The",7814 W US 290 Hwy,Austin,5,98.6,95,100,2026-03-23,100,School & Childcare,"Learning Experience, The"
@@ -573,7 +573,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2800282,Kealing Jr. High School,1607 Pennsylvania Ave,Austin,6,97.67,96,99,2026-05-19,99,School & Childcare,Kealing Jr. High School
 2800529,Flea Market #stage,9500 E US 290 Hwy WB Service Rd,Austin,3,97.67,97,99,2026-02-07,97,Restaurant & Food Service,Flea Market #stage
 2800612,Crockett High School,5601 Menchaca Rd,Austin,6,97.67,94,100,2026-05-18,97,School & Childcare,Crockett High School
-2800970,Little Folks Bilingual CDC,5706 Reicher Dr,Austin,3,97.67,95,100,2025-11-03,98,Restaurant & Food Service,Little Folks Bilingual CDC
+2800970,Little Folks Bilingual CDC,5706 Reicher Dr,Austin,3,97.67,95,100,2025-11-03,98,School & Childcare,Little Folks Bilingual CDC
 2801001,Whole Foods Market/Deli,9607 Research NB Blvd Unit 300,Austin,3,97.67,95,100,2026-01-21,100,Grocery,Whole Foods Market
 2801129,HEB #20 Deli & Bakery,6001 W Parmer Ln,Austin,3,97.67,96,99,2026-02-04,99,Grocery,HEB #20 Deli & Bakery
 2801406,Forest North Elementary School,13414 Broadmeade Ave,Austin,6,97.67,95,99,2026-05-11,97,School & Childcare,Forest North Elementary School
@@ -624,7 +624,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 11648746,Wingstop # 1219,5455 N Interstate 35,Austin,5,97.6,94,99,2025-12-18,94,Restaurant & Food Service,Wingstop
 11714231,Double Dave's Pizzaworks,8947 FM 2244 Rd Ste 201,Austin,5,97.6,95,100,2026-02-17,95,Restaurant & Food Service,Double Dave's Pizzaworks
 11755890,Starbucks #48298,3120 Palm Way Ste 110,Austin,5,97.6,93,100,2026-01-12,97,Restaurant & Food Service,Starbucks
-11927026,Sweet Briar CDC LLC,205 Sandra St,Austin,5,97.6,91,100,2026-03-27,91,Restaurant & Food Service,Sweet Briar CDC LLC
+11927026,Sweet Briar CDC LLC,205 Sandra St,Austin,5,97.6,91,100,2026-03-27,91,School & Childcare,Sweet Briar CDC LLC
 12392385,PF - Popeye's #303,1547 FM 685,Pflugerville,5,97.6,94,100,2025-11-18,98,Restaurant & Food Service,PF - Popeye's
 12393475,PF - Recs Hushpuppie Heaven,200 E Pecan St Ste 1,Pflugerville,5,97.6,94,99,2025-11-20,98,Restaurant & Food Service,PF - Recs Hushpuppie Heaven
 12396012,McDonald's #14128,1024 E Anderson WB Ln,Austin,5,97.6,95,99,2026-02-09,99,Restaurant & Food Service,McDonald's
@@ -766,7 +766,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 10357765,Chipotle Mexican Grill,2700 W Anderson Ln Ste 204,Austin,5,97,95,99,2026-04-28,97,Restaurant & Food Service,Chipotle Mexican Grill
 10471466,Community Clinical Research,8334 Cross Park Dr,Austin,3,97,95,100,2026-04-03,96,Healthcare,Community Clinical Research
 10652260,Stepping Stone School XVII,1007 E 40th St,Austin,3,97,96,98,2026-03-12,96,School & Childcare,Stepping Stone School XVII
-10658286,Provident Memory Care,11013 Signal Hill Dr,Austin,3,97,96,98,2025-03-05,98,Restaurant & Food Service,Provident Memory Care
+10658286,Provident Memory Care,11013 Signal Hill Dr,Austin,3,97,96,98,2025-03-05,98,Healthcare,Provident Memory Care
 10828111,Chipotle Mexican Grill #1723,2320 S Lamar Blvd,Austin,3,97,95,99,2026-03-30,95,Restaurant & Food Service,Chipotle Mexican Grill
 10860672,Dollar General Store #13115,1401 S Pleasant Valley Rd,Austin,3,97,95,99,2026-04-06,95,Convenience & Fuel,Dollar General Store
 10901300,WL - Pinkberry #170,3300 Bee Caves Rd,West Lake Hills,3,97,96,99,2025-11-03,96,Restaurant & Food Service,WL - Pinkberry
@@ -1501,7 +1501,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 11661044,Raising Canes Restaurants LLC.,2109 E Riverside Dr,Austin,4,94,91,99,2026-01-08,94,Restaurant & Food Service,Raising Canes Restaurants LLC.
 11718633,Poke House,11150 Research SB Blvd Unit 216,Austin,3,94,92,97,2026-02-06,93,Restaurant & Food Service,Poke House
 11761889,"Supermercado Los Vaqueros #1 (Seafood, Creamria & Meat)",8752 Research SB Blvd,Austin,4,94,92,97,2026-04-23,97,Grocery,"Supermercado Los Vaqueros #1 (Seafood, Creamria & Meat)"
-11920756,Jeremiah Program CDC,1200 Paul Teresa Saldana,Austin,3,94,93,95,2025-03-04,94,Restaurant & Food Service,Jeremiah Program CDC
+11920756,Jeremiah Program CDC,1200 Paul Teresa Saldana,Austin,3,94,93,95,2025-03-04,94,School & Childcare,Jeremiah Program CDC
 11923808,MN - Wendy's,11808 Ring Dr Bldg 2,Manor,5,94,93,97,2025-10-20,94,Restaurant & Food Service,MN - Wendy's
 12094330,7-Eleven Convenience Store #35801A,9704 Giles Ln,Austin,5,94,93,95,2026-03-31,93,Convenience & Fuel,7-Eleven Convenience Store #35801A
 12176481,Omni Barton Creek Resort & Spa (Blind Salamander),8212 Barton Club Dr,Austin,4,94,90,97,2026-01-21,97,Restaurant & Food Service,Omni Barton Creek Resort & Spa (Blind Salamander)
@@ -2801,7 +2801,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2802055,Cheddar's Casual Cafe,15119 N IH 35 NB Service Rd,Austin,4,87.75,83,91,2026-03-12,87,Restaurant & Food Service,Cheddar's Casual Cafe
 2802739,Summer Moon Coffee Bar,3115 S 1st St Ste B,Austin,4,87.75,81,95,2025-11-24,90,Restaurant & Food Service,Summer Moon Coffee Bar
 2803084,"Stephen F. Austin Royal Sonesta, The",701 Congress Ave,Austin,4,87.75,80,98,2026-02-03,98,Restaurant & Food Service,"Stephen F. Austin Royal Sonesta, The"
-10866935,Hana World Market - Meat and Fish,1700 W Parmer Ln Ste 100,Austin,4,87.75,83,95,2025-11-21,95,Restaurant & Food Service,Hana World Market - Meat and Fish
+10866935,Hana World Market - Meat and Fish,1700 W Parmer Ln Ste 100,Austin,4,87.75,83,95,2025-11-21,95,Grocery,Hana World Market - Meat and Fish
 11084376,Omni Barton Creek Resort & Spa - (Texas Spice),8212 Barton Club Dr,Austin,4,87.75,86,91,2026-01-21,86,Restaurant & Food Service,Omni Barton Creek Resort & Spa - (Texas Spice)
 11201901,Pollos Asados Los Regios JB,1725 Ohlen Rd,Austin,4,87.75,85,92,2026-02-18,85,Restaurant & Food Service,Pollos Asados Los Regios JB
 11207395,Brookdale Spicewood Springs,4401 Spicewood Springs Rd,Austin,4,87.75,86,90,2026-05-06,88,Restaurant & Food Service,Brookdale Spicewood Springs
@@ -2913,7 +2913,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 10256583,Perla's Seafood & Oyster Bar,1400 S Congress Ave Unit 100,Austin,3,87,84,92,2026-02-27,84,Restaurant & Food Service,Perla's Seafood & Oyster Bar
 10306272,Carrabba's Italian Grill,11590 Research SB Blvd,Austin,4,87,82,90,2025-12-26,89,Restaurant & Food Service,Carrabba's Italian Grill
 10426941,BC - Hill Country Food Mart,13908 W SH 71 Bldg A,Bee Cave,6,87,83,91,2025-11-05,91,Convenience & Fuel,BC - Hill Country Food Mart
-10875585,Hana World Market - Foodcourt,1700 W Parmer Ln Ste 100,Austin,3,87,85,89,2025-06-24,87,Restaurant & Food Service,Hana World Market - Foodcourt
+10875585,Hana World Market - Foodcourt,1700 W Parmer Ln Ste 100,Austin,3,87,85,89,2025-06-24,87,Grocery,Hana World Market - Foodcourt
 10903317,Turf & Surf Po'boy,405 Lavaca St,Austin,4,87,82,91,2026-02-20,91,Restaurant & Food Service,Turf & Surf Po'boy
 10928499,Kung Fu Saloon,716 W 6th St,Austin,3,87,85,89,2026-02-10,89,Restaurant & Food Service,Kung Fu Saloon
 11016089,WL - Maryes Gourmet Pizza,3663 Bee Caves Rd Ste 4G,West Lake Hills,5,87,82,95,2026-01-29,82,Restaurant & Food Service,WL - Maryes Gourmet Pizza
@@ -3076,7 +3076,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 10483507,Vince Young Steakhouse,301 San Jacinto Blvd,Austin,3,85.67,72,94,2025-07-17,72,Restaurant & Food Service,Vince Young Steakhouse
 10734366,HandleBar,121 E 5th St,Austin,3,85.67,82,88,2026-04-16,88,Restaurant & Food Service,HandleBar
 10805455,WL - Lupe Tortillas Mexican Restaurant,701 S Capital of Texas Hwy Bldg A,West Lake Hills,6,85.67,82,90,2026-01-23,84,Restaurant & Food Service,WL - Lupe Tortillas Mexican Restaurant
-10866954,Hana World Market - Deli,1700 W Parmer Ln Ste 100,Austin,3,85.67,81,91,2025-06-24,81,Restaurant & Food Service,Hana World Market - Deli
+10866954,Hana World Market - Deli,1700 W Parmer Ln Ste 100,Austin,3,85.67,81,91,2025-06-24,81,Grocery,Hana World Market - Deli
 11095956,Moonies Burger House,13450 N US 183 Hwy Service Rd SB,Austin,3,85.67,81,91,2026-03-12,81,Restaurant & Food Service,Moonies Burger House
 11130514,Courtesy Shell #4,2241 S Ih 35,Austin,3,85.67,80,97,2026-05-06,80,Convenience & Fuel,Courtesy Shell
 11393326,"Pavilion At Great Hills, The",11819 Pavilion Blvd,Austin,3,85.67,85,87,2026-03-03,85,Restaurant & Food Service,"Pavilion At Great Hills, The"

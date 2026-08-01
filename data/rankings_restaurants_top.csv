@@ -2,10 +2,10 @@ rank,name,category,street,city,mean_score,n,min_score,max_score,latest_score,lat
 1,Caffe Mac,Restaurant & Food Service,320 S Capital of Texas Hwy Ste A,West Lake Hills,100,6,100,100,100,2026-02-12
 2,Growing Imaginations L.C.,Restaurant & Food Service,5410 S 1st St,Austin,100,4,100,100,100,2025-08-18
 3,See's Candy Shop,Restaurant & Food Service,10710 Research SB Blvd,Austin,100,3,100,100,100,2026-05-01
-4,Longhorn Village - Memory Support Country Kitchen,Restaurant & Food Service,12001 Longhorn Pkwy,Austin,100,3,100,100,100,2025-11-20
-5,"Quarries of Hyde Park, The",Restaurant & Food Service,11400 N Mopac Expy # Sb,Austin,100,3,100,100,100,2025-11-19
-6,Ruta Maya Importing Ltd.,Restaurant & Food Service,6231 E Stassney Ln Bldg 12,Austin,100,3,100,100,100,2025-11-12
-7,LW - Table 620,Restaurant & Food Service,2000 S FM 620 Rd,Lakeway,100,3,100,100,100,2025-09-11
-8,MN - Mini Foods Mart,Restaurant & Food Service,10400 E US 290 WB Hwy,Manor,100,3,100,100,100,2025-09-09
-9,"Sneha's Vegetarian Kitchen, LLC",Restaurant & Food Service,1501 N FM 620 Rd,Lakeway,100,3,100,100,100,2025-08-29
-10,SV - Cost Plus World Market,Restaurant & Food Service,5601 Brodie Ln Ste 1100,Sunset Valley,100,3,100,100,100,2025-08-27
+4,"Quarries of Hyde Park, The",Restaurant & Food Service,11400 N Mopac Expy # Sb,Austin,100,3,100,100,100,2025-11-19
+5,Ruta Maya Importing Ltd.,Restaurant & Food Service,6231 E Stassney Ln Bldg 12,Austin,100,3,100,100,100,2025-11-12
+6,LW - Table 620,Restaurant & Food Service,2000 S FM 620 Rd,Lakeway,100,3,100,100,100,2025-09-11
+7,"Sneha's Vegetarian Kitchen, LLC",Restaurant & Food Service,1501 N FM 620 Rd,Lakeway,100,3,100,100,100,2025-08-29
+8,VEGG LLC,Restaurant & Food Service,1606 W Stassney Ln Ste 1,Austin,100,3,100,100,100,2025-08-27
+9,Parmer Lane 5 Caffe Macs-Sushi,Restaurant & Food Service,5505 W Parmer Ln Bldg 5,Austin,99.8,5,99,100,99,2025-12-18
+10,Campsite at Shield Ranch,Restaurant & Food Service,10417 Crumley Ranch Rd,Austin,99.75,4,99,100,100,2026-05-22
