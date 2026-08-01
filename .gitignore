@@ -1,0 +1,14 @@
+# R session state. RestoreWorkspace/SaveWorkspace are off in the .Rproj so the
+# pipeline fails honestly instead of succeeding on a stale workspace.
+.RData
+.Rhistory
+.Rproj.user/
+
+# macOS
+.DS_Store
+
+# Superseded by docs/index.html -- the old self-contained saveWidget output.
+restaurant_inspection_map.html
+
+# Scratch export nothing reads; kept on disk, out of the repo.
+data/addy.csv
