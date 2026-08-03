@@ -13,12 +13,12 @@
   .sub { font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:12px; }
   h2 { font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);
        margin:22px 0 7px; }
-  table { border-collapse:collapse; width:100%; font-size:13.5px; }
+  table { border-collapse:collapse; width:100%%; font-size:13.5px; }
   th,td { text-align:left; padding:7px 9px; border-bottom:1px solid var(--line); vertical-align:top; }
   th { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);
        font-weight:700; border-bottom:1.5px solid #d0d0d0; white-space:nowrap; }
   td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  td.rank { color:var(--muted); font-variant-numeric:tabular-nums; width:1%; }
+  td.rank { color:var(--muted); font-variant-numeric:tabular-nums; width:1%%; }
   .nm { font-weight:600; }
   .addr { font-size:11.5px; color:var(--muted); }
   .chip { display:inline-grid; place-items:center; min-width:34px; height:23px; padding:0 5px;
@@ -27,50 +27,66 @@
   .note { font-size:11.5px; color:var(--muted); line-height:1.55; margin-top:16px;
           border-top:1px solid var(--line); padding-top:9px; }
   .cap { font-size:12px; color:var(--muted); line-height:1.5; margin:0 0 8px; }
+  .withdrawn { font-size:12.5px; line-height:1.6; background:#fdf6e3; border:1px solid #e6d9a8;
+               border-left:4px solid #d9a300; border-radius:5px; padding:11px 13px;
+               margin:16px 0 4px; color:#4a3d18; }
   @media (max-width:560px) { .hide-sm { display:none; } body { padding:10px; } }
 </style>
 </head>
 <body>
 <h1>Austin-area restaurants, ranked by inspection consistency</h1>
 <div class="sub">
-  Average score across every inspection on record &mdash; not a snapshot of a single
-  visit. Restaurants, cafes and coffee shops only, each with an inspection in the last
-  18 months.
+  Average score across <b>routine</b> inspections &mdash; not a snapshot of a single
+  visit. Restaurants, cafes and coffee shops only. Inspection records run through
+  <b>May 22, 2026</b>; this page was built August 3, 2026.
+</div>
+
+<div class="withdrawn" id="corrections">
+  <b>Correction &mdash; the lowest-scoring list has been withdrawn.</b>
+  It counted follow-up re-checks as independent inspections. A follow-up happens
+  <i>because</i> a routine inspection went badly, so counting it toward the
+  three-inspection minimum let a poor score qualify a restaurant on its own. Four of
+  the ten restaurants named had only two routine inspections and should never have
+  appeared; three of those four were listed as the first, second and third worst in
+  Austin. Pooling the re-checks also raised those averages rather than lowering them,
+  because follow-ups score well above the visit that triggered them.
+  The list will return, computed from routine inspections only, once the city&rsquo;s
+  live portal has been checked for inspections the frozen open-data export never
+  carried. Named in full in CORRECTIONS.md.
 </div>
 
 <h2>Best records</h2>
 <p class="cap">
-  Highest average, among restaurants inspected at least <b>5</b> times. A spotless
-  record over three visits is common enough to be unremarkable, so the bar is higher
-  here than for the list below.
+  Highest average, among restaurants with at least <b>5</b> routine
+  inspections. A spotless record over three visits is common enough to be unremarkable,
+  so the bar is higher here.
 </p>
 <div id="top"></div>
 
-<h2>Lowest average scores</h2>
-<p class="cap">
-  Lowest average, among restaurants inspected at least <b>3</b> times. A low average
-  across three visits is already a pattern rather than one bad day, which is why the
-  threshold is lower &mdash; requiring five would hide the worst-scoring restaurants
-  in the city.
-</p>
-<div id="bottom"></div>
-
 <div class="note">
-  <b>How this was built.</b> One row per licensed restaurant, averaged across every
-  inspection on record. Excludes five facilities scored 0 &mdash; a 0 means no score was
-  issued, not a failing kitchen &mdash; plus names carrying an out-of-business or
-  ineligible-for-renewal flag. Where one operator licenses several counters at a single
-  address, only its best-scoring counter appears.
+  <b>How this was built.</b> One row per licensed restaurant, averaged across its
+  <b>routine</b> inspections. Follow-up re-checks and compliance visits are real
+  inspections and appear on the map, but they are excluded from this average and from
+  the minimum-inspection count, because both happen in response to a prior result and
+  so are not independent observations.
+  Also excluded: names carrying an out-of-business or ineligible-for-renewal flag, and
+  where one operator licenses several counters at a single address, only its
+  best-scoring counter appears.
   Chains and coffee shops count as restaurants; schools, groceries, convenience stores,
   care facilities, stadium concessions, staff-only canteens and retailers that merely
   hold a food permit are excluded. The city publishes no facility-type field, so type is
   inferred from the establishment name and a few will be misclassified &mdash; each list
   was checked by hand before publication.
-  Source: City of Austin food establishment inspection scores. Generated August 3, 2026.
+  A handful of establishments are recorded with a score of 0. A 0 is not a low score on
+  the 100-point scale and we have not established for every case which permit type
+  produced it, so those are held back pending verification against the city&rsquo;s
+  portal.
+  Source: City of Austin. Inspection records through May 22, 2026; page built
+  August 3, 2026.
 </div>
 
 <script>
-var DATA = {"top":[{"rank":1,"name":"PF - In-N-Out #316","category":"Restaurant & Food Service","street":"1600 Town Center Dr","city":"Pflugerville","mean_score":99.67,"n":6,"min_score":98,"max_score":100,"latest_score":98,"latest":"2026-03-05"},{"rank":2,"name":"Wingstop #2138","category":"Restaurant & Food Service","street":"1420 W Wells Branch Pkwy Ste 100","city":"Pflugerville","mean_score":99.6,"n":5,"min_score":99,"max_score":100,"latest_score":100,"latest":"2026-02-17"},{"rank":3,"name":"Chipotle Mexican Grill #874","category":"Restaurant & Food Service","street":"6301 W Parmer Ln Bldg 2","city":"Austin","mean_score":99.4,"n":5,"min_score":98,"max_score":100,"latest_score":99,"latest":"2026-04-21"},{"rank":4,"name":"BC - Baguette et Chocolat","category":"Restaurant & Food Service","street":"12101 Bee Cave Rd","city":"Bee Cave","mean_score":99.4,"n":5,"min_score":97,"max_score":100,"latest_score":100,"latest":"2026-01-07"},{"rank":5,"name":"Little Deli & Pizzeria","category":"Restaurant & Food Service","street":"1804 Briarcliff Blvd","city":"Austin","mean_score":99.4,"n":5,"min_score":98,"max_score":100,"latest_score":100,"latest":"2025-12-31"},{"rank":6,"name":"sweetgreen","category":"Restaurant & Food Service","street":"1900 Aldrich St Ste 140","city":"Austin","mean_score":99.17,"n":6,"min_score":96,"max_score":100,"latest_score":100,"latest":"2025-11-17"},{"rank":7,"name":"PF - Sonic","category":"Restaurant & Food Service","street":"1101 FM 685","city":"Pflugerville","mean_score":99.14,"n":7,"min_score":98,"max_score":100,"latest_score":100,"latest":"2026-02-20"},{"rank":8,"name":"PF - Raising Canes # 194","category":"Restaurant & Food Service","street":"2408 FM 685","city":"Pflugerville","mean_score":99.14,"n":7,"min_score":97,"max_score":100,"latest_score":100,"latest":"2026-01-22"},{"rank":9,"name":"Cloud Kitchen","category":"Restaurant & Food Service","street":"5610 N IH 35 Service Rd SB","city":"Austin","mean_score":99,"n":7,"min_score":96,"max_score":100,"latest_score":100,"latest":"2026-05-04"},{"rank":10,"name":"Wendy's #W129/11274","category":"Restaurant & Food Service","street":"10701 Research NB Blvd","city":"Austin","mean_score":98.8,"n":5,"min_score":98,"max_score":100,"latest_score":98,"latest":"2026-01-13"}],"bottom":[{"rank":1,"name":"Special Noodle","category":"Restaurant & Food Service","street":"13729 N US 183 Hwy NB","city":"Austin","mean_score":67.67,"n":3,"min_score":59,"max_score":74,"latest_score":70,"latest":"2026-01-21"},{"rank":2,"name":"Hunan Bistro","category":"Restaurant & Food Service","street":"10700 Anderson Mill Rd Ste 105","city":"Austin","mean_score":69.33,"n":3,"min_score":66,"max_score":71,"latest_score":71,"latest":"2025-12-03"},{"rank":3,"name":"Biryani & Co.","category":"Restaurant & Food Service","street":"11150 Research SB Blvd Unit 210A","city":"Austin","mean_score":70,"n":3,"min_score":67,"max_score":73,"latest_score":73,"latest":"2026-03-12"},{"rank":4,"name":"Gang Nam Korean BBQ","category":"Restaurant & Food Service","street":"701 E Stassney Ln Ste C","city":"Austin","mean_score":70.25,"n":4,"min_score":63,"max_score":77,"latest_score":77,"latest":"2025-10-01"},{"rank":5,"name":"India Gate","category":"Restaurant & Food Service","street":"12636 Research SB Blvd Unit 110","city":"Austin","mean_score":70.75,"n":4,"min_score":65,"max_score":77,"latest_score":70,"latest":"2026-02-12"},{"rank":6,"name":"Fruttilandia","category":"Restaurant & Food Service","street":"5200 E William Cannon Dr","city":"Austin","mean_score":71.33,"n":3,"min_score":62,"max_score":78,"latest_score":74,"latest":"2025-03-13"},{"rank":7,"name":"Buffet Palace","category":"Restaurant & Food Service","street":"4608 West Gate Blvd","city":"Austin","mean_score":71.5,"n":10,"min_score":57,"max_score":82,"latest_score":70,"latest":"2026-04-30"},{"rank":8,"name":"LW - Lakeway Market","category":"Restaurant & Food Service","street":"2114 Lakeway Blvd Ste 100","city":"Lakeway","mean_score":71.6,"n":5,"min_score":70,"max_score":74,"latest_score":74,"latest":"2026-03-02"},{"rank":9,"name":"Pho Phi Vietnamese Noodles and Grill","category":"Restaurant & Food Service","street":"1700 W Parmer Ln Ste 610","city":"Austin","mean_score":71.75,"n":4,"min_score":68,"max_score":78,"latest_score":71,"latest":"2026-04-17"},{"rank":10,"name":"Wing Daddy's Sauce House","category":"Restaurant & Food Service","street":"9811 S IH 35","city":"Austin","mean_score":71.75,"n":4,"min_score":65,"max_score":77,"latest_score":77,"latest":"2025-05-06"}]};
+var DATA = {"top":[{"rank":1,"name":"PF - In-N-Out #316","category":"Restaurant & Food Service","street":"1600 Town Center Dr","city":"Pflugerville","mean_score":99.67,"n":6,"min_score":98,"max_score":100,"latest_score":98,"latest":"2026-03-05"},{"rank":2,"name":"Wingstop #2138","category":"Restaurant & Food Service","street":"1420 W Wells Branch Pkwy Ste 100","city":"Pflugerville","mean_score":99.6,"n":5,"min_score":99,"max_score":100,"latest_score":100,"latest":"2026-02-17"},{"rank":3,"name":"Chipotle Mexican Grill #874","category":"Restaurant & Food Service","street":"6301 W Parmer Ln Bldg 2","city":"Austin","mean_score":99.4,"n":5,"min_score":98,"max_score":100,"latest_score":99,"latest":"2026-04-21"},{"rank":4,"name":"BC - Baguette et Chocolat","category":"Restaurant & Food Service","street":"12101 Bee Cave Rd","city":"Bee Cave","mean_score":99.4,"n":5,"min_score":97,"max_score":100,"latest_score":100,"latest":"2026-01-07"},{"rank":5,"name":"Little Deli & Pizzeria","category":"Restaurant & Food Service","street":"1804 Briarcliff Blvd","city":"Austin","mean_score":99.4,"n":5,"min_score":98,"max_score":100,"latest_score":100,"latest":"2025-12-31"},{"rank":6,"name":"sweetgreen","category":"Restaurant & Food Service","street":"1900 Aldrich St Ste 140","city":"Austin","mean_score":99.17,"n":6,"min_score":96,"max_score":100,"latest_score":100,"latest":"2025-11-17"},{"rank":7,"name":"PF - Sonic","category":"Restaurant & Food Service","street":"1101 FM 685","city":"Pflugerville","mean_score":99.14,"n":7,"min_score":98,"max_score":100,"latest_score":100,"latest":"2026-02-20"},{"rank":8,"name":"PF - Raising Canes # 194","category":"Restaurant & Food Service","street":"2408 FM 685","city":"Pflugerville","mean_score":99.14,"n":7,"min_score":97,"max_score":100,"latest_score":100,"latest":"2026-01-22"},{"rank":9,"name":"Cloud Kitchen","category":"Restaurant & Food Service","street":"5610 N IH 35 Service Rd SB","city":"Austin","mean_score":99,"n":7,"min_score":96,"max_score":100,"latest_score":100,"latest":"2026-05-04"},{"rank":10,"name":"Wendy's #W129/11274","category":"Restaurant & Food Service","street":"10701 Research NB Blvd","city":"Austin","mean_score":98.8,"n":5,"min_score":98,"max_score":100,"latest_score":98,"latest":"2026-01-13"}]};
 var COLORS = { red:"#d62828", orange:"#f77f00", yellow:"#ecc30b", green:"#2a9d3f" };
 function bucket(s){ return s<=69?"red":s<=79?"orange":s<=89?"yellow":"green"; }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
@@ -98,8 +114,8 @@ function table(rows){
         "<td class='num'>"+r.latest_score+"<div class='addr'>"+fmtDate(r.latest)+"</div></td></tr>";
     }).join("") + "</tbody></table>";
 }
-document.getElementById("top").innerHTML    = table(DATA.top);
-document.getElementById("bottom").innerHTML = table(DATA.bottom);
+document.getElementById("top").innerHTML = table(DATA.top);
+// No bottom table: DATA carries no `bottom` key while the list is withdrawn.
 </script>
 </body>
 </html>

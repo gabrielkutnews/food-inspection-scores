@@ -3,18 +3,26 @@
 An interactive map and consistency rankings built from the City of Austin's food
 establishment inspection export, designed to be embedded in Grove via an iframe.
 
+> **The open-data source has stopped updating.** Socrata dataset `ecmv-9xxi` is frozen at
+> `rowsUpdatedAt = 2026-06-15` with no inspection after 2026-05-22 — verified against the
+> Socrata metadata API. Re-running `R/download.R` changes nothing. Fresh scores now come
+> from `R/portal_fetch.R`, which reads the city's live portal. That portal only retains
+> ~18 months, so for 2023-06 → 2025-01 the frozen export is the **only** surviving source.
+
 ## Run order
 
 ```bash
-Rscript R/download.R   # only needed to refresh data/ins.csv from the city's API
+Rscript R/download.R      # frozen source; kept for provenance
+Rscript R/portal_fetch.R  # scrape the live portal (opens a Chrome window, ~1 h backfill)
 Rscript R/geocode.R    # network; only geocodes addresses missing from the cache
 Rscript R/prep.R       # writes docs/data/points.json
-Rscript R/rankings.R   # writes docs/rankings.html + data/rankings_*.csv
+Rscript R/rankings.R   # writes docs/rankings.html + data/internal/rankings_*.csv
 ```
 
 | File | Role |
 |---|---|
-| `R/download.R` | Pulls the city export to `data/ins.csv` (download block commented out by default) |
+| `R/download.R` | Pulls the city export to `data/ins.csv`. **The source is dead** — frozen 2026-06-15, see below |
+| `R/portal_fetch.R` | Scrapes the city's live inspections portal via headful Chrome + chromote |
 | `R/common.R` | Shared: city/category derivation, address cleaning, score buckets, dedupe-to-latest |
 | `R/geocode.R` | Address normalisation + Census/ArcGIS geocoding, cached in `data/geocoded_cache.csv` |
 | `R/prep.R` | Builds the map payload |
@@ -24,9 +32,13 @@ Rscript R/rankings.R   # writes docs/rankings.html + data/rankings_*.csv
 
 `hmm_food.R` is the first-pass analysis this project grew out of: it builds a
 3-bucket leaflet map and writes `restaurant_inspection_map.html` via `saveWidget`.
-It is preserved unchanged for reference and does **not** run as written — line 18
-writes `ins` before it exists and line 57 reads `data/geo_coded`, which is not a
-real filename. The corrected versions of that logic live in `R/`.
+It is preserved for reference. Line 57 reads `data/geo_coded`, which is not a real
+filename, so it stops there; the corrected versions of that logic live in `R/`.
+
+Its `write_csv(ins, "data/ins.csv")` on line 18 is **commented out**, and should stay
+that way. It does not error when `ins` is in scope — it silently overwrites the source
+data with whatever that object currently holds, which is how `data/ins.csv` once
+acquired a 12th column and reformatted dates.
 
 Editing thresholds: `RECENCY_MONTHS` and `BUCKETS` live at the top of `R/common.R`;
 `MIN_TOP`, `MIN_BOTTOM` and `TOP_N` at the top of `R/rankings.R`.
@@ -56,10 +68,16 @@ has two inspections on the same date with different scores, the lower one wins �
 row order is not a defensible tiebreak for a food-safety map. `R/prep.R` prints
 those conflicts (currently 2) on every run.
 
-**Scores of 0 are not real scores.** Five facilities have one; Fiesta Tortillas went
-96 → 98 → 0 and PBS Hospitality went 99 → 0. A 0 means no score was issued — closed,
-refused entry, out of business. They are excluded from the rankings. Never publish
-them as failing kitchens.
+**Scores of 0 are real values, but not on the 100-point scale.** *(Corrected — this
+section previously said a 0 "means no score was issued." See `CORRECTIONS.md`.)* Five
+facilities in the export are recorded at 0. The city uses 0 for inspections the FDA
+100-point scale does not apply to: on the portal, pool and spa inspections are scored 0
+with findings written into a comments field, and Fiesta Tortillas carries inspection
+type "Wholesale" with the note "No open or handling of TCS foods." For the other four
+the permit type is **not** established, so no reason is asserted for them. PBS
+Hospitality's 0 was also simply superseded — the live portal shows a later score in the
+nineties that the frozen export never carried. Held out of the score bands pending
+verification; never publish them as failing kitchens without checking the type.
 
 **`OOB` and `INELIGIBLE` name prefixes** are administrative flags (282 and 1
 facilities). Excluded from the rankings. `OOB` reads as out-of-business but is
@@ -84,25 +102,40 @@ check that list after any data refresh, before publishing. Chains and coffee sho
 count as restaurants; wholesalers, staff-only dining and retailers holding a food
 permit do not.
 
-**The two ranking thresholds differ on purpose.** The top requires ≥5 inspections
-(`MIN_TOP`), the bottom ≥3 (`MIN_BOTTOM`). A spotless record over three visits is
-unremarkable, so a "best" claim needs volume; a low average over three visits is
-already a pattern, and a symmetric ≥5 cut would hide the six worst-scoring
-restaurants in the city. Both captions on the page state their threshold.
+**Only routine inspections count**, toward both the threshold and the average. A
+follow-up re-check happens *because* a routine inspection went badly, so it is not an
+independent observation — counting it let a bad score supply the third inspection that
+qualified a restaurant to be ranked on it. That defect put four restaurants in a
+published table who should never have been eligible; see `CORRECTIONS.md` and
+`METHODOLOGY.md`. Follow-up and compliance rows stay in the data and on the map.
+
+**The two ranking thresholds differ on purpose.** The top requires ≥5 routine
+inspections (`MIN_TOP`), the bottom ≥3 (`MIN_BOTTOM`). A spotless record over three
+visits is unremarkable, so a "best" claim needs volume; a low average over three visits
+is already a pattern, and a symmetric ≥5 cut would hide the worst-scoring restaurants
+in the city.
+
+**The lowest-scoring table is currently withdrawn** pending the portal fact-check. It is
+absent from the page payload, not merely hidden, and the ranking CSVs are no longer
+tracked or served — `rankings_all_eligible.csv` was one sort away from reconstituting
+the list.
 
 **It is not only Austin.** Roughly 650 facilities are in Pflugerville, Manor, Bee
 Cave, Lakeway, West Lake Hills, Del Valle, Sunset Valley and other jurisdictions.
 
-**Both ranking tables are real rankings.** At ≥5 inspections no restaurant holds a
+**The best-records table is a real ranking.** At ≥5 inspections no restaurant holds a
 perfect record, so the top is ordered by genuinely distinct averages rather than
 being a sample of a tie. That was not true at ≥3, where 8 restaurants tied at exactly
 100.00 — if you lower `MIN_TOP`, the script warns when the tie exceeds ten and you
 should label the table accordingly. Ties on the mean break toward more inspections,
 then recency, and only one counter per operator per address can appear.
 
-**Recency.** Rankings require an inspection within 18 months. The map hides older
-inspections by default but lets the reader show them, rather than silently dropping
-~950 pins.
+**Recency is anchored to the data, not the clock.** The window is 18 months back from
+the **newest inspection in the dataset**, via `recency_cutoff()` in `R/common.R`. It used
+to be 18 months back from `Sys.Date()`, which slid forward daily against a frozen export
+and had silently dropped 132 facilities before it was caught. The map hides older
+inspections by default but lets the reader show them, and its label states the actual
+window rather than "last 18 months".
 
 **Coverage.** 6,507 of 6,511 facilities are mapped (99.9%). The four that aren't are
 in Austin and failed both geocoders.

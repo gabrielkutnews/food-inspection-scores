@@ -37,15 +37,36 @@ dir.create("docs", showWarnings = FALSE)
 ins    <- load_inspections()
 cutoff <- recency_cutoff(ins)   # anchored to the data, not to today
 
-eligible <- ins |>
-  filter(!is.na(score), score > 0, !str_detect(restaurant_name, ADMIN_FLAG_RE)) |>
+# ROUTINE INSPECTIONS ONLY, for both the threshold and the mean.
+#
+# This corrects a real defect in work that was published. A follow-up re-check is
+# triggered BY a poor routine inspection, so it is not an independent observation of
+# the same establishment -- and counting it let a bad score manufacture its own
+# eligibility. Four of the ten restaurants published as Austin's lowest-scoring had
+# only TWO routine inspections; they reached MIN_BOTTOM = 3 solely because their own
+# bad routine produced a follow-up. Three of those four were published as #1, #2 and
+# #3 worst.
+#
+# Note the direction: routine-only averages are LOWER in 8 of the 10 cases (Special
+# Noodle 67.67 -> 64.50), because follow-ups score well above the visit that
+# triggered them. So this tightens the finding. What it removes is manufactured
+# eligibility, not severity.
+#
+# Follow-up and compliance rows are kept in the data and on the map -- they are real
+# inspections -- but they do not count toward the ranking metric.
+routine <- ins |>
+  filter(!is.na(score), score > 0,
+         !str_detect(restaurant_name, ADMIN_FLAG_RE),
+         !is_followup)
+
+eligible <- routine |>
   group_by(facility_id) |>
   summarise(
     name       = first(restaurant_name),
     street     = display_street(first(street)),
     city       = first(city),
-    n          = n(),
-    mean_score = round(mean(score), 2),
+    n          = n(),                       # routine inspections only
+    mean_score = round(mean(score), 2),     # routine inspections only
     min_score  = min(score),
     max_score  = max(score),
     latest     = max(inspection_date),
@@ -85,10 +106,15 @@ tables <- list(
   restaurants_bottom = rank_table(restaurants, "bottom")
 )
 
+# Internal only, and gitignored. These previously lived in tracked data/ and were
+# served from the GitHub Pages site, which meant "withdrawing" the bottom table by
+# deleting a <div> withdrew nothing: rankings_all_eligible.csv is a single ascending
+# sort away from reconstituting the whole list.
+dir.create("data/internal", showWarnings = FALSE, recursive = TRUE)
 for (nm in names(tables)) {
-  write_csv(tables[[nm]], file.path("data", paste0("rankings_", nm, ".csv")))
+  write_csv(tables[[nm]], file.path("data/internal", paste0("rankings_", nm, ".csv")))
 }
-write_csv(eligible |> arrange(desc(mean_score)), "data/rankings_all_eligible.csv")
+write_csv(eligible |> arrange(desc(mean_score)), "data/internal/rankings_all_eligible.csv")
 
 # ---- console ------------------------------------------------------------------
 
@@ -131,16 +157,32 @@ print(as.data.frame(
 ), right = FALSE)
 
 # ---- rankings.html -------------------------------------------------------------
-# Restaurants only. The all-establishments tables stay in data/rankings_all_*.csv
-# for fact-checking but are not published: schools dominate them, because they are
+# Restaurants only. The all-establishments tables stay in data/internal/ for
+# fact-checking but are not published: schools dominate them, because they are
 # inspected roughly twice as often as restaurants.
+#
+# The BOTTOM TABLE IS WITHDRAWN. It is deliberately absent from `payload`, not merely
+# hidden in the HTML, so the ten names are not in the shipped page source or in any
+# archive snapshot of it. It returns once the portal scrape has fact-checked the
+# survivors against inspections the frozen export never carried. See CORRECTIONS.md.
 
 payload <- list(
-  top    = tables$restaurants_top,
-  bottom = tables$restaurants_bottom
+  top = tables$restaurants_top
 )
 
-html <- sprintf('<!doctype html>
+# Token substitution rather than a positional sprintf. The template is ~120 lines with
+# CSS percent signs in it, and every copy edit risked either doubling a %% or silently
+# permuting the argument list. render() also errors if any token is left unfilled.
+render <- function(tpl, vals) {
+  for (k in names(vals)) tpl <- gsub(paste0("{{", k, "}}"), vals[[k]], tpl, fixed = TRUE)
+  if (grepl("\\{\\{", tpl)) {
+    stop("unsubstituted token(s): ",
+         paste(unique(unlist(str_extract_all(tpl, "\\{\\{[a-z_]+\\}\\}"))), collapse = ", "))
+  }
+  tpl
+}
+
+html <- render('<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -169,51 +211,67 @@ html <- sprintf('<!doctype html>
   .note { font-size:11.5px; color:var(--muted); line-height:1.55; margin-top:16px;
           border-top:1px solid var(--line); padding-top:9px; }
   .cap { font-size:12px; color:var(--muted); line-height:1.5; margin:0 0 8px; }
+  .withdrawn { font-size:12.5px; line-height:1.6; background:#fdf6e3; border:1px solid #e6d9a8;
+               border-left:4px solid #d9a300; border-radius:5px; padding:11px 13px;
+               margin:16px 0 4px; color:#4a3d18; }
   @media (max-width:560px) { .hide-sm { display:none; } body { padding:10px; } }
 </style>
 </head>
 <body>
 <h1>Austin-area restaurants, ranked by inspection consistency</h1>
 <div class="sub">
-  Average score across every inspection on record &mdash; not a snapshot of a single
-  visit. Restaurants, cafes and coffee shops only, each with an inspection in the last
-  %d months.
+  Average score across <b>routine</b> inspections &mdash; not a snapshot of a single
+  visit. Restaurants, cafes and coffee shops only. Inspection records run through
+  <b>{{through}}</b>; this page was built {{generated}}.
+</div>
+
+<div class="withdrawn" id="corrections">
+  <b>Correction &mdash; the lowest-scoring list has been withdrawn.</b>
+  It counted follow-up re-checks as independent inspections. A follow-up happens
+  <i>because</i> a routine inspection went badly, so counting it toward the
+  three-inspection minimum let a poor score qualify a restaurant on its own. Four of
+  the ten restaurants named had only two routine inspections and should never have
+  appeared; three of those four were listed as the first, second and third worst in
+  Austin. Pooling the re-checks also raised those averages rather than lowering them,
+  because follow-ups score well above the visit that triggered them.
+  The list will return, computed from routine inspections only, once the city&rsquo;s
+  live portal has been checked for inspections the frozen open-data export never
+  carried. Named in full in CORRECTIONS.md.
 </div>
 
 <h2>Best records</h2>
 <p class="cap">
-  Highest average, among restaurants inspected at least <b>%d</b> times. A spotless
-  record over three visits is common enough to be unremarkable, so the bar is higher
-  here than for the list below.
+  Highest average, among restaurants with at least <b>{{min_top}}</b> routine
+  inspections. A spotless record over three visits is common enough to be unremarkable,
+  so the bar is higher here.
 </p>
 <div id="top"></div>
 
-<h2>Lowest average scores</h2>
-<p class="cap">
-  Lowest average, among restaurants inspected at least <b>%d</b> times. A low average
-  across three visits is already a pattern rather than one bad day, which is why the
-  threshold is lower &mdash; requiring five would hide the worst-scoring restaurants
-  in the city.
-</p>
-<div id="bottom"></div>
-
 <div class="note">
-  <b>How this was built.</b> One row per licensed restaurant, averaged across every
-  inspection on record. Excludes five facilities scored 0 &mdash; a 0 means no score was
-  issued, not a failing kitchen &mdash; plus names carrying an out-of-business or
-  ineligible-for-renewal flag. Where one operator licenses several counters at a single
-  address, only its best-scoring counter appears.
+  <b>How this was built.</b> One row per licensed restaurant, averaged across its
+  <b>routine</b> inspections. Follow-up re-checks and compliance visits are real
+  inspections and appear on the map, but they are excluded from this average and from
+  the minimum-inspection count, because both happen in response to a prior result and
+  so are not independent observations.
+  Also excluded: names carrying an out-of-business or ineligible-for-renewal flag, and
+  where one operator licenses several counters at a single address, only its
+  best-scoring counter appears.
   Chains and coffee shops count as restaurants; schools, groceries, convenience stores,
   care facilities, stadium concessions, staff-only canteens and retailers that merely
   hold a food permit are excluded. The city publishes no facility-type field, so type is
   inferred from the establishment name and a few will be misclassified &mdash; each list
   was checked by hand before publication.
-  Source: City of Austin food establishment inspection scores. Generated %s.
+  A handful of establishments are recorded with a score of 0. A 0 is not a low score on
+  the 100-point scale and we have not established for every case which permit type
+  produced it, so those are held back pending verification against the city&rsquo;s
+  portal.
+  Source: City of Austin. Inspection records through {{through}}; page built
+  {{generated}}.
 </div>
 
 <script>
-var DATA = %s;
-var COLORS = { red:"%s", orange:"%s", yellow:"%s", green:"%s" };
+var DATA = {{data}};
+var COLORS = { red:"{{c_red}}", orange:"{{c_orange}}", yellow:"{{c_yellow}}", green:"{{c_green}}" };
 function bucket(s){ return s<=69?"red":s<=79?"orange":s<=89?"yellow":"green"; }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
   return {"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;"}[c]; }); }
@@ -240,18 +298,32 @@ function table(rows){
         "<td class=\'num\'>"+r.latest_score+"<div class=\'addr\'>"+fmtDate(r.latest)+"</div></td></tr>";
     }).join("") + "</tbody></table>";
 }
-document.getElementById("top").innerHTML    = table(DATA.top);
-document.getElementById("bottom").innerHTML = table(DATA.bottom);
+document.getElementById("top").innerHTML = table(DATA.top);
+// No bottom table: DATA carries no `bottom` key while the list is withdrawn.
 </script>
 </body>
 </html>
 ',
-  RECENCY_MONTHS, MIN_TOP, MIN_BOTTOM,
-  str_squish(format(Sys.Date(), "%B %e, %Y")),
-  toJSON(payload, dataframe = "rows", auto_unbox = TRUE, Date = "ISO8601"),
-  BUCKETS$color[1], BUCKETS$color[2], BUCKETS$color[3], BUCKETS$color[4]
-)
+  list(
+    min_top   = MIN_TOP,
+    through   = str_squish(format(data_through(ins), "%B %e, %Y")),
+    generated = str_squish(format(Sys.Date(), "%B %e, %Y")),
+    data      = as.character(toJSON(payload, dataframe = "rows",
+                                    auto_unbox = TRUE, Date = "ISO8601")),
+    c_red     = BUCKETS$color[1],
+    c_orange  = BUCKETS$color[2],
+    c_yellow  = BUCKETS$color[3],
+    c_green   = BUCKETS$color[4]
+  ))
 
 writeLines(html, "docs/rankings.html")
+
+# Guard: the withdrawn names must not be reachable from anything we publish.
+withdrawn <- c("Special Noodle", "Hunan Bistro", "Biryani & Co.", "Fruttilandia")
+leaked <- withdrawn[vapply(withdrawn, function(n)
+  any(grepl(n, readLines("docs/rankings.html", warn = FALSE), fixed = TRUE)), logical(1))]
+if (length(leaked)) stop("withdrawn name still present in docs/rankings.html: ",
+                         paste(leaked, collapse = ", "))
+
 message("")
-message("Wrote docs/rankings.html and data/rankings_*.csv")
+message("Wrote docs/rankings.html (bottom table withdrawn) and data/internal/rankings_*.csv")
