@@ -6,21 +6,27 @@ establishment inspection export, designed to be embedded in Grove via an iframe.
 ## Run order
 
 ```bash
+Rscript R/download.R   # only needed to refresh data/ins.csv from the city's API
 Rscript R/geocode.R    # network; only geocodes addresses missing from the cache
 Rscript R/prep.R       # writes docs/data/points.json
 Rscript R/rankings.R   # writes docs/rankings.html + data/rankings_*.csv
 ```
 
-`hmm_food.R` refreshes `data/ins.csv` from the city's API — uncomment the download
-block when you want new data, then re-run all three.
-
 | File | Role |
 |---|---|
+| `R/download.R` | Pulls the city export to `data/ins.csv` (download block commented out by default) |
 | `R/common.R` | Shared: city/category derivation, address cleaning, score buckets, dedupe-to-latest |
 | `R/geocode.R` | Address normalisation + Census/ArcGIS geocoding, cached in `data/geocoded_cache.csv` |
 | `R/prep.R` | Builds the map payload |
 | `R/rankings.R` | Builds the ranking tables |
 | `docs/` | The published site (GitHub Pages root) |
+| `hmm_food.R` | The original exploratory script — kept as-is, not part of the pipeline |
+
+`hmm_food.R` is the first-pass analysis this project grew out of: it builds a
+3-bucket leaflet map and writes `restaurant_inspection_map.html` via `saveWidget`.
+It is preserved unchanged for reference and does **not** run as written — line 18
+writes `ins` before it exists and line 57 reads `data/geo_coded`, which is not a
+real filename. The corrected versions of that logic live in `R/`.
 
 Editing thresholds: `RECENCY_MONTHS` and `BUCKETS` live at the top of `R/common.R`;
 `MIN_TOP`, `MIN_BOTTOM` and `TOP_N` at the top of `R/rankings.R`.
