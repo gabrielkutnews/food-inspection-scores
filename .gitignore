@@ -12,3 +12,14 @@ restaurant_inspection_map.html
 
 # Scratch export nothing reads; kept on disk, out of the repo.
 data/addy.csv
+
+# Raw portal scrape. NEVER commit: the `comments` column is inspector free text
+# that names individual certified food managers with their certificate numbers and
+# expiry dates. Collected for reporting, not for publication.
+data/portal_inspections.csv
+data/portal_status.json
+
+# Internal ranking tables. Untracked so that withdrawing a published table
+# actually withdraws it -- rankings_all_eligible.csv is one sort away from
+# reconstituting the bottom-10 list.
+data/internal/

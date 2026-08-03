@@ -68,7 +68,7 @@ message(sprintf("Co-located: %d facilities share a coordinate with another; larg
 # ---- Assemble ----------------------------------------------------------------
 
 city_levels <- sort(unique(pts$city))
-cutoff      <- as_date(Sys.Date()) %m-% months(RECENCY_MONTHS)
+cutoff      <- recency_cutoff(ins)   # anchored to the data, not to today
 
 out <- pts |>
   mutate(
@@ -94,8 +94,12 @@ out <- pts |>
   )
 
 payload <- list(
-  generated  = format(Sys.Date(), "%Y-%m-%d"),
-  cutoff     = format(cutoff, "%Y-%m-%d"),
+  # Three distinct dates, never collapsed into one "generated". The page previously
+  # said "Data generated <today>" while describing inspections that stopped 73 days
+  # earlier, which read as a freshness claim it could not support.
+  generated    = format(Sys.Date(), "%Y-%m-%d"),   # when this file was built
+  data_through = format(data_through(ins), "%Y-%m-%d"),  # newest inspection in it
+  cutoff       = format(cutoff, "%Y-%m-%d"),       # start of the recency window
   recency_months = RECENCY_MONTHS,
   n_total    = n_all,
   n_mapped   = nrow(out),

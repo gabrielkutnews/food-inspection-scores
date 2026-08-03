@@ -15,7 +15,11 @@ library(htmlwidgets)
 # ) %>%
 #   clean_names()
 
-write_csv(ins, "data/ins.csv")
+# DISABLED -- this line overwrites data/ins.csv with whatever `ins` happens to hold.
+# It fired once from a session where `ins` was already mutated, and rewrote the source
+# file with a 12th column and reformatted dates. It belongs inside the commented
+# download block above, not out here. The pipeline in R/ never touches this file.
+# write_csv(ins, "data/ins.csv")
 
 ins <- read_csv("data/ins.csv")
 
@@ -55,6 +59,22 @@ geo <- ins |>
 # write_csv(geo_coded, "data/geocoded_addresses.csv")
 
 geo_coded <- read_csv("data/geo_coded")
+
+last_ins <- ins |>
+  mutate(
+    inspection_date = as_date(inspection_date),
+    score_group = case_when(
+      score <= 69 ~ "Red",
+      score >= 70 & score <= 85 ~ "Yellow",
+      score >= 86 & score <= 100 ~ "Green",
+      TRUE ~ NA_character_
+    )
+  ) |>
+  arrange(desc(inspection_date)) |>
+  group_by(restaurant_name) |>
+  slice(1) |>
+  ungroup()
+
 
 ins_geo <- ins |>
   mutate(

@@ -149,9 +149,12 @@
   <div class="panel-body">
     <div id="buckets"></div>
     <div class="divider"></div>
+    <!-- Label is data-relative, filled from the payload. It must never say "last N
+         months", because the window is anchored to the newest inspection in the
+         data, not to today -- with a stale export those are different things. -->
     <label class="row">
       <input type="checkbox" id="recent" checked>
-      <span class="lbl">Last <span id="recency-months">18</span> months only</span>
+      <span class="lbl" id="recency-label">Recent inspections only</span>
     </label>
     <div style="margin-top:7px">
       <select id="category" aria-label="Filter by establishment type">
@@ -233,10 +236,16 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   };
+  // Total on bad input. A payload built before the data_through/cutoff keys existed
+  // can still be in a reader's cache for up to the GitHub Pages max-age after a
+  // deploy; throwing here would happen inside buildPanel, before the marker layers
+  // are added, and leave a blank map rather than a stale one.
   var fmtDate = function (iso) {
+    if (!iso || typeof iso !== 'string') return '';
     var p = iso.split('-');
+    if (p.length !== 3) return iso;
     var m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return m[+p[1] - 1] + ' ' + (+p[2]) + ', ' + p[0];
+    return (m[+p[1] - 1] || '?') + ' ' + (+p[2]) + ', ' + p[0];
   };
   var comma = function (n) { return n.toLocaleString('en-US'); };
 
@@ -301,7 +310,12 @@
       for (var j = 0; j < markers.length; j++) markers[j].setRadius(r);
     });
 
-    $('gen').textContent = 'Data generated ' + fmtDate(data.generated) + '.';
+    // Three dates, stated separately. "Data generated <today>" alone implied the
+    // scores were current as of today when the newest one was 73 days old.
+    $('gen').textContent = data.data_through
+      ? 'Inspection records through ' + fmtDate(data.data_through) +
+        '; page built ' + fmtDate(data.generated) + '.'
+      : 'Page built ' + fmtDate(data.generated) + '.';
   }
 
   // ---- filtering -------------------------------------------------------------
@@ -368,7 +382,12 @@
       applyFilters(F);
     });
 
-    $('recency-months').textContent = D.recency_months;
+    // Data-relative window label, e.g. "Inspected Nov 22, 2024 - May 22, 2026".
+    // Falls back to the old wording only if an older payload lacks the keys.
+    $('recency-label').textContent =
+      (D.cutoff && D.data_through)
+        ? 'Inspected ' + fmtDate(D.cutoff) + ' – ' + fmtDate(D.data_through)
+        : 'Last ' + D.recency_months + ' months only';
     $('recent').addEventListener('change', function (e) {
       state.recentOnly = e.target.checked;
       applyFilters(F);
@@ -393,8 +412,10 @@
     bits.push('<b>' + r[F.q] + '</b> inspection' + (r[F.q] === 1 ? '' : 's') + ' on record');
     bits.push(CAT[r[F.k]]);
     if (stale) {
-      bits.push('<span class="warn">Not inspected in the last ' +
-        D.recency_months + ' months.</span>');
+      // Stated against the data's own window, not "the last N months" -- the
+      // records end before today, so those are not the same claim.
+      bits.push('<span class="warn">No inspection on record since ' +
+        fmtDate(r[F.d]) + '.</span>');
     }
     if (r[F.u] > 0) {
       bits.push('Shares an address with ' + r[F.u] + ' other establishment' +

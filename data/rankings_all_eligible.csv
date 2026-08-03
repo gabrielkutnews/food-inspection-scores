@@ -435,6 +435,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2802293,Stepping Stone School,9405 Brodie Ln,Austin,4,98.25,97,100,2025-12-15,98,School & Childcare,Stepping Stone School
 10389065,Child's Day Child Development Center,2525 Wallingwood Dr Ste 100 Bldg 1,Austin,4,98.25,96,100,2026-01-22,100,School & Childcare,Child's Day Child Development Center
 11078207,Ashley's Playhouse,13343 N US 183 Hwy NB Service Rd Unit 200,Austin,4,98.25,94,100,2026-02-09,100,Restaurant & Food Service,Ashley's Playhouse
+12020894,Alternative Learning Center School,4900 Gonzales St,Austin,4,98.25,96,100,2025-01-09,100,School & Childcare,Alternative Learning Center School
 12186034,Catering by Rosemary 11th Floor,10721 Domain Dr,Austin,4,98.25,97,100,2025-06-06,98,Institutional & Catering,Catering by Rosemary 11th Floor
 2800007,Whataburger #132,9516 N Lamar Blvd,Austin,5,98.2,96,100,2026-01-13,96,Restaurant & Food Service,Whataburger
 2802959,Tokyo Gardens,500 W Canyon Ridge Dr,Austin,5,98.2,96,100,2026-04-21,100,Restaurant & Food Service,Tokyo Gardens
@@ -777,6 +778,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 11066733,Taco Bell #030141,4811 W Braker Ln,Austin,4,97,92,99,2025-12-26,99,Restaurant & Food Service,Taco Bell
 11066742,Taco Bell #030140,201 E Oltorf St,Austin,3,97,94,99,2026-03-12,98,Restaurant & Food Service,Taco Bell
 11066744,Taco Bell #030139,3501 Wells Branch Pkwy,Austin,5,97,94,100,2026-02-17,100,Restaurant & Food Service,Taco Bell
+11111617,LW - Lupine Lane,1001 Highlands,Lakeway,3,97,96,98,2024-12-03,97,Restaurant & Food Service,LW - Lupine Lane
 11152173,Dollar General # 6619,2205 W Pecan St,Pflugerville,3,97,92,100,2026-04-17,92,Convenience & Fuel,Dollar General
 11178828,Kellie's Baking Co.,5245 Burnet Rd,Austin,3,97,95,100,2025-12-23,100,Restaurant & Food Service,Kellie's Baking Co.
 11275726,CVS Pharmacy # 10139,7300 N FM 620 Rd,Austin,3,97,95,98,2026-02-24,98,Convenience & Fuel,CVS Pharmacy
@@ -881,6 +883,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12397340,Flo's Wine Bar and Bottle Shop,3111 W 35th St # A,Austin,3,96.67,95,98,2026-03-31,98,Restaurant & Food Service,Flo's Wine Bar and Bottle Shop
 12397445,Summer Moon Coffee,15511 W SH 71 Unit 100,Bee Cave,3,96.67,95,99,2026-01-09,99,Restaurant & Food Service,Summer Moon Coffee
 12397503,Cava Mezze Grill,10000 Research SB Blvd Unit 101,Austin,3,96.67,94,98,2026-05-01,98,Restaurant & Food Service,Cava Mezze Grill
+12397655,LW - Finery and Cake,1310 RR 620 Ste A01,Lakeway,3,96.67,95,98,2024-11-27,98,Restaurant & Food Service,LW - Finery and Cake
 12398570,Covenant Presbyterian Church,3003 Northland Dr,Austin,3,96.67,95,98,2026-02-12,98,Restaurant & Food Service,Covenant Presbyterian Church
 12400202,Nancy's Kitchen,5610 N IH 35 Service Rd SB,Austin,3,96.67,91,100,2026-05-01,91,Restaurant & Food Service,Nancy's Kitchen
 12400646,BC - Nothing Bundt Cakes,13011 Shops Pkwy Ste 500,Bee Cave,3,96.67,95,99,2026-01-22,95,Restaurant & Food Service,BC - Nothing Bundt Cakes
@@ -1109,6 +1112,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12186413,Captain Quakenbush's Coffee House,5326 Menchaca Rd,Austin,3,95.67,94,99,2026-02-25,94,Restaurant & Food Service,Captain Quakenbush's Coffee House
 12392932,QuikTrip # 4126,861 E Braker Ln,Austin,3,95.67,94,97,2026-01-27,96,Convenience & Fuel,QuikTrip
 12393017,PF - Typhoon Texas Waterpark - Fry Shack,18500 N SH 130 Service Rd,Pflugerville,3,95.67,91,100,2025-05-02,96,Venue & Concessions,PF - Typhoon Texas Waterpark - Fry Shack
+12393469,Bikkle Jamaican Resturant,3023 Guadalupe St,Austin,3,95.67,92,99,2025-01-09,99,Restaurant & Food Service,Bikkle Jamaican Resturant
 12394089,Third Coast Coffee,10515 Old Manchaca Rd Unit 100,Austin,3,95.67,93,97,2026-02-05,97,Restaurant & Food Service,Third Coast Coffee
 12394325,PF - Hilton Home2/Tru Pflugerville,18700 Hilltop Commercial Dr,Pflugerville,3,95.67,87,100,2026-04-07,100,Restaurant & Food Service,PF - Hilton Home2
 12394777,Microtel Inn and Suites,7705 Metro Center Dr,Austin,3,95.67,92,98,2025-07-03,98,Restaurant & Food Service,Microtel Inn and Suites
@@ -1358,6 +1362,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 10781348,Dollar General Store #12967,6729 Manor Rd,Austin,3,94.67,93,98,2026-04-06,93,Convenience & Fuel,Dollar General Store
 10815885,Ruth Barron Elementary School,14850 Harris Ridge Blvd,Pflugerville,6,94.67,92,97,2026-04-28,93,School & Childcare,Ruth Barron Elementary School
 11028095,Epoch Coffee,2700 W Anderson Ln,Austin,3,94.67,90,99,2025-11-10,95,Restaurant & Food Service,Epoch Coffee
+11153488,Happy Hearts Bilingual Learning Center #2,1112 W Slaughter Ln,Austin,3,94.67,93,96,2025-01-16,96,School & Childcare,Happy Hearts Bilingual Learning Center
 11180309,Figure 8 Coffee Purveyors,1111 Chicon St Unit A,Austin,3,94.67,93,96,2025-12-31,93,Restaurant & Food Service,Figure 8 Coffee Purveyors
 11261275,Starbucks Coffee #22300,1801 E 51st St Bldg A Unit 190,Austin,3,94.67,89,98,2025-11-04,98,Restaurant & Food Service,Starbucks Coffee
 11642557,Fairfield Inn and Suites Austin NW/Research,13087 N US 183 Hwy NB Service Rd,Austin,3,94.67,90,97,2025-11-25,97,Restaurant & Food Service,Fairfield Inn and Suites Austin NW
@@ -1386,6 +1391,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2800311,Whataburger #346,601 Barton Springs Rd,Austin,4,94.5,91,98,2026-03-16,92,Restaurant & Food Service,Whataburger
 2801216,Einstein Bros Bagels,4607 W Braker Ln Unit 500,Austin,6,94.5,92,97,2026-04-17,92,Restaurant & Food Service,Einstein Bros Bagels
 2803175,Wingstop #164,2410 E Riverside Dr,Austin,4,94.5,91,99,2025-11-04,91,Restaurant & Food Service,Wingstop
+10789876,Jack in the Box #825,814 E Rundberg Ln,Austin,4,94.5,91,97,2025-01-07,91,Restaurant & Food Service,Jack in the Box
 10789915,Jack in the Box #840,110 E William Cannon Dr,Austin,4,94.5,93,96,2026-01-20,95,Restaurant & Food Service,Jack in the Box
 10789984,Jack in the Box #904,6133 E Ben White Blvd,Austin,6,94.5,86,100,2026-02-20,96,Restaurant & Food Service,Jack in the Box
 10939383,Chick-fil-A,503 W Martin Luther King Jr Blvd,Austin,6,94.5,91,96,2026-04-16,96,Restaurant & Food Service,Chick-fil-A
@@ -1559,6 +1565,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12398190,Soup Peddler Far West,3720 Far West Blvd Ste 105,Austin,4,93.75,91,97,2026-01-23,92,Restaurant & Food Service,Soup Peddler Far West
 12395080,Mercer St. Taproom,12005 W US 290 Hwy,Austin,7,93.71,86,100,2026-01-02,91,Restaurant & Food Service,Mercer St. Taproom
 12396171,Patrizi's,1705 N Cuernavaca Dr,Austin,7,93.71,90,97,2026-04-03,92,Restaurant & Food Service,Patrizi's
+2800600,Clifton Center,1519 Coronado Hills Dr,Austin,3,93.67,91,96,2024-12-09,94,Restaurant & Food Service,Clifton Center
 2800858,Culver's,3424 W William Cannon Dr,Austin,3,93.67,92,95,2026-01-20,92,Restaurant & Food Service,Culver's
 10003499,Family Dollar Store #26767,9308 Anderson Mill Rd,Austin,3,93.67,90,97,2026-02-26,94,Convenience & Fuel,Family Dollar Store
 10004373,"Schlotzsky's Stores, LLC",13201 N FM 620 NB Rd,Austin,3,93.67,91,98,2025-11-24,98,Restaurant & Food Service,"Schlotzsky's Stores, LLC"
@@ -2125,6 +2132,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2804064,Mesa Mart,8143 Mesa Dr,Austin,4,91.25,85,95,2026-05-19,85,Convenience & Fuel,Mesa Mart
 10224592,Sunrise Mini Mart #5,7401 Burnet Rd,Austin,4,91.25,86,95,2025-11-14,95,Convenience & Fuel,Sunrise Mini Mart
 11084298,Omni Barton Creek Resort & Spa Club-19th Hole,8212 Barton Club Dr,Austin,4,91.25,86,98,2026-01-28,98,Restaurant & Food Service,Omni Barton Creek Resort & Spa Club-19th Hole
+11175572,Olamaie,1610 San Antonio St,Austin,4,91.25,88,94,2025-01-07,94,Restaurant & Food Service,Olamaie
 11414602,Jersey Mike's Subs,600 E Ben White Blvd Ste 350,Austin,4,91.25,90,93,2025-08-06,91,Restaurant & Food Service,Jersey Mike's Subs
 11503365,Recovery Unplugged,14109 FM 969 Rd,Austin,4,91.25,85,100,2026-04-28,90,Restaurant & Food Service,Recovery Unplugged
 11655910,Tee's Donuts,3742 Far West Blvd Ste 112,Austin,4,91.25,88,98,2026-02-26,98,Restaurant & Food Service,Tee's Donuts
@@ -2244,6 +2252,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12398297,Lovebirds,2337 E Cesar Chavez St,Austin,4,90.75,85,97,2026-05-13,85,Restaurant & Food Service,Lovebirds
 12398636,Driskill Hotel - Lobby Bar,604 Brazos St,Austin,4,90.75,83,99,2025-06-30,99,Restaurant & Food Service,Driskill Hotel - Lobby Bar
 12398637,BC - Via 313 Pizzeria,3944 S FM 620 Rd Bldg 4 Ste 100,Austin,4,90.75,84,94,2025-11-21,94,Restaurant & Food Service,BC - Via 313 Pizzeria
+12398969,Saturn Disco Cocktail,906 Congress Ave,Austin,4,90.75,86,95,2024-12-05,93,Restaurant & Food Service,Saturn Disco Cocktail
 12396193,LW - Crown Donut,325 S FM 620 Rd Ste 102,Lakeway,7,90.71,86,96,2026-04-30,96,Restaurant & Food Service,LW - Crown Donut
 2800866,Slick Willie's Family Pool Hall,8440 Burnet Rd,Austin,3,90.67,89,93,2026-04-07,90,Restaurant & Food Service,Slick Willie's Family Pool Hall
 2802210,Taco More,1325 Rutland Dr,Austin,3,90.67,85,94,2026-02-24,93,Restaurant & Food Service,Taco More
@@ -2422,6 +2431,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12396507,BC - Runaway Luna Lifestyle,13420 Galleria Cir # A-110,Bee Cave,3,90,88,93,2026-03-16,88,Restaurant & Food Service,BC - Runaway Luna Lifestyle
 12396904,Chi'Lantro - 620,12129 FM 620 N,Austin,3,90,85,94,2025-12-08,85,Restaurant & Food Service,Chi'Lantro -
 12397951,Tropical Smoothie Cafe,9600 Escarpment Blvd Unit H900,Austin,3,90,88,91,2026-04-02,88,Restaurant & Food Service,Tropical Smoothie Cafe
+12398116,Shawarma Point,6319 El Mirando St,Austin,4,90,86,95,2025-01-09,95,Restaurant & Food Service,Shawarma Point
 12398437,Courtyard Bistro,5660 N Interstate 35,Austin,6,90,83,95,2026-03-31,89,Restaurant & Food Service,Courtyard Bistro
 12398692,Jimmy John's,515 Congress Ave Ste 120,Austin,4,90,87,93,2026-02-03,93,Restaurant & Food Service,Jimmy John's
 12401236,Taqueria Los Altos,6700 Middle Fiskville Rd Ste 404,Austin,3,90,87,92,2026-05-05,91,Restaurant & Food Service,Taqueria Los Altos
@@ -2471,6 +2481,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 11915024,Riverbend Church,4214 N Capital of Texas Hwy,Austin,3,89.67,79,97,2025-10-29,79,Restaurant & Food Service,Riverbend Church
 12091100,Dos Batos,2525 W Anderson Ln Unit 175,Austin,6,89.67,84,94,2026-02-26,90,Restaurant & Food Service,Dos Batos
 12125277,"Far Out, The",109 Ralph Ablanedo Dr,Austin,3,89.67,82,94,2025-09-02,82,Restaurant & Food Service,"Far Out, The"
+12143458,ABIA - Heart of Austin (Main Kitchen),3600 Presidential Blvd Unit F3472,Austin,3,89.67,89,90,2024-12-19,90,Venue & Concessions,ABIA - Heart of Austin (Main Kitchen)
 12177153,Tienda Mexicana,1925 Rutland Dr Ste B,Austin,3,89.67,83,94,2026-03-04,83,Restaurant & Food Service,Tienda Mexicana
 12185776,Smoothie King,4301 W William Cannon Dr Unit 200,Austin,3,89.67,86,93,2026-04-20,86,Restaurant & Food Service,Smoothie King
 12392551,Vic & Al's,2406 Manor Rd Ste D,Austin,3,89.67,89,91,2026-04-23,89,Restaurant & Food Service,Vic & Al's
@@ -2591,6 +2602,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 11461792,Best Western Plus Austin Central,919 E Koenig EB Ln,Austin,4,89,84,95,2026-04-29,91,Restaurant & Food Service,Best Western Plus Austin Central
 11632792,Taqueria Krystal,13620 N FM 973 Rd,Manor,4,89,85,93,2025-12-09,85,Restaurant & Food Service,Taqueria Krystal
 11650922,Poke - Poke,2320 Hancock Dr,Austin,5,89,83,95,2025-12-23,95,Restaurant & Food Service,Poke - Poke
+11687789,Thai Kitchen,3009 Guadalupe St,Austin,3,89,83,96,2024-11-26,96,Restaurant & Food Service,Thai Kitchen
 11933212,Hyatt Place Austin Airport,9532 Spirit of Austin,Austin,4,89,82,98,2025-06-09,85,Restaurant & Food Service,Hyatt Place Austin Airport
 11941326,1st Express,4111 S 1st St,Austin,4,89,84,94,2025-08-27,94,Convenience & Fuel,1st Express
 12035543,Lady T Kitchen,15608 Spring Hill Ln,Pflugerville,3,89,87,90,2026-03-13,90,Restaurant & Food Service,Lady T Kitchen
@@ -2606,6 +2618,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12394251,Jet's Pizza,8900 S Congress Ave Bldg 2 Ste 175,Austin,4,89,88,91,2025-07-09,88,Restaurant & Food Service,Jet's Pizza
 12395226,MN - 7-Eleven Convenience Store #41555A,11209 E US 290 EB Hwy,Manor,6,89,84,93,2026-03-17,86,Convenience & Fuel,MN - 7-Eleven Convenience Store #41555A
 12396095,AMG Mart,10700 Anderson Mill Rd Ste 403,Austin,3,89,86,93,2026-03-25,88,Convenience & Fuel,AMG Mart
+12396341,Stony's Pizza,9521 W US 290 Hwy,Austin,4,89,81,100,2025-01-15,100,Restaurant & Food Service,Stony's Pizza
 12396651,Texas Bakery,10901 N Lamar Blvd Ste D408,Austin,5,89,81,98,2026-02-19,91,Restaurant & Food Service,Texas Bakery
 12397209,LW - Springhill Suites Lakeway by Marriott,322 Medical Pkwy,Lakeway,4,89,84,91,2025-07-29,91,Restaurant & Food Service,LW - Springhill Suites Lakeway by Marriott
 12397567,Master Nutrition,4700 Loyola Ln Ste 112,Austin,3,89,86,93,2025-12-19,93,Restaurant & Food Service,Master Nutrition
@@ -3152,6 +3165,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 11785125,Honest Mary's,9828 Great Hills Trl Ste 300,Austin,3,85,77,92,2026-04-15,86,Restaurant & Food Service,Honest Mary's
 11903671,Brodie Market,7612 Brodie Ln,Austin,3,85,82,87,2026-04-21,82,Restaurant & Food Service,Brodie Market
 11967754,Pretzel Maker,2901 S Capital of Texas Hwy,Austin,3,85,76,94,2025-02-20,94,Restaurant & Food Service,Pretzel Maker
+12035566,Local Pie,8201 Cross Park Dr Ste B3,Austin,3,85,81,88,2024-12-30,86,Restaurant & Food Service,Local Pie
 12156023,Oseyo Restaurant,1628 E Cesar Chavez St,Austin,3,85,80,90,2025-08-07,85,Restaurant & Food Service,Oseyo Restaurant
 12186252,Carve American Grille,7415 Southwest Pkwy # 100,Austin,3,85,82,88,2025-05-02,82,Restaurant & Food Service,Carve American Grille
 12186655,PF - Al Zaytoon,616 FM 685 Ste 104A,Pflugerville,4,85,82,91,2026-03-10,84,Restaurant & Food Service,PF - Al Zaytoon
@@ -3185,6 +3199,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 10428064,Yellow Jacket Social Club,1704 E 5th St Ste 100,Austin,3,84.67,79,90,2025-06-02,79,Restaurant & Food Service,Yellow Jacket Social Club
 10449800,Kerbey Lane Cafe,4301 W William Cannon Dr Bldg F,Austin,3,84.67,82,89,2025-07-23,82,Restaurant & Food Service,Kerbey Lane Cafe
 11301280,Of Rigor LLC DBA The Madison/Roosevelt Room,307 W 5th St,Austin,3,84.67,82,87,2025-09-03,85,Restaurant & Food Service,Of Rigor LLC DBA The Madison
+11481254,Lavaca Street Bar Domain,11420 Rock Rose Ave Ste 100,Austin,3,84.67,80,88,2024-12-30,88,Restaurant & Food Service,Lavaca Street Bar Domain
 11519680,7-Eleven Convenience Store #36680A,3848 Airport Blvd,Austin,3,84.67,75,91,2026-03-11,88,Convenience & Fuel,7-Eleven Convenience Store #36680A
 11655851,Taqueria Arandinas Botanero Sports Bar,9616 N Lamar Blvd Ste 195,Austin,6,84.67,70,93,2025-12-22,70,Restaurant & Food Service,Taqueria Arandinas Botanero Sports Bar
 11763395,La Madeleine # 201,9828 Great Hills Trl Ste 650,Austin,3,84.67,83,86,2026-02-12,85,Restaurant & Food Service,La Madeleine
@@ -3273,6 +3288,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 12393014,Paperboy,1203 E 11th St,Austin,5,84,80,91,2025-09-22,80,Restaurant & Food Service,Paperboy
 12394087,Orange Market 2 Inc,2401 San Gabriel St Apt 200,Austin,3,84,78,89,2025-06-24,89,Restaurant & Food Service,Orange Market 2 Inc
 12396127,Zoom Zoom Food Mart,2300 E Ben White Blvd,Austin,3,84,83,85,2026-02-11,85,Convenience & Fuel,Zoom Zoom Food Mart
+12396263,Biderman's Deli,3742 Far West Blvd Ste 101,Austin,4,84,82,86,2025-01-23,86,Restaurant & Food Service,Biderman's Deli
 12396652,"El Oceano Sports Bar and Mariscos, LLC",9515 N Lamar Blvd Ste 102,Austin,7,84,75,90,2025-09-16,76,Restaurant & Food Service,"El Oceano Sports Bar and Mariscos, LLC"
 12398605,Fire Bowl Cafe,5601 Brodie Ln,Sunset Valley,3,84,76,94,2025-03-12,82,Restaurant & Food Service,Fire Bowl Cafe
 2800840,Taco Shack,4412 Medical Pkwy,Austin,7,83.86,71,90,2026-05-21,85,Restaurant & Food Service,Taco Shack
@@ -3340,6 +3356,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2801929,Roaring Fork Restaurant,701 Congress Ave,Austin,3,83,76,90,2025-08-06,76,Restaurant & Food Service,Roaring Fork Restaurant
 10000448,Mom's Taste,6613 Airport Blvd,Austin,3,83,76,89,2026-03-10,84,Restaurant & Food Service,Mom's Taste
 10338098,BC - Mandolas Italian Market,12815 Shops Pkwy Ste 400,Austin,4,83,75,87,2025-11-25,87,Restaurant & Food Service,BC - Mandolas Italian Market
+10686563,Highland Market,4511 Airport Blvd,Austin,4,83,82,85,2025-01-17,85,Restaurant & Food Service,Highland Market
 10809127,Starstop 38,4912 Monterey Oaks Blvd,Austin,3,83,80,86,2025-05-02,83,Restaurant & Food Service,Starstop
 10957424,"LW - Grove Wine Bar & Kitchen, The",3001 S FM 620 Rd,Lakeway,4,83,82,86,2026-02-06,86,Restaurant & Food Service,"LW - Grove Wine Bar & Kitchen, The"
 11309001,"Omelettry, The",4631 Airport Blvd Unit 131A,Austin,5,83,77,91,2026-01-09,91,Restaurant & Food Service,"Omelettry, The"
@@ -3427,6 +3444,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2800486,Mr. Natural,1901 E Cesar Chavez St,Austin,5,81.8,76,87,2026-03-13,76,Restaurant & Food Service,Mr. Natural
 2801111,Al's Food Mart,3503 Webberville Rd,Austin,4,81.75,76,86,2026-01-20,83,Convenience & Fuel,Al's Food Mart
 2801501,Blind Pig Pub,317 E 6th St,Austin,4,81.75,79,88,2025-12-03,88,Restaurant & Food Service,Blind Pig Pub
+2802263,"Castilian, The",2323 San Antonio St,Austin,4,81.75,77,86,2025-01-13,84,Restaurant & Food Service,"Castilian, The"
 10234230,"Mom's Convenience Store, Inc.",10900 W US 290 Hwy,Austin,4,81.75,77,86,2026-03-16,85,Convenience & Fuel,"Mom's Convenience Store, Inc."
 10261963,BC - Rosie's Tamale House,13436 W SH 71,Bee Cave,4,81.75,77,90,2026-04-09,90,Restaurant & Food Service,BC - Rosie's Tamale House
 10692933,Cafe Malta,3421 W William Cannon Dr Ste 127,Austin,4,81.75,76,86,2025-09-09,82,Restaurant & Food Service,Cafe Malta
@@ -3674,6 +3692,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 2801187,Perfect 10 Men's Club,16511 Bratton Ln,Austin,3,76.33,75,78,2026-01-13,76,Restaurant & Food Service,Perfect 10 Men's Club
 2803909,Stop 71,8314 W SH 71,Austin,3,76.33,72,81,2025-06-23,81,Restaurant & Food Service,Stop
 11363962,Saigon Cafe,5000 Hudson Bend Rd Apt B,Austin,3,76.33,74,79,2025-12-19,74,Restaurant & Food Service,Saigon Cafe
+11466820,"Darwood Commercial Kitchen, Inc",11500 Rock Rose Ave Unit C,Austin,3,76.33,68,82,2024-12-30,82,Restaurant & Food Service,"Darwood Commercial Kitchen, Inc"
 11566549,Fresa's Chicken,1703 S 1st St,Austin,3,76.33,75,79,2025-11-24,75,Restaurant & Food Service,Fresa's Chicken
 12397899,La Mexicana Supermercado #5 (suite #100),2004 E William Cannon Dr Ste 100,Austin,3,76.33,72,80,2025-07-01,80,Grocery,La Mexicana Supermercado #5 (suite #100)
 11140053,Lavallarta Restaurant,6628 S Congress Ave,Austin,4,76.25,72,82,2025-09-15,72,Restaurant & Food Service,Lavallarta Restaurant
@@ -3745,6 +3764,7 @@ facility_id,name,street,city,n,mean_score,min_score,max_score,latest,latest_scor
 11935418,Kawa Asian Kitchen,5145 FM 620 N # 110,Austin,5,73.6,62,84,2026-03-05,76,Restaurant & Food Service,Kawa Asian Kitchen
 12395563,Ichi Umi Sushi,9503 Research NB Blvd Unit 500,Austin,5,73.6,68,87,2026-04-10,70,Restaurant & Food Service,Ichi Umi Sushi
 10988489,Hunan Lion Restaurant,4006 S Lamar SB Blvd Unit 1000,Austin,4,73.5,70,78,2025-12-17,74,Restaurant & Food Service,Hunan Lion Restaurant
+2800125,"Phoenicia Bakery & Deli, Inc.",2912 S Lamar Blvd,Austin,3,73.33,63,81,2025-01-17,81,Restaurant & Food Service,"Phoenicia Bakery & Deli, Inc."
 11841772,Xian Noodles,3401 Esperanza Xing,Austin,3,73.33,68,77,2025-09-03,68,Restaurant & Food Service,Xian Noodles
 12399110,SouthIndiaKitchen LLC,2121 W Parmer Ln Ste 114A,Austin,3,73.33,62,87,2026-03-12,71,Restaurant & Food Service,SouthIndiaKitchen LLC
 2801611,Hai Ky,1931 E Oltorf St,Austin,5,73,57,81,2025-07-17,81,Restaurant & Food Service,Hai Ky

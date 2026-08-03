@@ -34,8 +34,8 @@ TOP_N      <- 10
 
 dir.create("docs", showWarnings = FALSE)
 
-cutoff <- as_date(Sys.Date()) %m-% months(RECENCY_MONTHS)
 ins    <- load_inspections()
+cutoff <- recency_cutoff(ins)   # anchored to the data, not to today
 
 eligible <- ins |>
   filter(!is.na(score), score > 0, !str_detect(restaurant_name, ADMIN_FLAG_RE)) |>

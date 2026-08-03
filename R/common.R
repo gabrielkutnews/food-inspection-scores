@@ -13,6 +13,21 @@ suppressPackageStartupMessages({
 # 590 in 2024, and presenting those as current would be wrong.
 RECENCY_MONTHS <- 18
 
+# The recency window is a property of the DATA, not of when the script runs.
+#
+# Both prep.R and rankings.R used to anchor the cutoff to Sys.Date(). Against a
+# frozen dataset that slides the window forward every day and silently drops
+# facilities out of the rankings and off the map default -- 132 of them had
+# already vanished that way before this was caught, for no reason but the passage
+# of time. Anchoring to max(inspection_date) makes the window stable and
+# reproducible: re-running the pipeline next month on the same data yields the
+# same set.
+data_through <- function(ins) as_date(max(ins$inspection_date, na.rm = TRUE))
+
+recency_cutoff <- function(ins, months = RECENCY_MONTHS) {
+  data_through(ins) %m-% months(months)
+}
+
 # Score buckets. Reds are only ~0.2% of the map, so the UI has to show counts.
 BUCKETS <- tibble::tibble(
   key   = c("red", "orange", "yellow", "green"),
