@@ -23,7 +23,7 @@ block when you want new data, then re-run all three.
 | `docs/` | The published site (GitHub Pages root) |
 
 Editing thresholds: `RECENCY_MONTHS` and `BUCKETS` live at the top of `R/common.R`;
-`MIN_INSPECTIONS` and `TOP_N` at the top of `R/rankings.R`.
+`MIN_TOP`, `MIN_BOTTOM` and `TOP_N` at the top of `R/rankings.R`.
 
 ## Embedding in Grove
 
@@ -60,20 +60,39 @@ facilities). Excluded from the rankings. `OOB` reads as out-of-business but is
 applied inconsistently — Shoal Creek Saloon carries it while still being inspected
 through May 2026 — so verify against the city portal before relying on it.
 
-**This is not a restaurant dataset.** It covers 425 schools and childcare centres,
-337 convenience stores and pharmacies, 277 groceries, 63 healthcare kitchens and
-stadium/airport concessions alongside restaurants. Hence "food establishments" in
-the title. `category` is inferred from the establishment name — the city publishes
-no type field — so expect some miscategorisation.
+**The map is not a restaurant dataset; the rankings are.** The map covers 460
+schools and childcare centres, 487 convenience stores and pharmacies, 291
+groceries, 196 institutional and custodial kitchens, 102 stadium and airport
+concessions, 80 healthcare kitchens and 16 specialty retailers alongside 4,879
+restaurants — hence "food establishments" in its title, and a type filter so a
+reader can narrow it. `docs/rankings.html` publishes **restaurants only**.
+
+`category` is inferred from the establishment name because the city publishes no
+type field, and `"Restaurant & Food Service"` is the **residual** bucket — anything
+matching no pattern lands there. That makes the patterns in `R/common.R`
+load-bearing for the rankings: before they were tightened, roughly half the top 40
+candidates were not restaurants (a daycare, a candy shop, a coffee wholesaler,
+Apple's staff canteens, sorority kitchens, a school food pod, a hospital gift shop).
+`R/rankings.R` prints the **top 20 candidates with their category on every run** —
+check that list after any data refresh, before publishing. Chains and coffee shops
+count as restaurants; wholesalers, staff-only dining and retailers holding a food
+permit do not.
+
+**The two ranking thresholds differ on purpose.** The top requires ≥5 inspections
+(`MIN_TOP`), the bottom ≥3 (`MIN_BOTTOM`). A spotless record over three visits is
+unremarkable, so a "best" claim needs volume; a low average over three visits is
+already a pattern, and a symmetric ≥5 cut would hide the six worst-scoring
+restaurants in the city. Both captions on the page state their threshold.
 
 **It is not only Austin.** Roughly 650 facilities are in Pflugerville, Manor, Bee
 Cave, Lakeway, West Lake Hills, Del Valle, Sunset Valley and other jurisdictions.
 
-**The top 10 is a tie, not a ranking.** 68 establishments have never scored below
-100. The table shows ten of them ordered by inspection count, and says so. Schools
-are inspected about twice as often as restaurants, which is why they dominate that
-ordering — use the restaurants-only view for a restaurant story. The bottom 10 *is*
-a real ranking; those averages are genuinely distinct.
+**Both ranking tables are real rankings.** At ≥5 inspections no restaurant holds a
+perfect record, so the top is ordered by genuinely distinct averages rather than
+being a sample of a tie. That was not true at ≥3, where 8 restaurants tied at exactly
+100.00 — if you lower `MIN_TOP`, the script warns when the tie exceeds ten and you
+should label the table accordingly. Ties on the mean break toward more inspections,
+then recency, and only one counter per operator per address can appear.
 
 **Recency.** Rankings require an inspection within 18 months. The map hides older
 inspections by default but lets the reader show them, rather than silently dropping

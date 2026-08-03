@@ -1,10 +1,18 @@
-# Top 10 / bottom 10 by inspection consistency.
+# Top 10 / bottom 10 restaurants by inspection consistency.
 #
 # Why not a straight top 10 on the latest score: 590 establishments scored a
 # perfect 100 on their most recent inspection, so "the top 10" would be a 1.7%
-# arbitrary slice of a 590-way tie. Ranking by mean score across at least three
-# inspections turns that tie into an actual finding, and on the bottom end it
+# arbitrary slice of a 590-way tie. Ranking by mean score across every inspection
+# on record turns that tie into an actual finding, and on the bottom end it
 # surfaces repeat offenders instead of one bad day.
+#
+# The two thresholds are deliberately different, because the tables answer
+# different questions. A perfect record over three visits is unremarkable --
+# hundreds have one -- so calling a record "best" needs volume: MIN_TOP = 5. A
+# 67.7 average over three visits is already a pattern worth flagging, and a
+# symmetric cut would hide the six worst restaurants in Austin (Special Noodle,
+# Hunan Bistro, Biryani & Co., Gang Nam, India Gate and Fruttilandia all have
+# 3-4 visits), so MIN_BOTTOM = 3.
 #
 # Exclusions, all deliberate:
 #   score == 0   Five facilities. Not real scores -- Fiesta Tortillas went
@@ -13,13 +21,16 @@
 #   ^OOB         282 names carry this prefix; it reads as out-of-business.
 #   INELIGIBLE   One name is literally "INELIGIBLE FOR RENEWAL - ...".
 #   stale        Latest inspection older than RECENCY_MONTHS.
-#   n < 3        Not enough inspections for a mean to mean anything.
+#   non-restaurant  See categorize() in R/common.R. The published tables are
+#                restaurants only; the all-establishments equivalents are still
+#                written to data/rankings_all_*.csv for fact-checking.
 
 source("R/common.R")
 suppressPackageStartupMessages(library(jsonlite))
 
-MIN_INSPECTIONS <- 3
-TOP_N           <- 10
+MIN_TOP    <- 5   # a "best record" claim needs a track record
+MIN_BOTTOM <- 3   # a sustained low average is already newsworthy
+TOP_N      <- 10
 
 dir.create("docs", showWarnings = FALSE)
 
@@ -42,18 +53,22 @@ eligible <- ins |>
     .groups = "drop"
   ) |>
   mutate(category = categorize(name), venue = venue_of(name)) |>
-  filter(n >= MIN_INSPECTIONS, latest >= cutoff)
+  filter(n >= MIN_BOTTOM, latest >= cutoff)
 
-message(sprintf("Eligible: %d facilities (>=%d inspections, inspected since %s).",
-                nrow(eligible), MIN_INSPECTIONS, format(cutoff)))
-message(sprintf("  of those, %d hold a perfect mean of 100.", sum(eligible$mean_score == 100)))
+restaurants <- eligible |> filter(category == "Restaurant & Food Service")
+
+message(sprintf("Eligible: %d facilities inspected since %s, of which %d restaurants.",
+                nrow(eligible), format(cutoff), nrow(restaurants)))
+message(sprintf("  at >=%d inspections: %d restaurants, %d with a perfect record.",
+                MIN_TOP, sum(restaurants$n >= MIN_TOP),
+                sum(restaurants$mean_score == 100 & restaurants$n >= MIN_TOP)))
 
 # Ties on the mean break toward more inspections (more evidence), then recency.
 rank_table <- function(df, direction) {
   df <- if (direction == "top") {
-    arrange(df, desc(mean_score), desc(n), desc(latest))
+    df |> filter(n >= MIN_TOP) |> arrange(desc(mean_score), desc(n), desc(latest))
   } else {
-    arrange(df, mean_score, desc(n), desc(latest))
+    df |> arrange(mean_score, desc(n), desc(latest))
   }
   df |>
     distinct(venue, .keep_all = TRUE) |>   # one slot per parent operator
@@ -62,8 +77,6 @@ rank_table <- function(df, direction) {
     select(rank, name, category, street, city, mean_score, n,
            min_score, max_score, latest_score, latest)
 }
-
-restaurants <- eligible |> filter(category == "Restaurant & Food Service")
 
 tables <- list(
   all_top            = rank_table(eligible, "top"),
@@ -89,44 +102,42 @@ show <- function(title, df) {
   ), right = FALSE)
 }
 
-perfect_all  <- sum(eligible$mean_score == 100)
-perfect_rest <- sum(restaurants$mean_score == 100)
+perfect_rest <- sum(restaurants$mean_score == 100 & restaurants$n >= MIN_TOP)
 
-top_label <- function(scope, perfect) {
-  if (perfect > TOP_N) {
-    sprintf("TOP %d -- %s (%d of %d with a perfect record, most-inspected first)",
-            TOP_N, scope, TOP_N, perfect)
-  } else {
-    sprintf("TOP %d -- %s (highest averages; %d hold a perfect record)",
-            TOP_N, scope, perfect)
-  }
-}
+show(sprintf("TOP %d RESTAURANTS -- highest average, >=%d inspections", TOP_N, MIN_TOP),
+     tables$restaurants_top)
+show(sprintf("BOTTOM %d RESTAURANTS -- lowest average, >=%d inspections", TOP_N, MIN_BOTTOM),
+     tables$restaurants_bottom)
 
-show(top_label("all establishments", perfect_all), tables$all_top)
-show("BOTTOM 10 -- all establishments",    tables$all_bottom)
-show(top_label("restaurants only", perfect_rest),  tables$restaurants_top)
-show("BOTTOM 10 -- restaurants only",      tables$restaurants_bottom)
-
-message("")
-message(sprintf(
-  "NOTE: %d establishments hold a perfect record, so the top table is a sample of a\n      %d-way tie, not a ranking -- rank 1 does not beat rank 10. The bottom table IS\n      a ranking; those means are genuinely distinct.",
-  perfect_all, perfect_all))
-
-n_school_top <- sum(tables$all_top$category == "School & Childcare")
-if (n_school_top >= TOP_N / 2) {
+if (perfect_rest > TOP_N) {
+  message("")
   message(sprintf(
-    "      %d of the top %d are schools/childcare: they are inspected ~6 times per cycle\n      vs 3-4 for restaurants, so ordering by inspection count favours them.",
-    n_school_top, TOP_N))
+    "NOTE: %d restaurants hold a perfect record, so the top table is a sample of a tie\n      rather than a ranking. Say so if you publish it.", perfect_rest))
 }
+
+# Audit. "Restaurant & Food Service" is the residual category, so anything the
+# patterns in R/common.R do not recognise lands in these tables by default. Eyeball
+# this after every data refresh -- half of this pool were not restaurants before
+# the patterns were tightened.
+message("")
+message(sprintf("AUDIT -- top %d restaurant candidates. Anything here that is not a\n         restaurant needs a pattern or an override in R/common.R.", 20))
+print(as.data.frame(
+  restaurants |>
+    filter(n >= MIN_TOP) |>
+    arrange(desc(mean_score), desc(n)) |>
+    distinct(venue, .keep_all = TRUE) |>
+    head(20) |>
+    transmute(name = str_trunc(name, 40), street = str_trunc(street, 26), n, mean = mean_score)
+), right = FALSE)
 
 # ---- rankings.html -------------------------------------------------------------
+# Restaurants only. The all-establishments tables stay in data/rankings_all_*.csv
+# for fact-checking but are not published: schools dominate them, because they are
+# inspected roughly twice as often as restaurants.
 
 payload <- list(
-  tables = tables,
-  meta = list(
-    all         = list(perfect = perfect_all,  eligible = nrow(eligible)),
-    restaurants = list(perfect = perfect_rest, eligible = nrow(restaurants))
-  )
+  top    = tables$restaurants_top,
+  bottom = tables$restaurants_bottom
 )
 
 html <- sprintf('<!doctype html>
@@ -142,12 +153,8 @@ html <- sprintf('<!doctype html>
   body { margin:0; padding:14px; font-family:var(--font); color:var(--ink); background:#fff; }
   h1 { font-size:17px; margin:0 0 3px; }
   .sub { font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:12px; }
-  .scope { display:inline-flex; border:1px solid #cfcfcf; border-radius:6px; overflow:hidden; margin-bottom:14px; }
-  .scope button { font:inherit; font-size:13px; padding:6px 13px; border:0; background:#fff;
-                  cursor:pointer; color:var(--ink); }
-  .scope button[aria-pressed="true"] { background:#1a1a1a; color:#fff; }
   h2 { font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);
-       margin:20px 0 7px; }
+       margin:22px 0 7px; }
   table { border-collapse:collapse; width:100%%; font-size:13.5px; }
   th,td { text-align:left; padding:7px 9px; border-bottom:1px solid var(--line); vertical-align:top; }
   th { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);
@@ -166,34 +173,42 @@ html <- sprintf('<!doctype html>
 </style>
 </head>
 <body>
-<h1>Austin-area food establishments, ranked by inspection consistency</h1>
+<h1>Austin-area restaurants, ranked by inspection consistency</h1>
 <div class="sub">
-  Average score across every inspection on record, for establishments with at least
-  %d inspections and one within the last %d months. Not a snapshot of a single visit.
+  Average score across every inspection on record &mdash; not a snapshot of a single
+  visit. Restaurants, cafes and coffee shops only, each with an inspection in the last
+  %d months.
 </div>
 
-<div class="scope" role="group" aria-label="Scope">
-  <button type="button" data-scope="all" aria-pressed="true">All establishments</button>
-  <button type="button" data-scope="restaurants" aria-pressed="false">Restaurants only</button>
-</div>
-
-<h2>Perfect records</h2>
-<p class="cap" id="top-cap"></p>
+<h2>Best records</h2>
+<p class="cap">
+  Highest average, among restaurants inspected at least <b>%d</b> times. A spotless
+  record over three visits is common enough to be unremarkable, so the bar is higher
+  here than for the list below.
+</p>
 <div id="top"></div>
+
 <h2>Lowest average scores</h2>
-<p class="cap" id="bottom-cap"></p>
+<p class="cap">
+  Lowest average, among restaurants inspected at least <b>%d</b> times. A low average
+  across three visits is already a pattern rather than one bad day, which is why the
+  threshold is lower &mdash; requiring five would hide the worst-scoring restaurants
+  in the city.
+</p>
 <div id="bottom"></div>
 
 <div class="note">
-  <b>How this was built.</b> One row per licensed establishment. Excludes five facilities
-  scored 0 &mdash; a 0 means no score was issued, not a failing kitchen &mdash; plus names
-  carrying an out-of-business or ineligible-for-renewal flag. Where one operator licenses
-  many counters at a single venue, only its best-scoring counter appears. Schools are
-  inspected roughly twice as often as restaurants, which lifts them wherever inspection
-  count breaks a tie &mdash; use the restaurants-only view to compare like with like.
-  Establishment type is inferred from the name, since the city publishes no type field,
-  so a few will be miscategorised. Source: City of Austin food establishment inspection
-  scores. Generated %s.
+  <b>How this was built.</b> One row per licensed restaurant, averaged across every
+  inspection on record. Excludes five facilities scored 0 &mdash; a 0 means no score was
+  issued, not a failing kitchen &mdash; plus names carrying an out-of-business or
+  ineligible-for-renewal flag. Where one operator licenses several counters at a single
+  address, only its best-scoring counter appears.
+  Chains and coffee shops count as restaurants; schools, groceries, convenience stores,
+  care facilities, stadium concessions, staff-only canteens and retailers that merely
+  hold a food permit are excluded. The city publishes no facility-type field, so type is
+  inferred from the establishment name and a few will be misclassified &mdash; each list
+  was checked by hand before publication.
+  Source: City of Austin food establishment inspection scores. Generated %s.
 </div>
 
 <script>
@@ -207,17 +222,17 @@ function fmtDate(d){
   var m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   return m[+p[1]-1]+" "+(+p[2])+", "+p[0];
 }
+// No Type column: every row is a restaurant now, so it would repeat itself ten times.
 function table(rows){
-  if(!rows.length) return "<p class=\'sub\'>No establishments meet the threshold in this view.</p>";
-  return "<table><thead><tr><th></th><th>Establishment</th>" +
-    "<th class=\'hide-sm\'>Type</th><th class=\'num\'>Average</th>" +
+  if(!rows.length) return "<p class=\'sub\'>No restaurants meet the threshold.</p>";
+  return "<table><thead><tr><th></th><th>Restaurant</th>" +
+    "<th class=\'num\'>Average</th>" +
     "<th class=\'num hide-sm\'>Inspections</th><th class=\'num hide-sm\'>Range</th>" +
     "<th class=\'num\'>Latest</th></tr></thead><tbody>" +
     rows.map(function(r){
       return "<tr><td class=\'rank\'>"+r.rank+"</td>" +
         "<td><div class=\'nm\'>"+esc(r.name)+"</div>" +
         "<div class=\'addr\'>"+esc(r.street)+", "+esc(r.city)+"</div></td>" +
-        "<td class=\'hide-sm addr\'>"+esc(r.category)+"</td>" +
         "<td class=\'num\'><span class=\'chip\' style=\'background:"+COLORS[bucket(r.mean_score)]+"\'>" +
           r.mean_score.toFixed(1)+"</span></td>" +
         "<td class=\'num hide-sm\'>"+r.n+"</td>" +
@@ -225,35 +240,13 @@ function table(rows){
         "<td class=\'num\'>"+r.latest_score+"<div class=\'addr\'>"+fmtDate(r.latest)+"</div></td></tr>";
     }).join("") + "</tbody></table>";
 }
-function draw(scope){
-  var m = DATA.meta[scope], T = DATA.tables;
-  document.getElementById("top").innerHTML    = table(T[scope+"_top"]);
-  document.getElementById("bottom").innerHTML = table(T[scope+"_bottom"]);
-
-  // The top table is a sample of a large tie, not a ranking. Say so plainly:
-  // ordering it 1..10 would imply a difference that is not in the data.
-  document.getElementById("top-cap").innerHTML = m.perfect > 10
-    ? "<b>"+m.perfect.toLocaleString()+"</b> of "+m.eligible.toLocaleString()+
-      " establishments have never scored below 100. No ten of them are \\u201cthe best\\u201d \\u2014 " +
-      "these are the ten with the most inspections behind that record."
-    : "Establishments with the highest average score.";
-  document.getElementById("bottom-cap").innerHTML =
-    "Lowest average across all inspections on record. These averages are genuinely " +
-    "distinct, so this one is a ranking.";
-
-  document.querySelectorAll("[data-scope]").forEach(function(b){
-    b.setAttribute("aria-pressed", String(b.dataset.scope===scope));
-  });
-}
-document.querySelectorAll("[data-scope]").forEach(function(b){
-  b.addEventListener("click", function(){ draw(b.dataset.scope); });
-});
-draw("all");
+document.getElementById("top").innerHTML    = table(DATA.top);
+document.getElementById("bottom").innerHTML = table(DATA.bottom);
 </script>
 </body>
 </html>
 ',
-  MIN_INSPECTIONS, RECENCY_MONTHS,
+  RECENCY_MONTHS, MIN_TOP, MIN_BOTTOM,
   str_squish(format(Sys.Date(), "%B %e, %Y")),
   toJSON(payload, dataframe = "rows", auto_unbox = TRUE, Date = "ISO8601"),
   BUCKETS$color[1], BUCKETS$color[2], BUCKETS$color[3], BUCKETS$color[4]

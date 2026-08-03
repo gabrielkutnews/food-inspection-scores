@@ -1,11 +1,11 @@
 rank,name,category,street,city,mean_score,n,min_score,max_score,latest_score,latest
-1,Caffe Mac,Restaurant & Food Service,320 S Capital of Texas Hwy Ste A,West Lake Hills,100,6,100,100,100,2026-02-12
-2,Growing Imaginations L.C.,Restaurant & Food Service,5410 S 1st St,Austin,100,4,100,100,100,2025-08-18
-3,See's Candy Shop,Restaurant & Food Service,10710 Research SB Blvd,Austin,100,3,100,100,100,2026-05-01
-4,"Quarries of Hyde Park, The",Restaurant & Food Service,11400 N Mopac Expy # Sb,Austin,100,3,100,100,100,2025-11-19
-5,Ruta Maya Importing Ltd.,Restaurant & Food Service,6231 E Stassney Ln Bldg 12,Austin,100,3,100,100,100,2025-11-12
-6,LW - Table 620,Restaurant & Food Service,2000 S FM 620 Rd,Lakeway,100,3,100,100,100,2025-09-11
-7,"Sneha's Vegetarian Kitchen, LLC",Restaurant & Food Service,1501 N FM 620 Rd,Lakeway,100,3,100,100,100,2025-08-29
-8,VEGG LLC,Restaurant & Food Service,1606 W Stassney Ln Ste 1,Austin,100,3,100,100,100,2025-08-27
-9,Parmer Lane 5 Caffe Macs-Sushi,Restaurant & Food Service,5505 W Parmer Ln Bldg 5,Austin,99.8,5,99,100,99,2025-12-18
-10,Campsite at Shield Ranch,Restaurant & Food Service,10417 Crumley Ranch Rd,Austin,99.75,4,99,100,100,2026-05-22
+1,PF - In-N-Out #316,Restaurant & Food Service,1600 Town Center Dr,Pflugerville,99.67,6,98,100,98,2026-03-05
+2,Wingstop #2138,Restaurant & Food Service,1420 W Wells Branch Pkwy Ste 100,Pflugerville,99.6,5,99,100,100,2026-02-17
+3,Chipotle Mexican Grill #874,Restaurant & Food Service,6301 W Parmer Ln Bldg 2,Austin,99.4,5,98,100,99,2026-04-21
+4,BC - Baguette et Chocolat,Restaurant & Food Service,12101 Bee Cave Rd,Bee Cave,99.4,5,97,100,100,2026-01-07
+5,Little Deli & Pizzeria,Restaurant & Food Service,1804 Briarcliff Blvd,Austin,99.4,5,98,100,100,2025-12-31
+6,sweetgreen,Restaurant & Food Service,1900 Aldrich St Ste 140,Austin,99.17,6,96,100,100,2025-11-17
+7,PF - Sonic,Restaurant & Food Service,1101 FM 685,Pflugerville,99.14,7,98,100,100,2026-02-20
+8,PF - Raising Canes # 194,Restaurant & Food Service,2408 FM 685,Pflugerville,99.14,7,97,100,100,2026-01-22
+9,Cloud Kitchen,Restaurant & Food Service,5610 N IH 35 Service Rd SB,Austin,99,7,96,100,100,2026-05-04
+10,Wendy's #W129/11274,Restaurant & Food Service,10701 Research NB Blvd,Austin,98.8,5,98,100,98,2026-01-13

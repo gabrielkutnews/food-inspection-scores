@@ -99,6 +99,15 @@ display_street <- function(street) {
   })
 
   a <- str_replace_all(a, regex("\\bSvrd\\b", ignore_case = TRUE), "Service Rd")
+
+  # 90 addresses arrive already mixed-case from the city ("3811 N Ih 35",
+  # "5204 Fm 2222", "11920 e Us 290 Hwy Wb"), which the de-shouting above leaves
+  # alone. Upper-case road designators only when a number follows: "Rm" and "Cr"
+  # are deliberately excluded because one address is genuinely "Ste A Rm 1154.2".
+  a <- str_replace_all(a, regex("\\b(IH|FM|SH|US|RR)(?=\\s*\\d)", ignore_case = TRUE), toupper)
+  a <- str_replace_all(a, regex("\\b(NB|SB|EB|WB)\\b", ignore_case = TRUE), toupper)
+  a <- str_replace_all(a, "\\b([nsew])\\b", toupper)
+
   str_squish(a)
 }
 
@@ -130,30 +139,121 @@ normalize_street <- function(street) {
   str_squish(a)
 }
 
-# Coarse facility type from the establishment name. Approximate by construction
-# -- the city does not publish a type field -- but good enough to let a reader
-# see that this dataset is not only restaurants.
+# Coarse facility type from the establishment name.
+#
+# The city publishes no type field, so this is inferred, and "Restaurant & Food
+# Service" is the RESIDUAL bucket -- anything matching no pattern below lands
+# there. That makes the patterns load-bearing for the rankings: an audit of the
+# top 40 candidates found roughly half were not restaurants (a daycare, a candy
+# shop, a coffee wholesaler, Apple's staff canteens, sorority kitchens, a
+# high-school food pod, a hospital gift shop). R/rankings.R prints the top 20
+# with their category so new leakers surface before they reach print.
+#
+# Chains and coffee shops DO count as restaurants; wholesalers, retailers that
+# happen to hold a food permit, and staff-only dining do not.
+
+# Checked BEFORE the school branch. "Dell Children's Medical Center" and "Texas
+# Children's Hospital" are hospitals, so the children-related school patterns
+# below would otherwise claim them. Reordering the whole Healthcare branch up here
+# is not an option either -- its "care cent" would swallow "Child Care Center".
+RE_MEDICAL_STRONG <- paste(
+  "hospital", "medical cent", "\\bclinic\\b", "healthcare", "\\bseton\\b",
+  "dell children", sep = "|")
+
+RE_SCHOOL <- paste(
+  "school", "elementary", "middle sch", "high sch", "\\bh s$", "\\bisd\\b",
+  "academy", "montessori", "childcare", "child care", "early childhood",
+  "kinder", "daycare", "day care", "learning cent", "learning experience",
+  "early learning", "preschool", "pre-school", "prep school", "college prep",
+  "head start", "nursery", "goddard", "primrose", "child development",
+  "children'?s cent", "children'?s courtyard", "\\bcdc\\b",
+  # charter networks whose names never contain the word "school"
+  "\\bkipp\\b", "^idea ", "idea public", "harmony science", "\\bvalor\\b",
+  "\\bbasis\\b",
+  "university", "college", "dining hall", sep = "|")
+
+RE_HEALTH <- paste(
+  "nursing", "rehab", "assisted living", "senior living", "memory care",
+  "memory support", "hospital", "clinic", "medical cent", "health cent",
+  "hospice", "care cent", "\\btreatment\\b", "mother teresa", "marbridge",
+  sep = "|")
+
+# Staff-only dining, contract feeders, and production/wholesale sites. "Caffe
+# Mac(s)" and "Parmer Lane N ..." are Apple's campus canteens; a sorority
+# kitchen and a school food pod are not places a reader can eat either.
+RE_INSTITUTIONAL <- paste(
+  "aramark", "sodexo", "compass group", "canteen", "cafeteria",
+  "employee dining", "corporate dining", "break room", "micro market",
+  "commissary", "catering", "caffe mac", "^parmer lane \\d", "@ samsung",
+  "sorority", "fraternity", "delta gamma", "\\bpod$", "prep kitchen",
+  "importing", "wholesale", "distribut", "roasting",
+  # residential, custodial and social-service kitchens. Note the patterns are
+  # specific: a bare "county" would catch County Line, a real BBQ restaurant.
+  "\\bshelter\\b", "settlement home", "home for children",
+  "\\bjail\\b", "correctional", "gardner betts", sep = "|")
+
+RE_CONVENIENCE <- paste(
+  "7-eleven", "7 eleven", "foods? mart", "\\bmart\\b", "xpress", "\\bcvs\\b",
+  "walgreen", "\\bpharmacy\\b", "dollar gen", "dollar tree", "family dollar",
+  "circle k", "\\bexxon\\b", "\\bshell\\b", "\\bvalero\\b", "chevron",
+  "conoco", "texaco", "\\bquik", "corner store", "convenience",
+  "gas station", sep = "|")
+
+# Note the optional apostrophe on randall's -- the plain "randalls" spelling
+# never matched the data, so two supermarket Starbucks kiosks were escaping
+# into the restaurant pool.
+RE_GROCERY <- paste(
+  "h-e-b", "\\bheb\\b", "randall'?s", "wal-?mart", "\\btarget\\b", "costco",
+  "sam'?s club", "sprouts", "whole foods", "trader joe", "fiesta mart",
+  "supermercado", "supermarket", "grocery", "food market", "central market",
+  "world market", sep = "|")
+
+# Stadium, arena and airport concession counters. Kept out of "Restaurant"
+# because a single venue can run dozens of separately-licensed stands that are
+# all inspected on the same day with the same score -- nine Q2 Stadium counters
+# would otherwise take nine of ten slots in a restaurant ranking.
+RE_VENUE <- paste(
+  "^levy ", "levy at", "q2 stadium", "^cota", "^abia", "circuit of the am",
+  "moody cent", "erwin cent", "\\bstadium\\b", "\\barena\\b", "amphitheat",
+  "concession", "suite pantry", "club level", "hawking", "grand stand",
+  "campsite", "waterpark", "water park", "quarries", sep = "|")
+
+# Shops that hold a food permit but are not somewhere you eat.
+RE_RETAIL <- paste(
+  "candy", "\\bgift", "general store", "oils? & vinegar", "total wine",
+  "wine & spirits", "\\bliquor\\b", "serasana", "\\bfeed\\b", "florist",
+  sep = "|")
+
+# Names no pattern can reach, mapped to the bucket they belong in.
+# "Growing Imaginations L.C." is a learning centre, but "L.C." cannot be matched
+# generically without also catching every "L.L.C."; "Westgate II" is a building
+# name with no food signal at all.
+# Audited 2026-08-03 -- re-check the audit print after any data refresh.
+NAME_OVERRIDES <- c(
+  "Growing Imaginations L.C." = "School & Childcare",
+  "Westgate II"               = "Retail & Specialty"
+)
+
 categorize <- function(nm) {
   n <- str_to_lower(nm)
   case_when(
-    str_detect(n, "school|elementary|middle sch|high sch|\\bisd\\b|academy|montessori|childcare|child care|early childhood|kinder|daycare|day care|learning cent|learning experience|early learning|preschool|pre-school|head start|nursery|goddard|primrose|child development|\\bcdc\\b|university|college|dining hall") ~ "School & Childcare",
-    str_detect(n, "nursing|rehab|assisted living|senior living|memory care|memory support|hospital|clinic|medical cent|health cent|hospice|care cent") ~ "Healthcare",
-    # Contract and institutional feeders are not restaurants a reader can visit.
-    str_detect(n, "aramark|sodexo|compass group|canteen|cafeteria|employee dining|corporate dining|break room|micro market|commissary|catering") ~ "Institutional & Catering",
-    str_detect(n, "7-eleven|7 eleven|foods? mart|\\bcvs\\b|walgreen|\\bpharmacy\\b|dollar gen|dollar tree|family dollar|circle k|\\bexxon\\b|\\bshell\\b|\\bvalero\\b|chevron|conoco|texaco|\\bquik|corner store|convenience|gas station") ~ "Convenience & Fuel",
-    str_detect(n, "h-e-b|\\bheb\\b|randalls|wal-?mart|\\btarget\\b|costco|sam's club|sprouts|whole foods|trader joe|fiesta mart|supermercado|grocery|central market|world market") ~ "Grocery",
-    # Stadium, arena and airport concession counters. Kept out of "Restaurant"
-    # because a single venue can run dozens of separately-licensed stands that
-    # are all inspected on the same day with the same score -- nine Q2 Stadium
-    # counters would otherwise take nine of ten slots in a restaurant ranking.
-    str_detect(n, "^levy |levy at|q2 stadium|^cota|^abia|circuit of the am|moody cent|erwin cent|\\bstadium\\b|\\barena\\b|amphitheat|concession|suite pantry|club level|hawking|grand stand") ~ "Venue & Concessions",
-    TRUE ~ "Restaurant & Food Service"
+    nm %in% names(NAME_OVERRIDES)       ~ unname(NAME_OVERRIDES[nm]),
+    str_detect(n, RE_MEDICAL_STRONG)    ~ "Healthcare",
+    str_detect(n, RE_SCHOOL)            ~ "School & Childcare",
+    str_detect(n, RE_HEALTH)            ~ "Healthcare",
+    str_detect(n, RE_INSTITUTIONAL)     ~ "Institutional & Catering",
+    str_detect(n, RE_CONVENIENCE)       ~ "Convenience & Fuel",
+    str_detect(n, RE_GROCERY)           ~ "Grocery",
+    str_detect(n, RE_VENUE)             ~ "Venue & Concessions",
+    str_detect(n, RE_RETAIL)            ~ "Retail & Specialty",
+    TRUE                                ~ "Restaurant & Food Service"
   )
 }
 
 CATEGORIES <- c("Restaurant & Food Service", "School & Childcare",
                 "Convenience & Fuel", "Grocery", "Healthcare",
-                "Venue & Concessions", "Institutional & Catering")
+                "Venue & Concessions", "Institutional & Catering",
+                "Retail & Specialty")
 
 # Multi-unit operators license each counter separately ("Levy at Q2
 # Stadium/South Main 103"). Collapse to the parent so one operator cannot

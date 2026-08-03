@@ -80,10 +80,6 @@
   .row .lbl { flex: 1; }
   .row .cnt { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
   .divider { height: 1px; background: var(--line); margin: 8px 0 6px; }
-  .shortcut {
-    background: none; border: 0; padding: 0; font: inherit; font-size: 12px;
-    color: #2f6fb0; cursor: pointer; text-decoration: underline;
-  }
   select {
     width: 100%; font-family: var(--font); font-size: 13px; padding: 5px 6px;
     border: 1px solid #cfcfcf; border-radius: 5px; background: #fff; color: var(--ink);
@@ -152,7 +148,6 @@
   <h2>Inspection score</h2>
   <div class="panel-body">
     <div id="buckets"></div>
-    <button class="shortcut" id="only-low" type="button">Show only 79 and below</button>
     <div class="divider"></div>
     <label class="row">
       <input type="checkbox" id="recent" checked>
@@ -376,17 +371,6 @@
     $('recency-months').textContent = D.recency_months;
     $('recent').addEventListener('change', function (e) {
       state.recentOnly = e.target.checked;
-      applyFilters(F);
-    });
-
-    // Orange + red together is the newsworthy slice and reads well on its own;
-    // red alone is ~0.2% of the map and looks broken without the counts.
-    $('only-low').addEventListener('click', function () {
-      var low = { red: true, orange: true, yellow: false, green: false };
-      BKEYS.forEach(function (k) { state.buckets[k] = low[k]; });
-      document.querySelectorAll('[data-bucket]').forEach(function (cb) {
-        cb.checked = state.buckets[cb.dataset.bucket];
-      });
       applyFilters(F);
     });
 
