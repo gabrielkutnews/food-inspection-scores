@@ -364,8 +364,10 @@
     // Source credit leads, then the window sentence. Both come from R/editorial.R and both
     // contain markup (source links, bolded dates), so this is innerHTML, not textContent --
     // textContent would print the <a> tags to the reader as literal angle-bracketed text.
+    // Joined with a <br> so the source credit sits on its own line above the window
+    // sentence. filter(Boolean) keeps the break from being emitted when either is empty.
     $('window-note').innerHTML =
-      [D.copy_source_line, D.copy_window_note].filter(Boolean).join(' ');
+      [D.copy_source_line, D.copy_window_note].filter(Boolean).join('<br>');
 
     $('credit-long-text').textContent = D.copy_credit_long || '';
 

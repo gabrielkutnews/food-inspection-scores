@@ -32,7 +32,7 @@ EDITORIAL <- list(
     credit_long   = paste(
       "Most recent inspection per establishment. Includes schools, stores and care",
       "facilities as well as restaurants, and covers surrounding jurisdictions."),
-    # The note under the map is `source_line` followed by `window_note`, in that order.
+    # The note under the map is `source_line` then a line break then `window_note`.
     # Both are rendered as HTML, so <a> and <b> tags below are live. Keep the dates as
     # {{cutoff}} / {{through}} rather than typing them: they are computed from the data,
     # so a hand-typed date silently becomes a lie the next time the data is refreshed.
@@ -45,7 +45,7 @@ EDITORIAL <- list(
       " target=\"_blank\" rel=\"noopener\">Austin Public Health</a> and",
       " <a href=\"https://data.austintexas.gov/Health-and-Community-Services",
       "/Food-Establishment-Inspection-Scores/ecmv-9xxi/about_data\"",
-      " target=\"_blank\" rel=\"noopener\">Data Austin Texas</a>."),
+      " target=\"_blank\" rel=\"noopener\">City of Austin Open Data Portal</a>."),
     window_note   = paste(
       "The map only shows establishments with inspections between <b>{{cutoff}}</b> and",
       "<b>{{through}}</b>, the latest available data."),
