@@ -16,6 +16,7 @@ Rscript R/download.R      # frozen source; kept for provenance
 Rscript R/portal_fetch.R  # scrape the live portal (opens a Chrome window, ~1 h backfill)
 Rscript R/portal_check.R  # reconcile the scrape against ins.csv -- the completeness proof
 Rscript R/crosswalk.R     # build data/permit_crosswalk.csv (permitID <-> facility_id)
+Rscript R/merge.R         # union both sources -> data/inspections_merged.csv
 Rscript R/geocode.R    # network; only geocodes addresses missing from the cache
 Rscript R/prep.R       # writes docs/data/points.json
 Rscript R/rankings.R   # writes docs/rankings.html + data/internal/rankings_*.csv
@@ -27,6 +28,7 @@ Rscript R/rankings.R   # writes docs/rankings.html + data/internal/rankings_*.cs
 | `R/portal_fetch.R` | Scrapes the city's live inspections portal via headful Chrome + chromote |
 | `R/portal_check.R` | Week-by-week reconciliation of the scrape against `ins.csv`, plus score-0 audit |
 | `R/crosswalk.R` | Matches portal `permitID` to `facility_id`; writes the crosswalk + a review file |
+| `R/merge.R` | Unions export + portal into `data/inspections_merged.csv`, the pipeline's input |
 | `R/common.R` | Shared: city/category derivation, address cleaning, score buckets, dedupe-to-latest |
 | `R/geocode.R` | Address normalisation + Census/ArcGIS geocoding, cached in `data/geocoded_cache.csv` |
 | `R/prep.R` | Builds the map payload |
@@ -207,3 +209,45 @@ Three rules that matter if you change this:
 - **Never make the jurisdiction-prefix hyphen optional** to catch `ABIA Amy's Ice Cream`
   vs `ABIA - Amy's Ice Cream`. It would turn `PF Chang's` into `Chang's` and merge it
   with any Pflugerville namesake. Tier 4 handles those cases with corroboration instead.
+
+## The merge
+
+`R/merge.R` unions the frozen export with the scraped portal into
+`data/inspections_merged.csv`: **22,150 inspections across 6,720 facilities,
+2023-06-16 → 2026-08-04**. Net **+1,186 inspections** and **74 days** recovered versus
+the export, plus 206 facilities that opened after it froze.
+
+**The dedup key is `(facility_id, date, score)`, not `(facility_id, date)`.** Letting the
+portal win per calendar day looks obviously right — it is the live system — and silently
+destroys data. Nine facilities have two inspections on one day and the sources capture
+different subsets:
+
+| | export | portal |
+|---|---|---|
+| Satellite…Eat.Drink.Orbit, 2026-03-03 | 100 **and 87** | 100 only |
+| Taco Bell #030157, 2025-03-03 | 100 and 95 | 95 only |
+| Man Pasand Supermarket, 2025-06-18 | 91 | **83** and 91 |
+| St. Louis Catholic Church, 2026-05-21 | 98 | **91** and 98 |
+
+Per-day precedence would have dropped Satellite's 87 — the lower of the two, and the one
+that matters on a food-safety map. Keying on the score keeps every distinct observation
+from either source; where a triple appears in both, the portal row wins for its richer
+metadata. Verified: **all 20,907 export triples survive the merge**.
+
+**Facility name and address come from the export where available.** The geocode cache is
+keyed on `"street_norm, city, TX, zip5"`; the portal's cleaner address strings would
+change that key for thousands of facilities and force a needless re-geocode. Verified:
+**6,514 of 6,514 established facilities keep a cached key**, and only the 206 genuinely
+new ones need geocoding.
+
+**Non-FDA portal rows are excluded from the union but used to annotate it.** They are not
+scored on the 100-point scale, so they must not enter an average — but they still say
+what a row *was*. That is how all five of the export's score-0 rows finally got a type:
+three `Wholesale`, two `Preopening`. Without it those zeros stayed unexplainable from the
+merged table alone.
+
+`comments` is deliberately absent from the merged file. It stays in the gitignored raw
+scrape, reachable for reporting, and out of anything feeding the published payload.
+
+11,108 rows still have no inspection type — the pre-2025 span the portal never retained.
+Those are **unknown**, not assumed scored.
