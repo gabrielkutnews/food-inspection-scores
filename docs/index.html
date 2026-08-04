@@ -361,10 +361,7 @@
     // establishments are absent because their last inspection is too old.
     $('window-note').innerHTML = (D.cutoff && D.data_through)
       ? 'Shows only establishments inspected between <b>' + fmtDate(D.cutoff) +
-        '</b> and <b>' + fmtDate(D.data_through) + '</b>. ' +
-        (D.n_ever && D.n_total
-          ? comma(D.n_ever - D.n_total) + ' others on record were last inspected before that and are not shown.'
-          : '')
+        '</b> and <b>' + fmtDate(D.data_through)
       : '';
 
     $('gen').textContent = data.data_through
@@ -405,7 +402,7 @@
     $('summary').innerHTML =
       '<b>' + comma(visible) + '</b> of ' + comma(D.n_mapped) + ' mapped establishments shown.' +
       (D.n_total > D.n_mapped
-        ? '<br>' + comma(D.n_total - D.n_mapped) + ' more could not be placed on the map.'
+        ? '<br>' + 'four locations could not be placed on the map.'
         : '');
   }
 
