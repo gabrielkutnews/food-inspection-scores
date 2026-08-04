@@ -198,7 +198,8 @@
 
 <div class="credit ui">
   <span class="credit-long"><span id="credit-long-text"></span> <span id="gen"></span></span>
-  <span id="source-line"></span> Map &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>,
+  <!-- Source credit moved into the note under the map, where it carries its links. -->
+  Map &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>,
   &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>.
 </div>
 
@@ -360,10 +361,13 @@
     // Copy comes from R/editorial.R via the payload, so wording can be changed in plain
     // text without touching JavaScript. A hand-edit here once left an unterminated
     // string, which took the whole script down and blanked the map.
-    $('window-note').innerHTML = D.copy_window_note || '';
+    // Source credit leads, then the window sentence. Both come from R/editorial.R and both
+    // contain markup (source links, bolded dates), so this is innerHTML, not textContent --
+    // textContent would print the <a> tags to the reader as literal angle-bracketed text.
+    $('window-note').innerHTML =
+      [D.copy_source_line, D.copy_window_note].filter(Boolean).join(' ');
 
     $('credit-long-text').textContent = D.copy_credit_long || '';
-    $('source-line').textContent = D.copy_source_line || '';
 
     $('gen').textContent = data.data_through
       ? 'Inspection records through ' + fmtDate(data.data_through) +

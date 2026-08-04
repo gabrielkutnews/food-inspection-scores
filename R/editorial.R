@@ -9,7 +9,7 @@
 # Placeholders in {{braces}} are filled in at build time. Available everywhere:
 #
 #   {{through}}    newest inspection in the data, e.g. "August 4, 2026"
-#   {{cutoff}}     start of the recency window,   e.g. "February 4, 2026"
+#   {{cutoff}}     start of the recency window,   e.g. "February 4, 2025"
 #   {{generated}}  the day the page was built
 #   {{min_top}}    routine-inspection minimum for the best-records table
 #   {{min_bottom}} routine-inspection minimum for the lowest-scores table
@@ -32,12 +32,24 @@ EDITORIAL <- list(
     credit_long   = paste(
       "Most recent inspection per establishment. Includes schools, stores and care",
       "facilities as well as restaurants, and covers surrounding jurisdictions."),
+    # The note under the map is `source_line` followed by `window_note`, in that order.
+    # Both are rendered as HTML, so <a> and <b> tags below are live. Keep the dates as
+    # {{cutoff}} / {{through}} rather than typing them: they are computed from the data,
+    # so a hand-typed date silently becomes a lie the next time the data is refreshed.
+    #
+    # Two sources are credited because they cover different periods. The open-data export
+    # is frozen -- its newest inspection is 2026-05-22 -- and the Austin Public Health
+    # portal supplies everything after that, so neither one alone accounts for the map.
+    source_line   = paste0(
+      "Source: <a href=\"https://inspections.myhealthdepartment.com/aph/\"",
+      " target=\"_blank\" rel=\"noopener\">Austin Public Health</a> and",
+      " <a href=\"https://data.austintexas.gov/Health-and-Community-Services",
+      "/Food-Establishment-Inspection-Scores/ecmv-9xxi/about_data\"",
+      " target=\"_blank\" rel=\"noopener\">Data Austin Texas</a>."),
     window_note   = paste(
-      "Map only shows establishments with inspections between <b>{{cutoff}}</b> and",
-      "<b>{{through}}</b>, the latest available data. {{n_excluded}} others on record",
-      "were last inspected before that and are not shown."),
-    unmapped_note = "{{n_unmapped}} locations could not be placed on the map.",
-    source_line   = "Source: City of Austin."
+      "The map only shows establishments with inspections between <b>{{cutoff}}</b> and",
+      "<b>{{through}}</b>, the latest available data."),
+    unmapped_note = "{{n_unmapped}} locations could not be placed on the map."
   ),
 
   # ---- best records (docs/best.html) -----------------------------------------
