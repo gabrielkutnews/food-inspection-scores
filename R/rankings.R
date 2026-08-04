@@ -64,7 +64,10 @@ rank_table <- function(df, direction) {
     distinct(venue, .keep_all = TRUE) |>   # one slot per parent operator
     head(TOP_N) |>
     mutate(rank = row_number()) |>
-    select(rank, name, category, street, city, mean_score, n,
+    # facility_id travels with the row so any audit can join on it rather than on the
+    # name. Two different Little Deli & Pizzeria locations share a name; matching on the
+    # name pools them and reports a mean that belongs to neither.
+    select(rank, facility_id, name, category, street, city, mean_score, n,
            min_score, max_score, latest_score, latest)
 }
 

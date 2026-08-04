@@ -197,10 +197,8 @@
 </div>
 
 <div class="credit ui">
-  <span class="credit-long">Most recent inspection per establishment. Includes schools, stores
-  and care facilities as well as restaurants, and covers surrounding jurisdictions.
-  <span id="gen"></span></span>
-  Source: City of Austin. Map &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>,
+  <span class="credit-long"><span id="credit-long-text"></span> <span id="gen"></span></span>
+  <span id="source-line"></span> Map &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>,
   &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>.
 </div>
 
@@ -359,10 +357,13 @@
     // scores were current as of today when the newest one was 73 days old.
     // State the hard filter plainly. Without this the reader cannot tell that ~1,000
     // establishments are absent because their last inspection is too old.
-    $('window-note').innerHTML = (D.cutoff && D.data_through)
-      ? 'Map only shows restaurants with inspections after <b>' + fmtDate(D.cutoff) +
-        '</b> and <b>' + fmtDate(D.data_through) + "</b>, the latest available data. 
-      : '';
+    // Copy comes from R/editorial.R via the payload, so wording can be changed in plain
+    // text without touching JavaScript. A hand-edit here once left an unterminated
+    // string, which took the whole script down and blanked the map.
+    $('window-note').innerHTML = D.copy_window_note || '';
+
+    $('credit-long-text').textContent = D.copy_credit_long || '';
+    $('source-line').textContent = D.copy_source_line || '';
 
     $('gen').textContent = data.data_through
       ? 'Inspection records through ' + fmtDate(data.data_through) +
@@ -401,9 +402,7 @@
 
     $('summary').innerHTML =
       '<b>' + comma(visible) + '</b> of ' + comma(D.n_mapped) + ' mapped establishments shown.' +
-      (D.n_total > D.n_mapped
-        ? '<br>' + 'Four locations could not be placed on the map.'
-        : '');
+      (D.copy_unmapped_note ? '<br>' + D.copy_unmapped_note : '');
   }
 
   function buildPanel(F) {

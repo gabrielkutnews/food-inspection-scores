@@ -184,17 +184,62 @@ say("  Look each up at https://inspections.myhealthdepartment.com/aph and confir
 say("  name, address and the most recent score match. These are accusations and claims")
 say("  about real businesses; nothing above substitutes for reading them.")
 
-for (pg in c("docs/best.html", "docs/lowest.html")) {
-  if (!file.exists(pg)) next
-  html <- paste(readLines(pg, warn = FALSE), collapse = "\n")
+# Full, untruncated, with every routine inspection listed so the mean can be checked by
+# hand. A truncated address cannot be looked up, which makes a verification sheet that
+# truncates worse than useless -- it looks like verification without enabling it.
+sheet <- character(0)
+add <- function(...) sheet <<- c(sheet, paste0(...))
+
+add("VERIFICATION SHEET — every name currently published")
+add("Generated ", format(Sys.time()), "   |   records through ", format(data_through(ins)))
+add("")
+add("Look each establishment up at https://inspections.myhealthdepartment.com/aph")
+add("(search by name, then confirm the address). For each one check:")
+add("  1. the establishment exists at the address shown")
+add("  2. it is a restaurant, not a market/store/cafeteria/school kitchen")
+add("  3. the routine inspection dates and scores below match the portal")
+add("  4. no newer inspection exists that we have missed")
+add(strrep("=", 78))
+
+for (pg in list(list(f = "docs/best.html",   t = "BEST INSPECTION RECORDS  (docs/best.html)"),
+                list(f = "docs/lowest.html", t = "LOWEST INSPECTION SCORES  (docs/lowest.html)"))) {
+  if (!file.exists(pg$f)) next
+  html <- paste(readLines(pg$f, warn = FALSE), collapse = "\n")
   dat <- fromJSON(sub(".*var DATA = (\\[.*?\\]);.*", "\\1", html), simplifyVector = FALSE)
-  say(""); say(sprintf("  -- %s", basename(pg)))
+  add(""); add(pg$t); add(strrep("-", 78))
   for (r in dat) {
-    say(sprintf("     %2d. %-40s %-28s  mean %5.2f over %d  latest %s on %s",
-                r$rank, str_trunc(r$name, 38), str_trunc(r$street, 26),
-                as.numeric(r$mean_score), r$n, r$latest_score, substr(r$latest, 1, 10)))
+    # Join on facility_id, never the name. Two different Little Deli & Pizzeria
+    # restaurants share a name at different addresses; a name join pools them and
+    # produces a mean that belongs to neither, then reports it as a discrepancy.
+    fid  <- as.character(r$facility_id)
+    hist <- ins |> filter(facility_id == fid) |> arrange(inspection_date) |>
+      transmute(inspection_date, score, purpose,
+                type = coalesce(inspection_type, "unknown"), source)
+    rt <- hist |> filter(purpose == "Routine", score > 0)
+    add("")
+    add(sprintf("%2d. %s", r$rank, r$name))
+    add(sprintf("    %s, %s TX %s", r$street, r$city,
+                ins |> filter(facility_id == fid) |> slice(1) |> pull(zip5)))
+    add(sprintf("    facility_id %s   category %s", fid, categorize(r$name)))
+    add(sprintf("    PUBLISHED: mean %.2f across %d routine inspections",
+                as.numeric(r$mean_score), r$n))
+    add(sprintf("    RECOMPUTED: mean %.2f across %d   -> %s",
+                mean(rt$score), nrow(rt),
+                if (abs(mean(rt$score) - as.numeric(r$mean_score)) < 0.005 &&
+                    nrow(rt) == r$n) "MATCHES" else "*** DISCREPANCY ***"))
+    add("    every inspection on record:")
+    for (i in seq_len(nrow(hist))) {
+      add(sprintf("      %s  %3d  %-10s %-26s %s%s",
+                  format(hist$inspection_date[i]), hist$score[i], hist$purpose[i],
+                  str_trunc(hist$type[i], 24), hist$source[i],
+                  if (hist$purpose[i] != "Routine" || hist$score[i] == 0)
+                    "   <- excluded from the mean" else ""))
+    }
   }
 }
+
+writeLines(sheet, "data/internal/verification_sheet.txt")
+for (l in sheet) say(l)
 
 # ---- 7. known-hard cases --------------------------------------------------------
 head_("7. Cases that have gone wrong before")

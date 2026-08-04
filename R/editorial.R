@@ -15,6 +15,12 @@
 #   {{min_bottom}} routine-inspection minimum for the lowest-scores table
 #   {{n_shown}}    establishments on the map
 #   {{n_excluded}} establishments withheld as too stale
+#   {{n_unmapped}} establishments that could not be geocoded
+#
+# It is all plain text. Nothing here is JavaScript, so a stray apostrophe or quote cannot
+# break a page. That matters: the map's wording used to be inlined in a <script> block, and
+# a single hand-edit left an unterminated string which took the whole script down and
+# published a blank map.
 #
 # Leave a link's `url` as "" to hide that link entirely.
 
@@ -27,9 +33,10 @@ EDITORIAL <- list(
       "Most recent inspection per establishment. Includes schools, stores and care",
       "facilities as well as restaurants, and covers surrounding jurisdictions."),
     window_note   = paste(
-      "Shows only establishments inspected between <b>{{cutoff}}</b> and",
-      "<b>{{through}}</b>. {{n_excluded}} others on record were last inspected before",
-      "that and are not shown."),
+      "Map only shows establishments with inspections between <b>{{cutoff}}</b> and",
+      "<b>{{through}}</b>, the latest available data. {{n_excluded}} others on record",
+      "were last inspected before that and are not shown."),
+    unmapped_note = "{{n_unmapped}} locations could not be placed on the map.",
     source_line   = "Source: City of Austin."
   ),
 

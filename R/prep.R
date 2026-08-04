@@ -9,6 +9,7 @@
 # Run after R/geocode.R.
 
 source("R/common.R")
+source("R/editorial.R")
 suppressPackageStartupMessages(library(jsonlite))
 
 CACHE_PATH <- "data/geocoded_cache.csv"
@@ -105,7 +106,23 @@ out <- pts |>
     u = as.integer(stack_n - 1)
   )
 
+# Reader-facing copy, filled here and rendered verbatim by docs/index.html. Keeping it in
+# R/editorial.R means a wording change never requires editing JavaScript.
+COPY_VALS <- list(
+  through    = str_squish(format(data_through(ins), "%B %e, %Y")),
+  cutoff     = str_squish(format(cutoff, "%B %e, %Y")),
+  generated  = str_squish(format(Sys.Date(), "%B %e, %Y")),
+  min_top    = "", min_bottom = "",
+  n_shown    = format(nrow(out), big.mark = ","),
+  n_excluded = format(n_ever - n_window, big.mark = ","),
+  n_unmapped = format(n_window - nrow(out), big.mark = ",")
+)
+
 payload <- list(
+  copy_window_note   = fill(EDITORIAL$map$window_note, COPY_VALS),
+  copy_unmapped_note = if (n_window > nrow(out)) fill(EDITORIAL$map$unmapped_note, COPY_VALS) else "",
+  copy_credit_long   = fill(EDITORIAL$map$credit_long, COPY_VALS),
+  copy_source_line   = fill(EDITORIAL$map$source_line, COPY_VALS),
   # Three distinct dates, never collapsed into one "generated". The page previously
   # said "Data generated <today>" while describing inspections that stopped 73 days
   # earlier, which read as a freshness claim it could not support.
