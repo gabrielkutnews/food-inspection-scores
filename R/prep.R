@@ -30,17 +30,30 @@ coords <- read_csv(CACHE_PATH, show_col_types = FALSE) |>
   distinct(query, .keep_all = TRUE) |>
   select(query, latitude, longitude)
 
-pts <- ins |>
+cutoff <- recency_cutoff(ins)   # anchored to the data, not to today
+
+all_pts <- ins |>
   latest_per_facility() |>
   left_join(counts, by = "facility_id") |>
   mutate(query = str_squish(str_c(normalize_street(street), city, "TX", zip5, sep = ", "))) |>
   left_join(coords, by = "query")
 
-n_all <- nrow(pts)
+# The recency window is now a HARD FILTER, not a checkbox the reader can switch off.
+# An establishment last inspected in 2023 tells a reader nothing about its kitchen today,
+# and offering it behind a toggle put the burden of that caveat on them. The map is now
+# simply "establishments inspected in the last RECENCY_MONTHS months", stated on the page.
+n_ever   <- nrow(all_pts)
+pts      <- all_pts |> filter(inspection_date >= cutoff)
+n_window <- nrow(pts)
+
+n_all <- n_window
 pts   <- pts |> filter(!is.na(latitude), !is.na(longitude))
 
-message(sprintf("Facilities: %d total, %d mappable (%.1f%%), %d dropped for missing coordinates.",
-                n_all, nrow(pts), 100 * nrow(pts) / n_all, n_all - nrow(pts)))
+message(sprintf("Facilities with a scored inspection ever: %d", n_ever))
+message(sprintf("  inspected since %s (the published set): %d  -- %d excluded as stale",
+                format(cutoff), n_window, n_ever - n_window))
+message(sprintf("  of those, mappable: %d (%.1f%%), %d dropped for missing coordinates.",
+                nrow(pts), 100 * nrow(pts) / n_window, n_window - nrow(pts)))
 
 # ---- Un-stack co-located facilities ------------------------------------------
 # ~2,000 establishments share an exact coordinate with another (42 sit on one pin
@@ -68,7 +81,6 @@ message(sprintf("Co-located: %d facilities share a coordinate with another; larg
 # ---- Assemble ----------------------------------------------------------------
 
 city_levels <- sort(unique(pts$city))
-cutoff      <- recency_cutoff(ins)   # anchored to the data, not to today
 
 out <- pts |>
   mutate(
@@ -101,8 +113,9 @@ payload <- list(
   data_through = format(data_through(ins), "%Y-%m-%d"),  # newest inspection in it
   cutoff       = format(cutoff, "%Y-%m-%d"),       # start of the recency window
   recency_months = RECENCY_MONTHS,
-  n_total    = n_all,
-  n_mapped   = nrow(out),
+  n_ever     = n_ever,      # facilities with any scored inspection on record
+  n_total    = n_all,       # of those, inspected inside the window (the published set)
+  n_mapped   = nrow(out),   # of those, successfully geocoded
   cities     = city_levels,
   categories = CATEGORIES,
   # As a list of named lists, not a tibble: write_json(dataframe = "values")

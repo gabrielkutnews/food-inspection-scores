@@ -29,10 +29,15 @@ recency_cutoff <- function(ins, months = RECENCY_MONTHS) {
 }
 
 # Score buckets. Reds are only ~0.2% of the map, so the UI has to show counts.
+# The two middle bands are purple and blue rather than a red-to-green ramp. That is a
+# deliberate accessibility gain as well as a style choice: red/green is the common
+# confusion pair, and putting two clearly non-red, non-green hues between them means the
+# four bands stay distinguishable under deuteranopia and protanopia. The `key` values stay
+# as they were so nothing downstream has to change -- they are identifiers, not colours.
 BUCKETS <- tibble::tibble(
   key   = c("red", "orange", "yellow", "green"),
   label = c("69 & below", "70–79", "80–89", "90–100"),
-  color = c("#d62828", "#f77f00", "#ecc30b", "#2a9d3f"),
+  color = c("#d62828", "#8e24aa", "#1976d2", "#2a9d3f"),
   lo    = c(0L, 70L, 80L, 90L),
   hi    = c(69L, 79L, 89L, 100L)
 )

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Austin restaurants with the best inspection records</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#6b6b6b; --line:#e6e6e6;
+          --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:14px; font-family:var(--font); color:var(--ink); background:#fff;
+         -webkit-text-size-adjust:100%; }
+  h1 { font-size:18px; margin:0 0 4px; line-height:1.25; }
+  .sub { font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:14px; }
+  .cap { font-size:12.5px; color:var(--muted); line-height:1.5; margin:0 0 10px; }
+  table { border-collapse:collapse; width:100%; font-size:14px; }
+  th,td { text-align:left; padding:8px 9px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);
+       font-weight:700; border-bottom:1.5px solid #d0d0d0; white-space:nowrap; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  td.rank { color:var(--muted); font-variant-numeric:tabular-nums; width:1%; }
+  .nm { font-weight:600; }
+  .addr { font-size:12px; color:var(--muted); }
+  .chip { display:inline-grid; place-items:center; min-width:36px; height:24px; padding:0 6px;
+          border-radius:4px; color:#fff; font-weight:700; font-size:13px;
+          text-shadow:0 1px 1px rgba(0,0,0,.28); }
+  .note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:18px;
+          border-top:1px solid var(--line); padding-top:10px; }
+  .xlinks { margin:14px 0 0; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 16px; }
+  .xlinks a { color:#1976d2; text-decoration:none; font-weight:600; }
+  .xlinks a:hover { text-decoration:underline; }
+  /* Mobile: the two least useful columns collapse, touch targets grow, and 16px type
+     stops iOS zooming the embed when a reader taps. */
+  @media (max-width:560px) {
+    body { padding:11px; }
+    h1 { font-size:17px; }
+    table { font-size:15px; }
+    th,td { padding:11px 7px; }
+    .hide-sm { display:none; }
+    .xlinks { font-size:15px; gap:12px; }
+    .xlinks a { padding:6px 0; display:inline-block; }
+  }
+</style>
+</head>
+<body>
+<h1>Austin-area restaurants with the best inspection records</h1>
+<div class="sub">Average score across <b>routine</b> inspections &mdash; not a snapshot of a single visit. Restaurants, cafes and coffee shops only. Inspection records run through <b>August 4, 2026</b>.</div>
+<p class="cap">Highest average, among restaurants with at least <b>5</b> routine inspections. A spotless record over three visits is common enough to be unremarkable, so the bar is higher here.</p>
+<div id="tbl"></div>
+<div class="xlinks">
+    <a href="index.html">View the full map &rarr;</a>
+    <a href="lowest.html">Lowest inspection scores &rarr;</a>
+</div>
+<div class="note"><b>How this was built.</b> One row per licensed restaurant, averaged across its <b>routine</b> inspections. Follow-up re-checks and permit-related visits are real inspections and appear on the map, but they are excluded from this average and from the minimum-inspection count, because both happen in response to a prior result and so are not independent observations. Also excluded: names carrying an out-of-business or ineligible-for-renewal flag; and where one operator licenses several counters at a single address, only its best-scoring counter appears. Chains and coffee shops count as restaurants; schools, groceries, markets, convenience stores, care facilities, stadium concessions, staff-only canteens and retailers that merely hold a food permit are excluded. The city publishes no facility-type field, so type is inferred from the establishment name and a few will be misclassified &mdash; each list is checked by hand before publication. A score of 0 is not a low score on the 100-point scale: the city records it for inspections that scale does not apply to, such as pool, wholesale and pre-opening checks. Those are excluded rather than counted as failures. Source: City of Austin. Inspection records through August 4, 2026; page built August 4, 2026.</div>
+<script>
+var DATA = [{"rank":1,"name":"PF - In-N-Out #316","category":"Restaurant & Food Service","street":"1600 Town Center Dr","city":"Pflugerville","mean_score":99.67,"n":6,"min_score":98,"max_score":100,"latest_score":98,"latest":"2026-03-05"},{"rank":2,"name":"Wingstop #2138","category":"Restaurant & Food Service","street":"1420 W Wells Branch Pkwy Ste 100","city":"Pflugerville","mean_score":99.6,"n":5,"min_score":99,"max_score":100,"latest_score":100,"latest":"2026-02-17"},{"rank":3,"name":"Little Deli & Pizzeria","category":"Restaurant & Food Service","street":"1804 Briarcliff Blvd","city":"Austin","mean_score":99.5,"n":6,"min_score":98,"max_score":100,"latest_score":100,"latest":"2026-05-26"},{"rank":4,"name":"Chipotle Mexican Grill #874","category":"Restaurant & Food Service","street":"6301 W Parmer Ln Bldg 2","city":"Austin","mean_score":99.4,"n":5,"min_score":98,"max_score":100,"latest_score":99,"latest":"2026-04-21"},{"rank":5,"name":"BC - Baguette et Chocolat","category":"Restaurant & Food Service","street":"12101 Bee Cave Rd","city":"Bee Cave","mean_score":99.4,"n":5,"min_score":97,"max_score":100,"latest_score":100,"latest":"2026-01-07"},{"rank":6,"name":"PF - Raising Canes # 194","category":"Restaurant & Food Service","street":"2408 FM 685","city":"Pflugerville","mean_score":99.25,"n":8,"min_score":97,"max_score":100,"latest_score":100,"latest":"2026-06-25"},{"rank":7,"name":"PF - Sonic","category":"Restaurant & Food Service","street":"1101 FM 685","city":"Pflugerville","mean_score":99.25,"n":8,"min_score":98,"max_score":100,"latest_score":100,"latest":"2026-06-11"},{"rank":8,"name":"LW - Yumtacular","category":"Restaurant & Food Service","street":"1501 N FM 620 Rd","city":"Lakeway","mean_score":99.2,"n":5,"min_score":97,"max_score":100,"latest_score":99,"latest":"2026-06-01"},{"rank":9,"name":"Cloud Kitchen","category":"Restaurant & Food Service","street":"5610 N IH 35 Service Rd SB","city":"Austin","mean_score":99,"n":7,"min_score":96,"max_score":100,"latest_score":100,"latest":"2026-05-04"},{"rank":10,"name":"Fairmont Austin - Good Things (Level 1)","category":"Restaurant & Food Service","street":"101 Red River St","city":"Austin","mean_score":99,"n":5,"min_score":97,"max_score":100,"latest_score":99,"latest":"2026-06-04"}];
+var COLORS = { red:"#d62828", orange:"#8e24aa", yellow:"#1976d2", green:"#2a9d3f" };
+function bucket(s){ return s<=69?"red":s<=79?"orange":s<=89?"yellow":"green"; }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+function fmtDate(d){
+  if(!d) return "";
+  var p=String(d).slice(0,10).split("-");
+  var m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return (m[+p[1]-1]||"?")+" "+(+p[2])+", "+p[0];
+}
+function table(rows){
+  if(!rows || !rows.length) return "<p class='cap'>No restaurants meet the threshold.</p>";
+  return "<table><thead><tr><th></th><th>Restaurant</th>" +
+    "<th class='num'>Average</th><th class='num hide-sm'>Inspections</th>" +
+    "<th class='num hide-sm'>Range</th><th class='num'>Latest</th></tr></thead><tbody>" +
+    rows.map(function(r){
+      return "<tr><td class='rank'>"+r.rank+"</td>" +
+        "<td><div class='nm'>"+esc(r.name)+"</div>" +
+        "<div class='addr'>"+esc(r.street)+", "+esc(r.city)+"</div></td>" +
+        "<td class='num'><span class='chip' style='background:"+COLORS[bucket(r.mean_score)]+"'>" +
+          r.mean_score.toFixed(1)+"</span></td>" +
+        "<td class='num hide-sm'>"+r.n+"</td>" +
+        "<td class='num hide-sm'>"+r.min_score+"&ndash;"+r.max_score+"</td>" +
+        "<td class='num'>"+r.latest_score+"<div class='addr'>"+fmtDate(r.latest)+"</div></td></tr>";
+    }).join("") + "</tbody></table>";
+}
+document.getElementById("tbl").innerHTML = table(DATA);
+</script>
+</body>
+</html>
+

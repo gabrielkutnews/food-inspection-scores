@@ -18,8 +18,9 @@ Rscript R/portal_check.R  # reconcile the scrape against ins.csv -- the complete
 Rscript R/crosswalk.R     # build data/permit_crosswalk.csv (permitID <-> facility_id)
 Rscript R/merge.R         # union both sources -> data/inspections_merged.csv
 Rscript R/geocode.R    # network; only geocodes addresses missing from the cache
-Rscript R/prep.R       # writes docs/data/points.json
-Rscript R/rankings.R   # writes docs/rankings.html + data/internal/rankings_*.csv
+Rscript R/prep.R          # writes docs/data/points.json (the map)
+Rscript R/rankings.R      # writes docs/best.html and docs/lowest.html
+Rscript R/factcheck.R     # verifies every published claim; non-zero exit = do not publish
 ```
 
 | File | Role |
@@ -32,7 +33,9 @@ Rscript R/rankings.R   # writes docs/rankings.html + data/internal/rankings_*.cs
 | `R/common.R` | Shared: city/category derivation, address cleaning, score buckets, dedupe-to-latest |
 | `R/geocode.R` | Address normalisation + Census/ArcGIS geocoding, cached in `data/geocoded_cache.csv` |
 | `R/prep.R` | Builds the map payload |
-| `R/rankings.R` | Builds the ranking tables |
+| `R/rankings.R` | Builds the two ranking embeds |
+| **`R/editorial.R`** | **All reader-facing wording: titles, captions, notes, cross-links** |
+| `R/factcheck.R` | Re-derives every published claim from source; exits non-zero on any failure |
 | `docs/` | The published site (GitHub Pages root) |
 | `hmm_food.R` | The original exploratory script — kept as-is, not part of the pipeline |
 
@@ -46,8 +49,47 @@ that way. It does not error when `ins` is in scope — it silently overwrites th
 data with whatever that object currently holds, which is how `data/ins.csv` once
 acquired a 12th column and reformatted dates.
 
-Editing thresholds: `RECENCY_MONTHS` and `BUCKETS` live at the top of `R/common.R`;
-`MIN_TOP`, `MIN_BOTTOM` and `TOP_N` at the top of `R/rankings.R`.
+## Editorial control: what to edit, and where
+
+| To change… | Edit | Then run |
+|---|---|---|
+| Headlines, standfirsts, table captions, the methodology note | `R/editorial.R` | `Rscript R/rankings.R` |
+| Links between the map and the two ranking pages | `R/editorial.R` → `links` | `Rscript R/rankings.R` |
+| The map's credit line and window note | `R/editorial.R` → `map` | `Rscript R/prep.R` |
+| Score band colours | `BUCKETS` in `R/common.R` | `prep.R` **and** `rankings.R` |
+| Recency window length | `RECENCY_MONTHS` in `R/common.R` | `prep.R` and `rankings.R` |
+| How many routine inspections a ranking needs | `MIN_TOP` / `MIN_BOTTOM` in `R/rankings.R` | `rankings.R` |
+| How many rows each table shows | `TOP_N` in `R/rankings.R` | `rankings.R` |
+
+`R/editorial.R` is the only file you need for wording. It computes nothing. Placeholders in
+`{{braces}}` — `{{through}}`, `{{cutoff}}`, `{{generated}}`, `{{min_top}}`, `{{min_bottom}}`,
+`{{n_excluded}}` — are filled at build time, and a typo in a placeholder name **fails the
+build** rather than shipping `{{throuhg}}` to a reader.
+
+To hide a cross-link, set its `url` to `""`. To retitle a page, change `headline` (the page
+heading) and `browser_title` (the tab).
+
+## Fact-checking before you publish
+
+```bash
+Rscript R/factcheck.R           # full report
+Rscript R/factcheck.R --brief   # just the PASS/FAIL lines
+```
+
+32 checks, in seven groups: provenance; that nothing was lost merging the two sources; that
+a score of 0 is never treated as a food score; that the map payload matches the data; that
+each ranking page **re-derives from source in the same order**; the full list of every name
+published, for hand-checking against the city portal; and the specific cases that have gone
+wrong before (address conflation in the crosswalk, "Market"-named corner stores reaching a
+restaurant ranking, the recency window drifting off the clock).
+
+It exits non-zero on any failure, so it can gate a publish. The report is written to
+`data/internal/factcheck_report.txt`.
+
+Group 6 is the part software cannot do for you: it prints every published name, address and
+score so you can look each up at
+`inspections.myhealthdepartment.com/aph` and confirm it. These are claims about real
+businesses.
 
 ## Embedding in Grove
 
@@ -74,8 +116,7 @@ has two inspections on the same date with different scores, the lower one wins �
 row order is not a defensible tiebreak for a food-safety map. `R/prep.R` prints
 those conflicts (currently 2) on every run.
 
-**Scores of 0 are real values, but never a failing food score.** *(Corrected — this
-section previously said a 0 "means no score was issued." See `CORRECTIONS.md`.)*
+**Scores of 0 are real values, but never a failing food score.**
 
 Now settled from the scrape. Across 16,879 portal inspections, **not one of the ~5,800
 zeros is a `2017 FDA Food Inspection`** — the type that produces the 0–100 scores on the
@@ -130,8 +171,7 @@ permit do not.
 follow-up re-check happens *because* a routine inspection went badly, so it is not an
 independent observation — counting it let a bad score supply the third inspection that
 qualified a restaurant to be ranked on it. That defect put four restaurants in a
-published table who should never have been eligible; see `CORRECTIONS.md` and
-`METHODOLOGY.md`. Follow-up and compliance rows stay in the data and on the map.
+early draft table who should never have been eligible; see `METHODOLOGY.md`. Follow-up and compliance rows stay in the data and on the map.
 
 **The two ranking thresholds differ on purpose.** The top requires ≥5 routine
 inspections (`MIN_TOP`), the bottom ≥3 (`MIN_BOTTOM`). A spotless record over three
@@ -251,3 +291,35 @@ scrape, reachable for reporting, and out of anything feeding the published paylo
 
 11,108 rows still have no inspection type — the pre-2025 span the portal never retained.
 Those are **unknown**, not assumed scored.
+
+## Embedding: three separate pages
+
+```html
+<!-- the map -->
+<iframe src="https://USERNAME.github.io/food-inspection-scores/index.html"
+        title="Austin-area food establishment inspection scores"
+        width="100%" height="620" style="border:0;width:100%;max-width:100%"
+        loading="lazy" scrolling="no"></iframe>
+
+<!-- best inspection records -->
+<iframe src="https://USERNAME.github.io/food-inspection-scores/best.html"
+        title="Austin restaurants with the best inspection records"
+        width="100%" height="900" style="border:0;width:100%;max-width:100%"
+        loading="lazy" scrolling="no"></iframe>
+
+<!-- lowest inspection scores -->
+<iframe src="https://USERNAME.github.io/food-inspection-scores/lowest.html"
+        title="Austin restaurants with the lowest inspection scores"
+        width="100%" height="900" style="border:0;width:100%;max-width:100%"
+        loading="lazy" scrolling="no"></iframe>
+```
+
+The two ranking tables are separate pages so either can run without the other. Each links
+to the map and to its counterpart; set a link's `url` to `""` in `R/editorial.R` to drop it.
+`rankings.html` now redirects to `best.html`, in case that URL is embedded anywhere.
+
+All three carry `<meta name="viewport">` and are responsive to 320px: on a phone the map's
+filter panel collapses behind a button and dismisses when the map is tapped, inputs use
+16px type so iOS does not zoom the embed, touch targets are ≥44px, markers are drawn
+slightly larger because a fingertip is less precise than a cursor, and the ranking tables
+drop their two least useful columns.

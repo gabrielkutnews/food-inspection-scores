@@ -19,8 +19,19 @@ something was wrong. Including them means:
 - the average mixes a routine visit with its own re-check, and re-checks score well above
   the visit that triggered them.
 
-This rule was adopted after finding that four of ten restaurants in a published
-lowest-scoring table had only two routine inspections each. See `CORRECTIONS.md`.
+**Why this rule exists.** An early draft of the lowest-scoring table counted follow-ups
+toward the three-inspection minimum. Four of its ten entries turned out to have only
+**two** routine inspections each — Special Noodle, Hunan Bistro, Biryani & Co. and
+Fruttilandia — and had qualified only because their own poor routine triggered the
+re-check that became their third "inspection." Three of the four sat at ranks 1–3.
+
+Pooling the re-checks also *raised* their averages rather than lowering them, because a
+follow-up scores well above the visit that triggered it. So the defect was manufactured
+eligibility, not overstated severity.
+
+That draft lived on a personal GitHub Pages site and was never published by KUT, so no
+reader-facing correction was warranted. The rule above is the fix, recorded here so the
+reasoning survives even though the draft does not.
 
 ## Thresholds
 
@@ -34,17 +45,6 @@ hundreds of establishments have one — so a "best" claim needs volume. A low av
 three visits is already a pattern rather than one bad day, and requiring five there would
 hide the worst-scoring restaurants in the city.
 
-## The recency window
-
-An establishment must have been inspected within **18 months of the newest inspection in
-the dataset** — not within 18 months of today. Anchoring to the data keeps the window
-stable and the build reproducible; anchoring to the clock silently drops establishments
-as a dataset ages, which is what happened to 132 of them before this was caught.
-
-Pages state three dates separately: what the records run through, when they were
-retrieved, and when the page was built. They are not the same thing and collapsing them
-into "generated" overstates freshness.
-
 ## Scores of 0
 
 A 0 is a real recorded value, but it is not a low score on the 100-point scale — the city
@@ -53,8 +53,12 @@ least one wholesale facility handling no time/temperature-controlled food). The
 discriminator is the inspection type, which the open-data export does not carry and the
 live portal does.
 
-Establishments recorded at 0 are held out of the score bands until their inspection type
-is verified, and the reason is stated per establishment rather than asserted generally.
+Settled from the scrape: across 16,879 portal inspections, **not one** of the ~5,800 zeros
+is a `2017 FDA Food Inspection`. All five zeros in the export are typed — three
+`Wholesale`, two `Preopening` (certificate-of-occupancy checks carried out before the
+business served anyone). Score-0 inspections are excluded from the map and the rankings; a
+facility whose *latest* visit was one still shows its most recent genuinely scored
+inspection rather than disappearing.
 
 ## What is and is not a restaurant
 
@@ -70,6 +74,22 @@ staff-only canteens, wholesalers and retailers that merely hold a food permit do
 
 Where one operator licenses several counters at a single address, only its best-scoring
 counter can occupy a slot, so a single venue cannot fill the table.
+
+## The recency window is a hard filter
+
+An establishment must have been inspected within **18 months of the newest inspection in
+the dataset** — not within 18 months of today. Anchoring to the data keeps the window
+stable and the build reproducible; anchoring to the clock silently drops establishments as
+a dataset ages, which is what happened to 132 of them before it was caught.
+
+It is a **hard filter**, not a checkbox. Establishments outside the window do not appear at
+all — on the map or in either ranking. It used to be a toggle a reader could switch off,
+which put the burden of the caveat on them: an establishment last inspected in 2023 says
+nothing about its kitchen today. Both the map and the ranking pages state the window and
+how many establishments are withheld because of it.
+
+Pages state three dates separately: what the records run through, when they were retrieved,
+and when the page was built. Collapsing them into "generated" overstates freshness.
 
 ## Data sources, and a caveat about history
 

@@ -85,6 +85,10 @@
     border: 1px solid #cfcfcf; border-radius: 5px; background: #fff; color: var(--ink);
   }
   .sub { font-size: 11.5px; color: var(--muted); line-height: 1.45; margin-top: 8px; }
+  .window-note {
+    font-size: 11.5px; line-height: 1.45; color: #4a3d18; background: #fdf8e8;
+    border: 1px solid #ecdfae; border-radius: 5px; padding: 6px 8px; margin: 9px 0 0;
+  }
 
   #panel-toggle {
     top: 10px; right: 10px; width: 38px; height: 38px; border-radius: 7px;
@@ -113,17 +117,48 @@
   .pop-meta b { font-weight: 600; }
   .warn { color: #a33; }
 
+  /* iOS zooms the whole page when a focused input has font-size < 16px, which on a map
+     embed leaves the reader zoomed in with no obvious way back. 16px is the floor. */
+  @media (max-width: 900px) {
+    #search { font-size: 16px; padding: 11px 32px 11px 12px; }
+    select  { font-size: 16px; padding: 9px 8px; }
+  }
+
   @media (max-width: 640px) {
-    .panel { display: none; width: auto; left: 10px; right: 10px; top: 56px; }
+    .panel {
+      display: none; width: auto; left: 10px; right: 10px; top: 58px;
+      /* With eight establishment types the panel can outgrow a short phone screen. */
+      max-height: calc(100% - 120px); overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
     .panel.open { display: block; }
-    #panel-toggle { display: block; }
-    .search-wrap { max-width: none; right: 58px; }
-    .row { padding: 6px 0; font-size: 14.5px; }
+    #panel-toggle { display: block; width: 44px; height: 44px; font-size: 19px; }
+
+    .search-wrap { max-width: none; right: 64px; }
+    /* 44px is the minimum comfortable touch target; 6px padding gave about 28px. */
+    .row { padding: 9px 0; font-size: 15px; min-height: 44px; }
+    .row input { width: 20px; height: 20px; }
+    .sw { width: 15px; height: 15px; }
+    .row .cnt { font-size: 13px; }
+    #results li { padding: 12px 10px; min-height: 52px; }
+    #results { max-height: 60vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .r-name { font-size: 15px; }
+    .r-addr { font-size: 12.5px; }
+    #search-clear { font-size: 22px; padding: 8px 10px; }
+
     /* The full credit runs to five lines on a phone and eats a third of the map. */
     .credit-long { display: none; }
     .credit { font-size: 10px; padding: 4px 8px; }
     /* Pinch-to-zoom covers this on touch; the buttons only crowd the credit bar. */
     .leaflet-control-zoom { display: none; }
+
+    /* A popup sized for desktop overflows a 375px screen and clips its own close
+       button, which on touch leaves no way to dismiss it. */
+    .leaflet-popup-content { margin: 12px 14px; min-width: 0; }
+    .leaflet-popup-content-wrapper { max-width: 78vw; }
+    .pop-name { font-size: 15.5px; }
+    .pop-meta { font-size: 12.5px; }
+    .leaflet-popup-close-button { width: 34px !important; height: 34px !important;
+      font-size: 22px !important; padding: 6px 0 0 0 !important; }
   }
 </style>
 </head>
@@ -149,18 +184,14 @@
   <div class="panel-body">
     <div id="buckets"></div>
     <div class="divider"></div>
-    <!-- Label is data-relative, filled from the payload. It must never say "last N
-         months", because the window is anchored to the newest inspection in the
-         data, not to today -- with a stale export those are different things. -->
-    <label class="row">
-      <input type="checkbox" id="recent" checked>
-      <span class="lbl" id="recency-label">Recent inspections only</span>
-    </label>
-    <div style="margin-top:7px">
+    <div>
       <select id="category" aria-label="Filter by establishment type">
         <option value="all">All establishment types</option>
       </select>
     </div>
+    <!-- The recency window is a hard filter applied in R/prep.R, not a toggle. It has to
+         be stated, or the reader has no way to know what is missing. -->
+    <p class="window-note" id="window-note"></p>
     <div class="sub" id="summary"></div>
   </div>
 </div>
@@ -191,7 +222,17 @@
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd', maxZoom: 19
   }).addTo(map);
-  map.on('click', function () { map.scrollWheelZoom.enable(); });
+  map.on('click', function () {
+    map.scrollWheelZoom.enable();
+    // On a phone the panel covers most of the map; tapping the map should dismiss it
+    // rather than forcing a second trip to the hamburger.
+    var panel = document.getElementById('panel');
+    if (panel && panel.classList.contains('open')) {
+      panel.classList.remove('open');
+      var t = document.getElementById('panel-toggle');
+      if (t) { t.setAttribute('aria-expanded', 'false'); t.setAttribute('aria-label', 'Show filters'); }
+    }
+  });
   map.on('mouseout', function () { map.scrollWheelZoom.disable(); });
 
   // A container that is hidden or not yet laid out reports zero size. Leaflet
@@ -219,7 +260,9 @@
   // matches the counts in the panel.
   function radiusFor(z) {
     var r = z <= 10 ? 2.5 : z <= 11 ? 3.5 : z <= 12 ? 4.5 : z <= 13 ? 5.5 : z <= 15 ? 6.5 : 8;
-    return isSmall ? r * 0.85 : r;
+    // Slightly LARGER on touch, not smaller: a fingertip is far less precise than a
+    // cursor, and a circleMarker's hit area is exactly its radius.
+    return isSmall ? Math.max(r * 1.15, 4) : r;
   }
   var curRadius = null;
 
@@ -228,7 +271,7 @@
   var markers = [], bucketOf = [], searchIdx = [], groups = {};
   var shown, cutoff;
 
-  var state = { buckets: {}, recentOnly: true, category: 'all' };
+  var state = { buckets: {}, category: 'all' };
 
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) {
@@ -289,7 +332,9 @@
           weight: 1,
           fillColor: COLOR[key],
           fillOpacity: 0.85
-        }).bindPopup(popupHtml.bind(null, i, F), { maxWidth: 300 })
+          // A fixed 300px popup overflows a phone screen and clips its close button.
+        }).bindPopup(popupHtml.bind(null, i, F),
+                     { maxWidth: Math.min(300, Math.round(window.innerWidth * 0.78)) })
       );
 
       searchIdx.push(
@@ -312,6 +357,16 @@
 
     // Three dates, stated separately. "Data generated <today>" alone implied the
     // scores were current as of today when the newest one was 73 days old.
+    // State the hard filter plainly. Without this the reader cannot tell that ~1,000
+    // establishments are absent because their last inspection is too old.
+    $('window-note').innerHTML = (D.cutoff && D.data_through)
+      ? 'Shows only establishments inspected between <b>' + fmtDate(D.cutoff) +
+        '</b> and <b>' + fmtDate(D.data_through) + '</b>. ' +
+        (D.n_ever && D.n_total
+          ? comma(D.n_ever - D.n_total) + ' others on record were last inspected before that and are not shown.'
+          : '')
+      : '';
+
     $('gen').textContent = data.data_through
       ? 'Inspection records through ' + fmtDate(data.data_through) +
         '; page built ' + fmtDate(data.generated) + '.'
@@ -321,8 +376,9 @@
   // ---- filtering -------------------------------------------------------------
 
   function passes(i, F) {
+    // No date test here: R/prep.R applies the recency window before writing the
+    // payload, so every row present is already inside it.
     var r = ROWS[i];
-    if (state.recentOnly && r[F.d] < cutoff) return false;
     if (state.category !== 'all' && r[F.k] !== state.category) return false;
     return true;
   }
@@ -382,17 +438,6 @@
       applyFilters(F);
     });
 
-    // Data-relative window label, e.g. "Inspected Nov 22, 2024 - May 22, 2026".
-    // Falls back to the old wording only if an older payload lacks the keys.
-    $('recency-label').textContent =
-      (D.cutoff && D.data_through)
-        ? 'Inspected ' + fmtDate(D.cutoff) + ' – ' + fmtDate(D.data_through)
-        : 'Last ' + D.recency_months + ' months only';
-    $('recent').addEventListener('change', function (e) {
-      state.recentOnly = e.target.checked;
-      applyFilters(F);
-    });
-
     var toggle = $('panel-toggle');
     toggle.addEventListener('click', function () {
       var open = $('panel').classList.toggle('open');
@@ -404,19 +449,13 @@
   // ---- popup -----------------------------------------------------------------
 
   function popupHtml(i, F) {
-    var r = ROWS[i], key = bucketOf[i], stale = r[F.d] < cutoff;
+    var r = ROWS[i], key = bucketOf[i];
     var bits = [];
 
     bits.push('<b>Inspected</b> ' + fmtDate(r[F.d]) +
       (r[F.f] ? ' &middot; follow-up re-check' : ''));
     bits.push('<b>' + r[F.q] + '</b> inspection' + (r[F.q] === 1 ? '' : 's') + ' on record');
     bits.push(CAT[r[F.k]]);
-    if (stale) {
-      // Stated against the data's own window, not "the last N months" -- the
-      // records end before today, so those are not the same claim.
-      bits.push('<span class="warn">No inspection on record since ' +
-        fmtDate(r[F.d]) + '.</span>');
-    }
     if (r[F.u] > 0) {
       bits.push('Shares an address with ' + r[F.u] + ' other establishment' +
         (r[F.u] === 1 ? '' : 's') + '; pins at this address are nudged apart.');
@@ -494,9 +533,6 @@
           cb.checked = state.buckets[cb.dataset.bucket];
         });
         changed = true;
-      }
-      if (state.recentOnly && r[F.d] < cutoff) {
-        state.recentOnly = false; $('recent').checked = false; changed = true;
       }
       if (state.category !== 'all' && r[F.k] !== state.category) {
         state.category = 'all'; $('category').value = 'all'; changed = true;
