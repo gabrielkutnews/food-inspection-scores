@@ -11,13 +11,7 @@ suppressPackageStartupMessages({
 # Analysis window. Inspections older than this are dropped from the rankings and
 # hidden by default on the map: 301 facilities were last inspected in 2023 and
 # 590 in 2024, and presenting those as current would be wrong.
-# 12 months. With data through 2026-08-04 the cutoff lands on 2025-08-04. Every page
-# states the window it is using, so this number is safe to change -- but note it governs
-# BOTH the map and the two ranking tables, and tightening it can change which restaurants
-# are named. Going 18 -> 12 dropped Ebisu Japanese Restaurant from the lowest-scores table
-# (its last routine inspection was 2025-07-23, twelve days outside the new window) and
-# brought in Joy East Chinese Buffet.
-RECENCY_MONTHS <- 12
+RECENCY_MONTHS <- 18
 
 # The recency window is a property of the DATA, not of when the script runs.
 #
