@@ -360,7 +360,10 @@
     // Copy comes from R/editorial.R via the payload, so wording can be changed in plain
     // text without touching JavaScript. A hand-edit here once left an unterminated
     // string, which took the whole script down and blanked the map.
-    $('window-note').innerHTML = D.copy_window_note || '';
+    $('window-note').innerHTML =
+      'Source: <a href="https://inspections.myhealthdepartment.com/aph/" target="_blank" rel="noopener">Austin Public Health</a> and ' +
+      '<a href="https://data.austintexas.gov/Health-and-Community-Services/Food-Establishment-Inspection-Scores/ecmv-9xxi/about_data" target="_blank" rel="noopener">Data Austin Texas</a>. ' +
+      'The map only shows establishments with inspections between <strong>February 4, 2025</strong> and <strong>August 4, 2026</strong>, the latest available data.';
 
     $('credit-long-text').textContent = D.copy_credit_long || '';
     $('source-line').textContent = D.copy_source_line || '';
