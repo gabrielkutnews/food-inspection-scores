@@ -360,8 +360,8 @@
     // State the hard filter plainly. Without this the reader cannot tell that ~1,000
     // establishments are absent because their last inspection is too old.
     $('window-note').innerHTML = (D.cutoff && D.data_through)
-      ? 'Shows only establishments inspected between <b>' + fmtDate(D.cutoff) +
-        '</b> and <b>' + fmtDate(D.data_through)
+      ? 'Map only shows restaurants with inspections after <b>' + fmtDate(D.cutoff) +
+        '</b> and <b>' + fmtDate(D.data_through) + "</b>, the latest available data. 
       : '';
 
     $('gen').textContent = data.data_through
@@ -402,7 +402,7 @@
     $('summary').innerHTML =
       '<b>' + comma(visible) + '</b> of ' + comma(D.n_mapped) + ' mapped establishments shown.' +
       (D.n_total > D.n_mapped
-        ? '<br>' + 'four locations could not be placed on the map.'
+        ? '<br>' + 'Four locations could not be placed on the map.'
         : '');
   }
 
