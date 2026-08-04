@@ -58,6 +58,31 @@ NAME_PREFIX_CITY <- c(
 # Names carrying an administrative flag rather than a normal establishment name.
 ADMIN_FLAG_RE <- regex("^OOB\\b|INELIGIBLE", ignore_case = TRUE)
 
+# The only inspection type scored on the 100-point FDA scale. Verified against 16,879
+# scraped inspections: this type is EXACTLY the set with a nonzero score, and not one of
+# the ~5,800 zeros is of this type. They are mobile-vendor permit checks, pool and spa
+# inspections, wholesale facilities handling no open TCS food, and pre-opening
+# walkthroughs -- none of which the 0-100 scale describes.
+FDA_TYPE <- "2017 FDA Food Inspection"
+
+# Is this inspection scored on that scale?
+#
+# A 0 is a real recorded value but never a food-safety score, so it must not colour a pin
+# or enter an average. Two of the five zeros in the export are `Preopening` -- certificate
+# of occupancy checks carried out before the business served anyone.
+#
+# inspection_type is NA for every pre-2025 row, because the portal only retains ~18
+# months and the frozen export never carried the field. Those rows are treated as scored:
+# their values run 56-100 with no zeros, so the score itself is the evidence. The type
+# test only ever excludes a row we positively know is off-scale.
+is_scored <- function(score, inspection_type = NULL) {
+  ok <- !is.na(score) & score > 0
+  if (!is.null(inspection_type)) {
+    ok <- ok & (is.na(inspection_type) | inspection_type == FDA_TYPE)
+  }
+  ok
+}
+
 score_bucket <- function(score) {
   cut(score,
       breaks = c(-Inf, 69, 79, 89, Inf),
@@ -220,8 +245,18 @@ RE_CONVENIENCE <- paste(
 RE_GROCERY <- paste(
   "h-e-b", "\\bheb\\b", "randall'?s", "wal-?mart", "\\btarget\\b", "costco",
   "sam'?s club", "sprouts", "whole foods", "trader joe", "fiesta mart",
-  "supermercado", "supermarket", "grocery", "food market", "central market",
-  "world market", sep = "|")
+  "supermercado", "supermarket", "grocery",
+  # Bare "market" -- 166 of the 228 facilities whose name contains it were being counted
+  # as restaurants, and they are corner stores: Hamilton Market, Rutland Market, JD's
+  # Market, Orange Market, La Michoacana Meat Market. One of them, LW - Lakeway Market,
+  # reached the published lowest-scoring table. See RE_RESTAURANT_OVERRIDE for the
+  # genuine restaurants this would otherwise catch.
+  "\\bmarket", sep = "|")
+
+# Names a broader category pattern would wrongly claim. Mandola's Italian Market is a
+# well-known Austin restaurant and deli, not a grocery, so it must survive the bare
+# "market" rule above.
+RE_RESTAURANT_OVERRIDE <- "mandola"
 
 # Stadium, arena and airport concession counters. Kept out of "Restaurant"
 # because a single venue can run dozens of separately-licensed stands that are
@@ -253,6 +288,7 @@ categorize <- function(nm) {
   n <- str_to_lower(nm)
   case_when(
     nm %in% names(NAME_OVERRIDES)       ~ unname(NAME_OVERRIDES[nm]),
+    str_detect(n, RE_RESTAURANT_OVERRIDE) ~ "Restaurant & Food Service",
     str_detect(n, RE_MEDICAL_STRONG)    ~ "Healthcare",
     str_detect(n, RE_SCHOOL)            ~ "School & Childcare",
     str_detect(n, RE_HEALTH)            ~ "Healthcare",
@@ -279,19 +315,51 @@ venue_of <- function(nm) {
   str_remove(v, "\\s+\\d+\\s*$")
 }
 
-# Load the raw inspection export with consistent typing. `created_at` and
-# `updated_at` are dropped: both are a single constant across all 20,964 rows
-# (bulk-export stamps), so the original desc(updated_at) tiebreak did nothing.
-load_inspections <- function(path = "data/ins.csv") {
+MERGED_PATH <- "data/inspections_merged.csv"
+
+# Load the inspection table. Prefers the merged export+portal table when R/merge.R has
+# produced it, and falls back to the raw Socrata export otherwise, so the pipeline still
+# runs on a fresh clone before anything has been scraped.
+#
+# The merged table already carries city/street/purpose and adds inspection_type,
+# program_name, permit_id, inspection_id and source. The Socrata path derives the first
+# three and leaves the rest NA, so downstream code sees one shape either way.
+load_inspections <- function(path = NULL) {
+  if (is.null(path)) path <- if (file.exists(MERGED_PATH)) MERGED_PATH else "data/ins.csv"
+
+  if (basename(path) == basename(MERGED_PATH)) {
+    # facility_id and zip5 are identifiers, not quantities. Left to col_guess() they
+    # come back numeric, which silently breaks every join against the geocode cache
+    # (character there) and would drop a leading zero if the data ever left Texas.
+    return(
+      read_csv(path, col_types = cols(
+        facility_id = col_character(), zip5 = col_character(),
+        permit_id = col_character(), inspection_id = col_character(),
+        score = col_integer(), inspection_date = col_date(),
+        .default = col_guess())) |>
+        mutate(restaurant_name = str_squish(restaurant_name))
+    )
+  }
+
+  # Raw Socrata export. `created_at` and `updated_at` are dropped: both are a single
+  # constant across all 20,964 rows (bulk-export stamps), so the original
+  # desc(updated_at) tiebreak did nothing.
   read_csv(path, show_col_types = FALSE) |>
     transmute(
-      facility_id,
+      facility_id     = as.character(facility_id),
       restaurant_name = str_squish(restaurant_name),
       address         = str_squish(address),
       zip5            = str_extract(as.character(zip_code), "^\\d{5}"),
       inspection_date = as_date(inspection_date),
       score,
-      is_followup     = process_description == "Follow-Up Inspection"
+      is_followup     = process_description == "Follow-Up Inspection",
+      purpose         = if_else(process_description == "Follow-Up Inspection",
+                                "Follow-Up", "Routine"),
+      inspection_type = NA_character_,
+      program_name    = NA_character_,
+      permit_id       = NA_character_,
+      inspection_id   = NA_character_,
+      source          = "socrata"
     ) |>
     mutate(
       city   = derive_city(address, restaurant_name),
@@ -299,13 +367,25 @@ load_inspections <- function(path = "data/ins.csv") {
     )
 }
 
-# One row per facility: its most recent inspection. Same-date ties resolve to the
-# LOWEST score -- six facilities have multiple rows on their latest date and four
-# of those disagree, including one holding both a 100 and an 87 on 2026-03-03.
-# Row order is not a defensible tiebreak for a food-safety map.
+# One row per facility: its most recent SCORED inspection.
+#
+# Unscored inspections are filtered out BEFORE picking the latest, not after, and the
+# distinction matters. A facility whose most recent visit was a wholesale or pre-opening
+# check still has a real food score further back, and it should show that rather than
+# disappear: Fiesta Tortillas' latest is a 0 on a Wholesale inspection, but it scored 98
+# on 2025-05-08 and that is what belongs on the map. Filtering afterwards would have
+# dropped the establishment entirely; filtering first shows the truth about it.
+#
+# Facilities with NO scored inspection at all do drop out, correctly -- 5 Rivers Tea and
+# Maher Business have only pre-opening checks, so they have never received a food-safety
+# score and there is nothing to plot.
+#
+# Same-date ties resolve to the LOWEST score. Row order is not a defensible tiebreak for
+# a food-safety map, and the export holds one facility with both a 100 and an 87 on
+# 2026-03-03.
 latest_per_facility <- function(ins) {
   ins |>
-    filter(!is.na(score)) |>
+    filter(is_scored(score, if ("inspection_type" %in% names(ins)) inspection_type else NULL)) |>
     arrange(facility_id, desc(inspection_date), score) |>
     group_by(facility_id) |>
     slice(1) |>

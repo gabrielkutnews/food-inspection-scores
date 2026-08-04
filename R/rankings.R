@@ -156,6 +156,21 @@ print(as.data.frame(
     transmute(name = str_trunc(name, 40), street = str_trunc(street, 26), n, mean = mean_score)
 ), right = FALSE)
 
+# The BOTTOM pool matters more than the top: this is where a misclassified establishment
+# becomes a published accusation. A corner store called "LW - Lakeway Market" reached the
+# lowest-scoring table before bare "market" was added to the grocery patterns, and
+# "Star Market" was on course to follow it.
+message("")
+message(sprintf("AUDIT -- bottom %d restaurant candidates. THIS IS THE PUBLISHED-ACCUSATION\n         list. Check every name is a restaurant a reader could walk into.", 20))
+print(as.data.frame(
+  restaurants |>
+    arrange(mean_score, desc(n)) |>
+    distinct(venue, .keep_all = TRUE) |>
+    head(20) |>
+    transmute(name = str_trunc(name, 40), street = str_trunc(street, 26), n,
+              mean = mean_score, latest)
+), right = FALSE)
+
 # ---- rankings.html -------------------------------------------------------------
 # Restaurants only. The all-establishments tables stay in data/internal/ for
 # fact-checking but are not published: schools dominate them, because they are
