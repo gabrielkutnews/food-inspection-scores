@@ -72,21 +72,39 @@ has two inspections on the same date with different scores, the lower one wins �
 row order is not a defensible tiebreak for a food-safety map. `R/prep.R` prints
 those conflicts (currently 2) on every run.
 
-**Scores of 0 are real values, but not on the 100-point scale.** *(Corrected — this
-section previously said a 0 "means no score was issued." See `CORRECTIONS.md`.)* Five
-facilities in the export are recorded at 0. The city uses 0 for inspections the FDA
-100-point scale does not apply to: on the portal, pool and spa inspections are scored 0
-with findings written into a comments field, and Fiesta Tortillas carries inspection
-type "Wholesale" with the note "No open or handling of TCS foods." For the other four
-the permit type is **not** established, so no reason is asserted for them. PBS
-Hospitality's 0 was also simply superseded — the live portal shows a later score in the
-nineties that the frozen export never carried. Held out of the score bands pending
-verification; never publish them as failing kitchens without checking the type.
+**Scores of 0 are real values, but never a failing food score.** *(Corrected — this
+section previously said a 0 "means no score was issued." See `CORRECTIONS.md`.)*
 
-**`OOB` and `INELIGIBLE` name prefixes** are administrative flags (282 and 1
-facilities). Excluded from the rankings. `OOB` reads as out-of-business but is
-applied inconsistently — Shoal Creek Saloon carries it while still being inspected
-through May 2026 — so verify against the city portal before relying on it.
+Now settled from the scrape. Across 16,879 portal inspections, **not one of the ~5,800
+zeros is a `2017 FDA Food Inspection`** — the type that produces the 0–100 scores on the
+map. Every zero belongs to a type the scale does not apply to: mobile-vendor permit
+checks (3,002), pool and spa inspections (2,624), wholesale (101), central preparation
+facilities (49), pre-opening walkthroughs, farmers' markets, vending machines.
+
+All five of the export's zeros are explained:
+
+| facility | inspection type | inspector's note |
+|---|---|---|
+| 5 Rivers Tea Company | **Preopening** | "Passed CO inspection after permit to…" |
+| Maher Business LLC | **Preopening** | — |
+| Fiesta Tortillas | **Wholesale** | — |
+| Texas Meat & Produce | **Wholesale** | "No open TCS foods." |
+| PBS Hospitality | Wholesale, then **95** on 2026-05-27 | standard food inspection |
+
+Two are certificate-of-occupancy checks scored before the business served anyone. So
+`SCORED ⟺ inspectionType == "2017 FDA Food Inspection"` is the rule, and it is exact:
+that set is precisely the set with a nonzero score. Historical Socrata rows carry no
+inspection type, so for 2023-06 → 2025-01 the rule cannot be applied and those rows
+must be treated as unknown rather than assumed scored.
+
+**`OOB` does NOT reliably mean out of business** — now settled. `OOB - Shoal Creek
+Saloon` shows portal routine inspections in April 2025 (80), December 2025 (88) and May
+2026 (63), *plus a mobile-vendor permit renewal in December 2025*. A closed restaurant
+does not renew permits. So the 282 `OOB`-prefixed names cannot be excluded on the
+assumption that they are closed, and absence from the portal cannot be read as closure
+either — the portal only retains ~18 months, so anything quiet before 2025 is missing
+for that reason alone. The prefix is carried as an internal flag and stripped from
+display; exclusion decisions need `permitType` and positive evidence.
 
 **The map is not a restaurant dataset; the rankings are.** The map covers 460
 schools and childcare centres, 487 convenience stores and pharmacies, 291
