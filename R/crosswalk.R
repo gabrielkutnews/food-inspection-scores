@@ -22,12 +22,14 @@
 #
 #   name+street+zip   92.8% of permits, 5,289 clean, 15 ambiguous keys
 #   name+num+zip      93.3%,            5,295 clean, 22 ambiguous
-#   name+zip          93.4%,            5,220 clean, 60 ambiguous
+#   name+zip          93.4%   <-- DELETED: all 5 of its unique matches were wrong
 #   name alone        94.0%,            4,424 clean, 317 ambiguous  <-- never used
 #
-# Name alone buys one point of coverage for a 20-fold rise in ambiguity, so the name
-# tiers stop at name+zip. Tier 4 then recovers the systematic name-string differences
-# (see below), taking the total to 96.4%. Everything left goes to review.
+# Any key that does not compare the address merges different sites of the same business.
+# name+zip looked like a cheap extra point of coverage and was in fact 5 conflations
+# (two Kerbey Lane Cafes, two Jersey Mike's, two Master Donuts...). Every surviving tier
+# compares street or house number, and a global assertion demotes any match whose house
+# number disagrees with its facility's -- see ADDRESS GUARD below.
 #
 # THE EVENT FINGERPRINT IS A DISAMBIGUATOR, NOT AN ACCEPTOR. Both sources cover
 # 2025-01-29 .. 2026-05-22, so a permit and a facility that are the same establishment
@@ -125,10 +127,14 @@ shared_events <- function(pids, fids) {
 
 # ---- tiered matching -----------------------------------------------------------
 
+# name+zip is DELETED, not merely guarded. It produced exactly 5 matches and all 5 were
+# address conflations between different sites of the same business: two Kerbey Lane Cafes
+# (300 vs 3003 S Lamar), two Jersey Mike's (3005 S Lamar vs 600 E Ben White), two Master
+# Donuts on E Riverside, and two more. A tier with a 100% error rate has no threshold
+# worth tuning. Every remaining tier compares the street or the house number.
 TIERS <- list(
   list(name = "name+street+zip", cols = c("k_name", "k_street", "zip")),
-  list(name = "name+num+zip",    cols = c("k_name", "k_num", "zip")),
-  list(name = "name+zip",        cols = c("k_name", "zip"))
+  list(name = "name+num+zip",    cols = c("k_name", "k_num", "zip"))
 )
 
 matched  <- tibble(permitID = character(), facility_id = character(),
@@ -250,6 +256,101 @@ if (nrow(p_left) > 0) {
   }
 }
 
+
+# ---- tier 5: retired-permit handoffs --------------------------------------------
+# The remaining ambiguity is almost entirely one pattern. Austin issues a NEW
+# facility_id when a business re-permits, so ins.csv holds two ids for one restaurant,
+# and the portal's single permit matches both. Measured on the 7 businesses left:
+# 4 are clean handoffs (Epic Poke, Pour Choices, Smiling Donuts, St. Michael's) with
+# 175-364 day gaps and no overlap; 3 genuinely overlap in time and are left alone.
+#
+# For a handoff the right answer is not "pick one" -- both ids are the same business, so
+# the permit attaches to whichever id is currently active and the older id is recorded in
+# data/facility_merges.csv so the merge stage can combine the two histories. Suppressing
+# the old id instead would discard real inspections.
+#
+# Guard: same normalised name, spans strictly disjoint, and a gap of at least 150 days.
+# Without the gap requirement two concurrent counters that happen not to overlap in a
+# small sample would be merged.
+HANDOFF_MIN_GAP <- 150
+
+merges <- tibble(old_facility_id = character(), new_facility_id = character(),
+                 business = character(), gap_days = integer())
+
+if (nrow(ambiguous) > 0) {
+  spans <- ins |> mutate(facility_id = as.character(facility_id)) |>
+    group_by(facility_id) |>
+    summarise(f_first = min(inspection_date), f_last = max(inspection_date),
+              f_n = n(), .groups = "drop")
+
+  # ADDRESS GUARD. A handoff is one business re-permitted at the SAME address. Without
+  # this check the rule crossed two campuses: St. Michael's Catholic Preparatory School
+  # has separate facilities at 2500 Wimberly Ln and 3000 Barton Creek Blvd, both in
+  # 78735 and both inspected on 2026-05-01, and the permit for Barton Creek was merged
+  # into the Wimberly facility. The name+zip tier never compares streets, and temporal
+  # disjointness cannot distinguish "re-permitted" from "a second site".
+  cand5 <- ambiguous |> distinct(permitID, facility_id) |>
+    left_join(spans, by = "facility_id") |>
+    left_join(P |> select(permitID, p_name_raw, k_num_p = k_num, k_street_p = k_street),
+              by = "permitID") |>
+    left_join(I |> select(facility_id, k_num_i = k_num, k_street_i = k_street),
+              by = "facility_id") |>
+    filter(!is.na(k_num_p), !is.na(k_num_i), k_num_p == k_num_i)
+
+  resolved5 <- list(); merged5 <- list()
+  for (pid in unique(cand5$permitID)) {
+    g <- cand5 |> filter(permitID == pid) |> arrange(f_first)
+    if (nrow(g) < 2) next
+    disjoint <- all(g$f_last[-nrow(g)] < g$f_first[-1])
+    gap <- as.integer(min(g$f_first[-1] - g$f_last[-nrow(g)]))
+    if (!disjoint || is.na(gap) || gap < HANDOFF_MIN_GAP) next   # a real overlap: leave it
+    live <- g$facility_id[which.max(g$f_last)]
+    resolved5[[pid]] <- tibble(permitID = pid, facility_id = live,
+                               match_method = "handoff", confidence = "retired_permit_handoff",
+                               n_shared_events = NA_integer_)
+    merged5[[pid]] <- tibble(old_facility_id = setdiff(g$facility_id, live),
+                             new_facility_id = live,
+                             business = g$p_name_raw[1], gap_days = gap)
+  }
+  if (length(resolved5)) {
+    add5 <- bind_rows(resolved5)
+    matched <- bind_rows(matched, add5)
+    merges  <- bind_rows(merges, bind_rows(merged5)) |> distinct(old_facility_id, .keep_all = TRUE)
+    ambiguous <- ambiguous |> filter(!permitID %in% add5$permitID)
+    p_left <- p_left |> filter(!permitID %in% add5$permitID)
+    message(sprintf("  %-16s +%d matched (%d facility histories to merge)",
+                    "handoff", nrow(add5), nrow(merges)))
+  }
+}
+write_csv(merges, "data/facility_merges.csv")
+
+# GLOBAL ADDRESS ASSERTION. Two tiers do not compare streets by construction --
+# name+zip, and the handoff resolver built on top of the ambiguous pool. Rather than
+# trusting each to guard itself, demote any match whose house number disagrees with its
+# facility's to the review file. This is the check that would have caught the St.
+# Michael's Barton Creek / Wimberly Lane conflation on its own.
+addr_check <- matched |>
+  left_join(P |> select(permitID, k_num_p = k_num), by = "permitID") |>
+  left_join(I |> select(facility_id, k_num_i = k_num), by = "facility_id") |>
+  mutate(crosses = !is.na(k_num_p) & !is.na(k_num_i) & k_num_p != k_num_i)
+
+crossed <- addr_check |> filter(crosses)
+if (nrow(crossed) > 0) {
+  message(sprintf("\nDEMOTED %d match(es) whose house number disagrees with the facility:",
+                  nrow(crossed)))
+  print(as.data.frame(crossed |>
+    left_join(P |> select(permitID, p_name_raw, p_addr_raw), by = "permitID") |>
+    left_join(I |> select(facility_id, i_addr_raw), by = "facility_id") |>
+    transmute(name = str_trunc(p_name_raw, 30), portal = str_trunc(p_addr_raw, 24),
+              ins = str_trunc(i_addr_raw, 24), method = match_method)), right = FALSE)
+  matched <- matched |> filter(!permitID %in% crossed$permitID)
+  merges  <- merges |> filter(new_facility_id %in% matched$facility_id)
+  ambiguous <- bind_rows(ambiguous,
+                         crossed |> transmute(permitID, facility_id, tier = "address_conflict"))
+  p_left <- bind_rows(p_left, P |> filter(permitID %in% crossed$permitID)) |>
+    distinct(permitID, .keep_all = TRUE)
+}
+
 # ---- new establishments ---------------------------------------------------------
 # A permit with no match is either genuinely new (opened after the export froze) or a
 # failed match. Its first-seen date is the discriminator: a permit whose inspections
@@ -288,13 +389,32 @@ if (nrow(dup_fac) > 0) {
 
 write_csv(xw, XW_PATH)
 
+# Review file, deduplicated per permit (a permit retried across tiers appeared once per
+# tier before, inflating 67 real cases into 123 rows) and self-triaging: the only reason
+# an unresolved permit matters editorially is if it could reach a published table. That
+# needs >= MIN_BOTTOM routine inspections AND a mean low enough to place. Anything else
+# is bookkeeping.
+p_stats <- portal |>
+  filter(purpose == "Routine") |>
+  group_by(permitID) |>
+  summarise(n_routine = n(), mean_score = round(mean(score, na.rm = TRUE), 1),
+            .groups = "drop")
+
 review <- bind_rows(
-  ambiguous |> transmute(permitID, facility_id, reason = paste0("ambiguous:", tier)),
+  ambiguous |> distinct(permitID, facility_id) |> mutate(reason = "ambiguous_time_overlap"),
   new_permits |> filter(status == "unmatched") |>
     transmute(permitID, facility_id = NA_character_, reason = "no_key_match")
 ) |>
+  distinct(permitID, facility_id, .keep_all = TRUE) |>
   left_join(P |> select(permitID, p_name_raw, p_addr_raw, p_zip, p_first, p_last), by = "permitID") |>
-  arrange(reason, p_name_raw)
+  left_join(p_stats, by = "permitID") |>
+  mutate(n_routine = coalesce(n_routine, 0L),
+         category = categorize(p_name_raw),
+         # Could this permit plausibly land in a published ranking if left unresolved?
+         could_affect_rankings =
+           n_routine >= 3 & !is.na(mean_score) & mean_score < 85 &
+           category == "Restaurant & Food Service") |>
+  arrange(desc(could_affect_rankings), reason, p_name_raw)
 write_csv(review, REVIEW_PATH)
 
 # ---- report ---------------------------------------------------------------------

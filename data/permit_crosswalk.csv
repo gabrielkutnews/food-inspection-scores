@@ -534,7 +534,6 @@ A157D79C-2F3E-4629-9E13-AFCC5A2308C2,10490383,name+street+zip,exact,NA,Barchi Ja
 46C7D6F1-4E8C-4B95-ADD6-0D25535B6238,2801399,name+street+zip,exact,NA,Barnes and Nobles Booksellers,14010 N US 183 HWY SB SVRD,AUSTIN,78613,Barnes and Nobles Booksellers,14010 N US 183 HWY SB SVRD,matched
 C425031B-81FB-466C-A4BF-53265A52C5F8,12400192,name+street+zip,exact,NA,Barnison Catering,2823 Hancock Dr,Austin,78731,Barnison Catering,2823 Hancock Dr,matched
 DE0F5E96-6FDE-467F-888F-F1F1BEC8C6DA,12186377,name+street+zip,exact,NA,Barnison Catering,12101 Moore Rd,Austin,78719,Barnison Catering,12101 Moore Rd,matched
-F7768E03-CC10-4C37-A16C-8897E4141B30,12186377,name+zip,exact,NA,Barnison Catering,9200 Blocker Ln,Austin,78719,Barnison Catering,12101 Moore Rd,matched
 15FCDAAA-0F28-4070-B874-6E8B4BBB7D00,11685371,name+street+zip,exact,NA,Barrett's Coffee,713 W Saint Johns Ave,Austin,78752,Barrett's Coffee,713 W Saint Johns Ave,matched
 5B71D08A-C585-4E68-9C8A-184E2CCAA4A0,12396803,name+street+zip,exact,NA,Barrett's Coffee - Luv Fats,7135 N Lamar Blvd,Austin,78752,Barrett's Coffee - Luv Fats,7135 N Lamar Blvd,matched
 5B82322D-0585-41CA-9CC2-7D59E82188AF,2800127,name+street+zip,exact,NA,Barrington Elementary,400 Cooper Dr,Austin,78753,Barrington Elementary,400 Cooper Dr,matched
@@ -1543,6 +1542,7 @@ E08E6BE9-3E78-41BE-B6C4-2A4EB6882EB9,11459795,name+street+zip,exact,NA,Embassy S
 B33E2FC0-769F-45BF-8068-7A9A054347C3,12395257,name+street+zip,exact,NA,Employee Cafeteria,208 Barton Springs Rd,Austin,78704,Employee Cafeteria,208 Barton Springs Rd,matched
 7F11DCF1-9DF2-48A0-A124-7892B29E1F95,12393329,name+street+zip,exact,NA,Enchiladas y Mas - Inc,1911 W Anderson Ln,Austin,78757,Enchiladas y Mas - Inc,1911 W Anderson Ln,matched
 4666B67F-0620-4BD7-9225-091148A8A6E3,12155982,name+street+zip,exact,NA,Encompass Health Rehabilitation Hospital of Austin,330 W Ben White Blvd,Austin,78704,Encompass Health Rehabilitation Hospital of Austin,330 W Ben White Blvd,matched
+4079DAD2-BA2E-4129-BB3B-DC967CB9AF9B,178820,handoff,retired_permit_handoff,NA,Epic Poke,6448 E Us 290 Hwy Svrd WB,Austin,78752,Epic Poke,6448 E Us 290 Hwy Svrd WB,matched
 A327100D-3E97-4998-946D-69C54FFCEEEB,10863734,name+street+zip,exact,NA,Epicerie,2307 Hancock Dr,Austin,78756,Epicerie,2307 Hancock Dr,matched
 22ACB47A-001C-4949-8430-2AB256383EAE,2800727,street+zip+name_corroborated,address+events,2,Episcopal Seminary Southwest,606  RATHERVUE  PL,AUSTIN,78705,Episcopal Seminary Southwest School,606 RATHERVUE PL,matched
 024BF7EE-0380-4000-9A80-34A589CC4DDD,11028095,name+street+zip,exact,NA,Epoch Coffee,2700 W Anderson Ln,Austin,78757,Epoch Coffee,2700 W Anderson Ln,matched
@@ -2243,7 +2243,6 @@ A7C2B11F-E519-43EB-BBA7-4291832CC649,10181920,name+street+zip,exact,NA,Jersey Mi
 AEAB5EEC-52CD-409C-8AFF-EA3148E4C293,12401259,name+street+zip,exact,NA,Jersey Mike's Subs,12407 N MOPAC NB EXPY,AUSTIN,78758,Jersey Mike's Subs,12407 N MOPAC NB EXPY,matched
 C7E0DC1B-640A-470F-8786-037EF2F8730F,11250082,name+street+zip,exact,NA,Jersey Mike's Subs,1000 E 41st St Ste 235,Austin,78751,Jersey Mike's Subs,1000 E 41st St Ste 235,matched
 ED179BA9-55E1-49CF-A892-D04F9646C25B,11414167,name+street+zip,exact,NA,Jersey Mike's Subs,4601 N Lamar Blvd Ste 504,Austin,78751,Jersey Mike's Subs,4601 N Lamar Blvd Ste 504,matched
-B25BF85D-D7B3-48C0-B158-D7DB82FC7979,11414602,name+zip,exact,NA,Jersey Mike's Subs,3005 S Lamar Blvd Ste D-111,Austin,78704,Jersey Mike's Subs,600 E Ben White Blvd Ste 350,matched
 88FD65AE-E6A8-4707-9C56-E0A1969E6367,11301291,name+street+zip,exact,NA,Jersey Mike's Subs #15070,12901 N IH 35 Svrd NB,Austin,78753,Jersey Mike's Subs #15070,12901 N IH 35 Svrd NB,matched
 29BE6376-1552-4A23-8DDF-3DDB489EFB70,2802230,name+street+zip,exact,NA,Jersey Mikes Subs,10001  RESEARCH NB BLVD Bunit 170,AUSTIN,78759,Jersey Mikes Subs,10001 RESEARCH NB BLVD Bunit 170,matched
 D9D1CADD-99B3-46D7-913B-77095FB4BCAD,10128381,name+street+zip,exact,NA,Jersey Mikes Subs,9500 S Interstate 35 Ste L,Austin,78748,Jersey Mikes Subs,9500 S Interstate 35 Ste L,matched
@@ -2382,7 +2381,6 @@ EB9A7280-12F3-481E-9628-7C3BD39948CA,11789736,name+street+zip,exact,NA,Kentucky 
 1317919B-3DEE-4B52-9EFA-95482E9F8BC0,2801316,name+street+zip,exact,NA,Kerbey Lane,2606 Guadalupe St,Austin,78705,Kerbey Lane,2606 Guadalupe St,matched
 55C24E63-78DB-429D-9AE4-126752C2C36C,10162925,name+street+zip,exact,NA,Kerbey Lane Cafe,13435 N US 183 HWY NB SVRD,AUSTIN,78729,Kerbey Lane Cafe,13435 N US 183 HWY NB SVRD,matched
 56700ACB-4498-4A63-9381-2826927EBEBD,10449800,name+street+zip,exact,NA,Kerbey Lane Cafe,4301 W William Cannon Dr Bldg F,Austin,78749,Kerbey Lane Cafe,4301 W William Cannon Dr Bldg F,matched
-3E28074F-B1C9-4A7F-8409-BB8E23858FA3,10700176,name+zip,exact,NA,Kerbey Lane Cafe,300 S Lamar Blvd,Austin,78704,Kerbey Lane Cafe,3003 S Lamar Blvd,matched
 B9DA292C-1A37-422A-9991-B3D8614C68F3,12093672,name+street+zip,exact,NA,"Kerbey Lane Cafe, Inc.",2200 Aldrich St Ste 100,Austin,78723,"Kerbey Lane Cafe, Inc.",2200 Aldrich St Ste 100,matched
 956EEC1E-5F03-4B7C-8D59-07EF411DC29D,2800235,name+street+zip,exact,NA,Kerbey Lane Restaurant,3704 Kerbey Ln,Austin,78731,Kerbey Lane Restaurant,3704 Kerbey Ln,matched
 EAD83729-BE04-4A7E-8D9F-0A6A0A0C5E02,12396306,name+street+zip,exact,NA,"Kerlin BBQ, LLC",3400 Comsouth Dr,Austin,78744,"Kerlin BBQ, LLC",3400 Comsouth Dr,matched
@@ -2798,7 +2796,6 @@ FFF1057F-0501-4441-847B-FB992C0F2369,10818868,name+street+zip,exact,NA,Los Pepes
 5F577F20-148F-4E16-BC64-011F297D6BB2,10796431,name+street+zip,exact,NA,Los Potrillos Restaurant,9120 N Interstate 35,Austin,78753,Los Potrillos Restaurant,9120 N Interstate 35,matched
 25B70914-2E83-42C2-AB51-84F54819319F,10219662,name+street+zip,exact,NA,Los Reyes Mexican Grill & Seafood Restaurant,13776 N US 183 HWY SB SVRD Unit 145,AUSTIN,78750,Los Reyes Mexican Grill & Seafood Restaurant,13776 N US 183 HWY SB SVRD Unit 145,matched
 353448AA-5218-46D2-9B04-9E083A26AAC2,11546953,name+street+zip,exact,NA,Lotus Chinese,11501 Rock Rose Ave Ste 152,Austin,78758,Lotus Chinese,11501 Rock Rose Ave Ste 152,matched
-D733FC61-19BD-4321-9436-41B92D728324,11546953,name+zip,exact,NA,Lotus Chinese,8309  RESEARCH NB BLVD Unit B,AUSTIN,78758,Lotus Chinese,11501 Rock Rose Ave Ste 152,matched
 471A5072-3827-4B56-9190-1E15B4B865B3,10770063,name+street+zip,exact,NA,Lotus Hunan Chinese Restaurant,3201 Bee Caves Rd Ste 109,Austin,78746,Lotus Hunan Chinese Restaurant,3201 Bee Caves Rd Ste 109,matched
 B355B99F-3ADA-46BB-9076-EF6F33B53811,12396610,name+street+zip,exact,NA,Lou's Barton Springs,1608 Barton Springs Rd,Austin,78704,Lou's Barton Springs,1608 Barton Springs Rd,matched
 99EC08FF-6C29-46DD-9807-DBB831F43BF2,12093095,name+street+zip,exact,NA,Lou's Bodega,1900 E Cesar Chavez St,Austin,78702,Lou's Bodega,1900 E Cesar Chavez St,matched
@@ -2985,7 +2982,7 @@ B293C2CE-9514-4DF9-9797-E78B5AB54613,10672549,name+street+zip,exact,NA,Masala Wo
 C9CA6D3D-5D7B-4E63-9730-3ABB8D283314,10067123,name+street+zip,exact,NA,Masala Wok,1100 Center Ridge Dr Ste 300 # Bunit,Austin,78753,Masala Wok,1100 Center Ridge Dr Ste 300 # Bunit,matched
 CCD0853B-C0C8-45C1-BA02-CEA7F6C9EED7,12401763,name+street+zip,exact,NA,Masfajitas Restaurant,15119 N IH 35 Svrd NB,Austin,78660,Masfajitas Restaurant,15119 N IH 35 Svrd NB,matched
 66FB11A0-C6C9-4A3B-8C8C-0828F7BD74EA,12395414,name+street+zip,exact,NA,Mason's Famous Lobster Rolls,200 Congress Ave Bldg 1,Austin,78701,Mason's Famous Lobster Rolls,200 Congress Ave Bldg 1,matched
-106875D2-8C48-4F76-BFF6-22A3A76F851D,12145559,name+zip,exact,NA,Master Donuts,6100 E Riverside Dr Ste 103,Austin,78741,Master Donuts,1725 E Riverside Dr Ste A,matched
+106875D2-8C48-4F76-BFF6-22A3A76F851D,12397690,street+zip+name_corroborated,address+events,3,Master Donuts,6100 E Riverside Dr Ste 103,Austin,78741,Master Donut,6100 E Riverside Dr Ste 103,matched
 D6A230DE-0580-409A-A48B-2EFAD4E3EBC4,12397567,name+street+zip,exact,NA,Master Nutrition,4700 Loyola Ln Ste 112,Austin,78723,Master Nutrition,4700 Loyola Ln Ste 112,matched
 0B84D4DC-D6FA-4B68-AE77-E49531828485,10978672,name+street+zip,exact,NA,Matamoros Tacos,10304 N Lamar Blvd,Austin,78758,Matamoros Tacos,10304 N Lamar Blvd,matched
 F09DA542-44F4-4504-9F27-CE6CF3500CAC,12398178,name+street+zip,exact,NA,Matcha Mama,1007 S Congress Ave # 100,Austin,78704,Matcha Mama,1007 S Congress Ave # 100,matched
@@ -3375,6 +3372,7 @@ B5C5ABD8-C858-49B3-B846-D7C4B2EF63E6,12396712,name+street+zip,exact,NA,OOB - PF 
 FD18BF1B-EE69-45A5-B9BA-D701A97750E9,11422211,name+street+zip,exact,NA,OOB - Papa Joe's Tex-Mex,917 Springdale Rd,Austin,78702,OOB - Papa Joe's Tex-Mex,917 Springdale Rd,matched
 5045062E-B73F-46A6-AD82-A46B73C15717,12399243,name+street+zip,exact,NA,OOB - Petalia Brews & Bites,1700 N FM 620  RD UNIT 101,AUSTIN,78734,OOB - Petalia Brews & Bites,1700 N FM 620 RD UNIT 101,matched
 4A3512E7-CE67-458A-93D6-539A79986C9D,11436954,name+street+zip,exact,NA,OOB - Potbelly Sandwich Shop,14009 N US 183 HWY NB SVRD Unit 101,AUSTIN,78717,OOB - Potbelly Sandwich Shop,14009 N US 183 HWY NB SVRD Unit 101,matched
+4CF6DCEB-6E49-4E58-966F-3EA8956A99F4,12399735,handoff,retired_permit_handoff,NA,OOB - Pour Choices,401 E 6th St,Austin,78701,Pour Choices,401 E 6th St,matched
 DC7A8822-7F77-4DD3-B367-538CAE550127,12393323,name+street+zip,exact,NA,OOB - Pressed Juicery,11401 Century Oaks Ter Ste 103 # Bunit,Austin,78758,Pressed Juicery,11401 Century Oaks Ter Ste 103 # Bunit,matched
 6520A446-B879-4B96-908D-290FF511A35C,10290244,name+street+zip,exact,NA,OOB - Quattro Gatti Restaurant,908 Congress Ave,Austin,78701,OOB - Quattro Gatti Restaurant,908 Congress Ave,matched
 BF6A4CDA-3E02-43F9-8C8C-76C604FA607F,2801415,name+street+zip,exact,NA,OOB - Reales Pizza & Cafe,13450 N US 183 HWY Svrd SB,Austin,78750,OOB - Reale's Pizza & Cafe,13450 N US 183 HWY Svrd SB,matched
@@ -3690,6 +3688,7 @@ A61D0E2D-F3F0-45FC-AC04-B41193B035B9,12186645,name+street+zip,exact,NA,PF - Roll
 16107A70-A40B-4C50-BB56-767D19CF478A,12396876,name+street+zip,exact,NA,PF - SLUSHED,1202 FM 685 Ste A6,Pflugerville,78660,PF - SLUSHED,1202 FM 685 Ste A6,matched
 D4AC6E01-0211-4AA7-95C7-6552373609B0,12397761,name+street+zip,exact,NA,PF - Sage Valley Senior Living,1100 Rauscher Dr,Pflugerville,78660,PF - Sage Valley Senior Living,1100 Rauscher Dr,matched
 DE21FB27-082C-4077-AD17-212734CC0B76,12186587,name+street+zip,exact,NA,PF - Shogun Japanese Grill & Sushi Bar,18816 Limestone Commercial Dr Ste 100,Pflugerville,78660,PF - Shogun Japanese Grill & Sushi Bar,18816 Limestone Commercial Dr Ste 100,matched
+5954EA10-7AA2-4B40-A1A4-DE6D590D5D8E,178926,handoff,retired_permit_handoff,NA,PF - Smiling Donuts,428 Grand Avenue Pkwy Ste 130,Pflugerville,78660,PF - Smiling Donuts,428 Grand Avenue Pkwy Ste 130,matched
 575D625D-08B8-49AD-BFF9-8A48677FF4B9,12401825,name+street+zip,exact,NA,PF - Snack Stop #5,1041 E WELLS BRANCH  PKWY STE 100,PFLUGERVILLE,78660,PF - Snack Stop #5,1041 E WELLS BRANCH PKWY STE 100,matched
 64677ED5-4F26-4B99-A3ED-29690DA8FEC3,12398460,name+street+zip,exact,NA,PF - Sonic,1101 FM 685,Pflugerville,78660,PF - Sonic,1101 FM 685,matched
 FA881A5C-2F87-4F23-93BD-4EC8F2F577C3,12392738,name+street+zip,exact,NA,PF - Sonic Drive-In #2767,2014 W Pecan St,Pflugerville,78660,PF - Sonic Drive-In #2767,2014 W Pecan St,matched
@@ -3975,6 +3974,7 @@ F0539400-43E3-49B5-8938-3790DBBD87CA,12399196,name+street+zip,exact,NA,Popshelf 
 C4F9E8D2-06F2-4315-A1F4-331196B44ABA,12401176,name+street+zip,exact,NA,Postino,1301 S LAMAR  BLVD STE 102,AUSTIN,78704,Postino,1301 S LAMAR BLVD STE 102,matched
 07EDE623-0563-40FD-818B-27FD2D1E8707,10035755,name+street+zip,exact,NA,Potbelly Sandwich Works,10515 N MOPAC NB EXPY Bunit 300,AUSTIN,78759,Potbelly Sandwich Works,10515 N MOPAC NB EXPY Bunit 300,matched
 85EB2576-2241-46E7-A34A-F80FE7CF86E4,10046409,name+street+zip,exact,NA,Potbelly Sandwich Works,2316 Guadalupe St,Austin,78705,Potbelly Sandwich Works,2316 Guadalupe St,matched
+2E75AF7C-0D3A-4BBD-955F-518BF6BE9918,12399735,handoff,retired_permit_handoff,NA,Pour Choices,401 E 6th St,Austin,78701,Pour Choices,401 E 6th St,matched
 47C9E9EC-7F13-4384-8237-CA9A5A912C27,10979642,name+street+zip,exact,NA,Pour House,11835 Jollyville Rd,Austin,78759,Pour House,11835 Jollyville Rd,matched
 D1CDDDA5-5C5C-4F17-990F-3E5A066B45C4,10094643,name+street+zip,exact,NA,Powerstop,8600 Menchaca Rd,Austin,78748,Powerstop,8600 Menchaca Rd,matched
 130D0E64-15C3-44FD-8A9B-C267A1D8A16C,12400265,name+street+zip,exact,NA,Prana,1623 E 7th St,Austin,78702,Prana,1623 E 7th St,matched
@@ -4389,6 +4389,7 @@ CC3DFBE6-B37B-4222-B700-C80C208B8ADF,2800866,name+street+zip,exact,NA,Slick Will
 E831DC7C-00FD-4C97-AD1E-B29D4B6621E6,12089685,name+street+zip,exact,NA,Sloan & Parker,2900 N Quinlan Park Rd,Austin,78732,Sloan & Parker,2900 N Quinlan Park Rd,matched
 67CB303B-A636-4C11-9255-54BA9F8AF58A,11401022,name+street+zip,exact,NA,Small Victory,108 E 7th St,Austin,78701,Small Victory,108 E 7th St,matched
 35043F95-A2EC-4E0A-9842-81DB8902F9E7,12401909,name+street+zip,exact,NA,Small's Pizza,1023 SPRINGDALE RD,Austin,78721,Small's Pizza,1023 SPRINGDALE RD,matched
+991E656E-4282-4327-8FE4-E7AFE1B515AA,178926,handoff,retired_permit_handoff,NA,Smiling Donuts,428 Grand Avenue Pkwy Ste 130,Pflugerville,78660,PF - Smiling Donuts,428 Grand Avenue Pkwy Ste 130,matched
 E93DB091-9E1F-4220-BDB8-B9E09F5C245E,2800148,name+street+zip,exact,NA,Smith Elementary School,4209 Smith School Rd,Austin,78744,Smith Elementary School,4209 Smith School Rd,matched
 BB93D68C-DFAD-4C11-91A2-97FFBA09D2D7,2800704,name+street+zip,exact,NA,Smokey J's Barbeque #1,7008 N FM 620  RD,AUSTIN,78732,Smokey J's Barbeque #1,7008 N FM 620 RD,matched
 50AEEE09-BF15-4F30-A6C9-291C3EF23D3F,10776533,name+street+zip,exact,NA,Smokey Mo's BBQ,6001 W Parmer Ln Ste 360,Austin,78727,Smokey Mo's BBQ,6001 W Parmer Ln Ste 360,matched
@@ -4532,6 +4533,7 @@ C5E6E5AF-7B95-44DA-8F6B-D7EE7741373B,11400309,name+street+zip,exact,NA,"St. Jame
 03D6DE81-4E48-4D68-90DC-90EB503A0E2F,12091496,street+zip+name_corroborated,address+name_containment,0,St. Louis Catholic Church,7601 Burnet Rd,Austin,78757,St. Louis Catholic Church - Wozniak Kitchen,7601 Burnet Rd,matched
 208EACCC-F87C-41FA-B69F-AD777145F065,12091496,name+street+zip,exact,NA,St. Louis Catholic Church - Wozniak Kitchen,7601 Burnet Rd,Austin,78757,St. Louis Catholic Church - Wozniak Kitchen,7601 Burnet Rd,matched
 CE4823E0-9D40-4785-8F3E-4DEE41C25C8A,2800538,name+street+zip,exact,NA,St. Martin Lutheran Church,606 W 15th St,Austin,78701,St. Martin Lutheran Church,606 W 15th St,matched
+4E0CDE04-F095-49D6-A4B1-43D78EE8D05A,179030,handoff,retired_permit_handoff,NA,St. Michael's Catholic Preparatory School,2500 Wimberly Ln,Austin,78735,St. Michael's Catholic Preparatory School,2500 Wimberly Ln,matched
 B55605A1-51E9-45F6-BB92-1C16D2CF0FFA,2800677,name+street+zip,exact,NA,St. Stephens School,6500 Saint Stephens Dr,Austin,78746,St. Stephens School,6500 Saint Stephens Dr,matched
 76D60D2B-1B7D-4429-AC56-653315ED1D94,10305392,name+street+zip,exact,NA,Star Bar,600 W 6th St,Austin,78701,Star Bar,600 W 6th St,matched
 7A7C899D-7F5B-4DD4-9EAE-0D23AFCCDD22,11053973,name+street+zip,exact,NA,Star Market,7930 Thaxton Rd,Austin,78747,Star Market,7930 Thaxton Rd,matched
@@ -5534,6 +5536,7 @@ F5E5FBE0-4B52-4232-87E2-751DA8E15349,P:F5E5FBE0-4B52-4232-87E2-751DA8E15349,NA,N
 6667131E-D7EF-4368-8E2F-0FB6E0FF887A,P:6667131E-D7EF-4368-8E2F-0FB6E0FF887A,NA,NA,NA,Aussie's Bar & Grill,306 Barton Springs Rd,Austin,78704,NA,NA,new_after_freeze
 78E32AD0-482F-4436-9CC7-D4F683EB732A,P:78E32AD0-482F-4436-9CC7-D4F683EB732A,NA,NA,NA,BC - Amy's Ice Creams,12800 Hill Country Blvd Ste G-150,Austin,78738,NA,NA,new_after_freeze
 F604D4DA-0E39-489F-9834-6C1CF61D5934,P:F604D4DA-0E39-489F-9834-6C1CF61D5934,NA,NA,NA,BC - Shipley Do-Nut,3620 S FM 620 Rd Ste 100,Austin,78738,NA,NA,new_after_freeze
+F7768E03-CC10-4C37-A16C-8897E4141B30,P:F7768E03-CC10-4C37-A16C-8897E4141B30,NA,NA,NA,Barnison Catering,9200 Blocker Ln,Austin,78719,NA,NA,new_after_freeze
 54395706-2073-4811-8924-2B9867E3BEE8,P:54395706-2073-4811-8924-2B9867E3BEE8,NA,NA,NA,Barton Springs Saloon,424 S LAMAR SB BLVD,AUSTIN,78704,NA,NA,new_after_freeze
 9B89D28B-FD02-4B78-854E-8726D324D843,P:9B89D28B-FD02-4B78-854E-8726D324D843,NA,NA,NA,Black Sheep Coffee,600 Guadalupe St,Austin,78701,NA,NA,new_after_freeze
 67D18B44-484F-4D34-B399-24471774F762,P:67D18B44-484F-4D34-B399-24471774F762,NA,NA,NA,Bless Food Mart,8603 Lockwood Springs Rd,Manor,78653,NA,NA,new_after_freeze
@@ -5589,6 +5592,7 @@ BB12711C-A7E5-4CDA-A97F-69BF391CD918,P:BB12711C-A7E5-4CDA-A97F-69BF391CD918,NA,N
 C60396D8-E419-4152-BC7A-5AF3636E5B4D,P:C60396D8-E419-4152-BC7A-5AF3636E5B4D,NA,NA,NA,Happy Hearts Bilingual Learning Center #2,1112 W Slaughter Ln,Austin,78748,NA,NA,new_after_freeze
 A3DF62C8-6689-4A1A-A1A5-4030E097D0C2,P:A3DF62C8-6689-4A1A-A1A5-4030E097D0C2,NA,NA,NA,Heritage of Gaines Ranch-Main Kit,4409 Gaines Ranch Loop,Austin,78735,NA,NA,new_after_freeze
 940ADAF1-D45A-4240-82D8-A75FDAB6C6B3,P:940ADAF1-D45A-4240-82D8-A75FDAB6C6B3,NA,NA,NA,It's Italian Cucina,1500 S Lamar Blvd Ste 110,Austin,78704,NA,NA,new_after_freeze
+B25BF85D-D7B3-48C0-B158-D7DB82FC7979,P:B25BF85D-D7B3-48C0-B158-D7DB82FC7979,NA,NA,NA,Jersey Mike's Subs,3005 S Lamar Blvd Ste D-111,Austin,78704,NA,NA,new_after_freeze
 54EC085E-BA72-4192-9EC9-2A03FF67C480,P:54EC085E-BA72-4192-9EC9-2A03FF67C480,NA,NA,NA,JuiceLand,7301 N FM 620 Rd Ste 660,Austin,78726,NA,NA,new_after_freeze
 0B1CC5BE-F1AD-4D41-8A1E-307E96CD7535,P:0B1CC5BE-F1AD-4D41-8A1E-307E96CD7535,NA,NA,NA,"Justin Credible BBQ Co., LLC",1501 N FM 620  RD UNIT C,LAKEWAY,78734,NA,NA,new_after_freeze
 4B7581FF-5565-481D-B86C-16527A4D6046,P:4B7581FF-5565-481D-B86C-16527A4D6046,NA,NA,NA,Kellys Irish Pub,519 W Oltorf St,Austin,78704,NA,NA,new_after_freeze
@@ -5677,11 +5681,11 @@ A966E176-8FAA-4A6E-9788-44E762FF1725,P:A966E176-8FAA-4A6E-9788-44E762FF1725,NA,N
 8754564A-B4B8-4A65-98C2-54284AE9F85E,P:8754564A-B4B8-4A65-98C2-54284AE9F85E,NA,NA,NA,Captain Quackenbush's Coffee House,5326 Menchaca Rd,Austin,78745,NA,NA,unmatched
 24303F1B-A9C1-4B13-924E-90E0E27A46AE,P:24303F1B-A9C1-4B13-924E-90E0E27A46AE,NA,NA,NA,Christen's Gourmet Pralines,15800 Awalt Dr,Austin,78734,NA,NA,unmatched
 82D74F5F-CD10-4589-85C5-7AA5051A6D35,P:82D74F5F-CD10-4589-85C5-7AA5051A6D35,NA,NA,NA,Cold Ones Pops,1900 Rosewood Ave,Austin,78702,NA,NA,unmatched
-4079DAD2-BA2E-4129-BB3B-DC967CB9AF9B,P:4079DAD2-BA2E-4129-BB3B-DC967CB9AF9B,NA,NA,NA,Epic Poke,6448 E Us 290 Hwy Svrd WB,Austin,78752,NA,NA,unmatched
 25DE788F-ED67-4FC8-B6A9-8F0F1C670D62,P:25DE788F-ED67-4FC8-B6A9-8F0F1C670D62,NA,NA,NA,Express Food Mart #5,2925 W Pecan St,Pflugerville,78660,NA,NA,unmatched
 AB02077E-7FEF-4AF1-9C6C-5E602D457DAA,P:AB02077E-7FEF-4AF1-9C6C-5E602D457DAA,NA,NA,NA,FoliePop's,3400 Comsouth Dr,Austin,78744,NA,NA,unmatched
 434F311A-9B0C-4B8A-B70F-364713392624,P:434F311A-9B0C-4B8A-B70F-364713392624,NA,NA,NA,Food Pantry,12300 Amherst Dr,Austin,78727,NA,NA,unmatched
 F9C3CBF0-8B21-40AE-AF7C-2229A3058BED,P:F9C3CBF0-8B21-40AE-AF7C-2229A3058BED,NA,NA,NA,"Jordan at Mueller Learning Center, The",2724 Philomena St,Austin,78723,NA,NA,unmatched
+3E28074F-B1C9-4A7F-8409-BB8E23858FA3,P:3E28074F-B1C9-4A7F-8409-BB8E23858FA3,NA,NA,NA,Kerbey Lane Cafe,300 S Lamar Blvd,Austin,78704,NA,NA,unmatched
 A2F5F8B6-3968-4A82-905A-CBF343BB3B04,P:A2F5F8B6-3968-4A82-905A-CBF343BB3B04,NA,NA,NA,Korrect Fitness,4401 Freidrich Ln Ste 301 # Bunit,Austin,78744,NA,NA,unmatched
 7DFBE372-B214-4A67-A8D1-A45595142DAA,P:7DFBE372-B214-4A67-A8D1-A45595142DAA,NA,NA,NA,LW - Dad's Premium Foods LLC,1501 N FM 620  RD,LAKEWAY,78734,NA,NA,unmatched
 829BDDA2-A4B8-40BD-9F6E-E6CC4D5601FD,P:829BDDA2-A4B8-40BD-9F6E-E6CC4D5601FD,NA,NA,NA,LW - Espetos Churrascaria Brazililan Steakhouse,900 S FM 620 Rd Ste B108,Lakeway,78734,NA,NA,unmatched
@@ -5690,6 +5694,7 @@ A2F5F8B6-3968-4A82-905A-CBF343BB3B04,P:A2F5F8B6-3968-4A82-905A-CBF343BB3B04,NA,N
 D6D04F7B-3CCA-4A67-98A9-705FE7FB0D74,P:D6D04F7B-3CCA-4A67-98A9-705FE7FB0D74,NA,NA,NA,Laurel Creek Learning Center,11704 N Lamar Blvd,Austin,78758,NA,NA,unmatched
 AA20A70A-92E4-4E5B-AC14-75D31A22063D,P:AA20A70A-92E4-4E5B-AC14-75D31A22063D,NA,NA,NA,Lazeez Mediterranean Cafe,6812 FM 620 N Unit B,Austin,78732,NA,NA,unmatched
 D8313C66-16D0-468D-9C39-71260F0F3EE0,P:D8313C66-16D0-468D-9C39-71260F0F3EE0,NA,NA,NA,Los Jarochos Dos,13609 N IH 35 Svrd NB,Austin,78753,NA,NA,unmatched
+D733FC61-19BD-4321-9436-41B92D728324,P:D733FC61-19BD-4321-9436-41B92D728324,NA,NA,NA,Lotus Chinese,8309  RESEARCH NB BLVD Unit B,AUSTIN,78758,NA,NA,unmatched
 C524551E-BC4E-49AD-878E-EC8925F5F29C,P:C524551E-BC4E-49AD-878E-EC8925F5F29C,NA,NA,NA,M Station Learning Center,2918 E Martin Luther King Jr Blvd,Austin,78702,NA,NA,unmatched
 6EBC5E25-D411-474E-B00A-E8DC7925C60C,P:6EBC5E25-D411-474E-B00A-E8DC7925C60C,NA,NA,NA,MN - La Mexicana Supermercado #6,12937 N FM 973 Rd Bldg 3,Manor,78653,NA,NA,unmatched
 B08C0903-55F9-43DA-AF40-B73D15871C02,P:B08C0903-55F9-43DA-AF40-B73D15871C02,NA,NA,NA,MN - La Mexicana Supermercado #6,12937 N FM 973 Rd Bldg 3,Manor,78653,NA,NA,unmatched
@@ -5700,7 +5705,6 @@ EA1EBDD0-0B32-4CBD-AE1C-E49987C5B35A,P:EA1EBDD0-0B32-4CBD-AE1C-E49987C5B35A,NA,N
 81BC2B86-2A0B-40A6-BF46-FC4684FA50F7,P:81BC2B86-2A0B-40A6-BF46-FC4684FA50F7,NA,NA,NA,"OOB - CJ Texas Enterprises, LLC",901 W BEN WHITE BLVD EB SVRD Unit B,AUSTIN,78745,NA,NA,unmatched
 B049675E-03E1-43A5-AC45-F54B88E9F12C,P:B049675E-03E1-43A5-AC45-F54B88E9F12C,NA,NA,NA,OOB - Guckenheimer at Atlassian Austin,1401 E 6th St Ste 1000,Austin,78702,NA,NA,unmatched
 B7528DB2-7361-4C7D-9632-2432BD7AF86C,P:B7528DB2-7361-4C7D-9632-2432BD7AF86C,NA,NA,NA,OOB - Guckenheimer at Atlassian Austin,1401 E 6th St Ste 1000,Austin,78702,NA,NA,unmatched
-4CF6DCEB-6E49-4E58-966F-3EA8956A99F4,P:4CF6DCEB-6E49-4E58-966F-3EA8956A99F4,NA,NA,NA,OOB - Pour Choices,401 E 6th St,Austin,78701,NA,NA,unmatched
 16714058-DC69-42BC-8022-3121061E1749,P:16714058-DC69-42BC-8022-3121061E1749,NA,NA,NA,OOB - SXSE Food Co - East,415 E Saint Elmo Rd,Austin,78745,NA,NA,unmatched
 9BDCBFC4-9F96-4F24-AE84-51DBA3269B7D,P:9BDCBFC4-9F96-4F24-AE84-51DBA3269B7D,NA,NA,NA,OOB - St. Gabriel Catholic School,2500 Wimberly Ln,Austin,78735,NA,NA,unmatched
 68827D7E-90FB-473E-9AF2-F43A75246A3E,P:68827D7E-90FB-473E-9AF2-F43A75246A3E,NA,NA,NA,OOB - Stop-N-Express,5301 Manor Rd,Austin,78723,NA,NA,unmatched
@@ -5710,19 +5714,15 @@ B7528DB2-7361-4C7D-9632-2432BD7AF86C,P:B7528DB2-7361-4C7D-9632-2432BD7AF86C,NA,N
 6F852A98-AE53-441F-AA52-1CBE6F4C1F61,P:6F852A98-AE53-441F-AA52-1CBE6F4C1F61,NA,NA,NA,PF - Los Amigos Market,15812 Windermere Dr Ste 200 # Bunit,Pflugerville,78660,NA,NA,unmatched
 FAF9F7F0-A9AB-4A1E-99CD-E2E6F761E272,P:FAF9F7F0-A9AB-4A1E-99CD-E2E6F761E272,NA,NA,NA,PF - Los Amigos Market,15812 Windermere Dr Ste 200 # Bunit,Pflugerville,78660,NA,NA,unmatched
 FF332B87-0BD0-4A75-826F-72E5D91DB553,P:FF332B87-0BD0-4A75-826F-72E5D91DB553,NA,NA,NA,PF - Los Amigos Market,15812 Windermere Dr Ste 200 # Bunit,Pflugerville,78660,NA,NA,unmatched
-5954EA10-7AA2-4B40-A1A4-DE6D590D5D8E,P:5954EA10-7AA2-4B40-A1A4-DE6D590D5D8E,NA,NA,NA,PF - Smiling Donuts,428 Grand Avenue Pkwy Ste 130,Pflugerville,78660,NA,NA,unmatched
 FE71F25C-0A09-4F2D-9EC1-225FA1E03583,P:FE71F25C-0A09-4F2D-9EC1-225FA1E03583,NA,NA,NA,PF - Typhoon Texas Waterpark - Typhoon Saloon,18500 N Sh 130 Svrd,Pflugerville,78660,NA,NA,unmatched
 B0FCB856-D024-46BF-A3FA-61A2EE70C932,P:B0FCB856-D024-46BF-A3FA-61A2EE70C932,NA,NA,NA,PF -Typhoon Texas Waterpark - Shackin' Wagon,18500 N Sh 130 Svrd,Pflugerville,78660,NA,NA,unmatched
 24EC4888-2B6F-416E-B690-370947795839,P:24EC4888-2B6F-416E-B690-370947795839,NA,NA,NA,PF-Typhoon Texas Waterpark - Ray's Pizzeria,18500 N Sh 130 Svrd,Pflugerville,78660,NA,NA,unmatched
 E83B98D4-827D-4F26-AD6B-4DB40D3E8175,P:E83B98D4-827D-4F26-AD6B-4DB40D3E8175,NA,NA,NA,Peace of Mind,5615 Burnet Rd,Austin,78756,NA,NA,unmatched
-2E75AF7C-0D3A-4BBD-955F-518BF6BE9918,P:2E75AF7C-0D3A-4BBD-955F-518BF6BE9918,NA,NA,NA,Pour Choices,401 E 6th St,Austin,78701,NA,NA,unmatched
 70100962-B160-43BA-80E0-699B0398BCEE,P:70100962-B160-43BA-80E0-699B0398BCEE,NA,NA,NA,Real Morocco Kitchen LLC,3400 Comsouth Dr,Austin,78744,NA,NA,unmatched
 9BE8330E-F453-4D6B-AA8E-AB7D47745705,P:9BE8330E-F453-4D6B-AA8E-AB7D47745705,NA,NA,NA,Restaurante Hondureno Ocotepeque,9515 N Lamar Blvd Ste 230,Austin,78753,NA,NA,unmatched
 83B0A0BD-D64D-4C0B-9F46-EB34B7982C24,P:83B0A0BD-D64D-4C0B-9F46-EB34B7982C24,NA,NA,NA,RiverSouth,401 S 1st St,Austin,78704,NA,NA,unmatched
-991E656E-4282-4327-8FE4-E7AFE1B515AA,P:991E656E-4282-4327-8FE4-E7AFE1B515AA,NA,NA,NA,Smiling Donuts,428 Grand Avenue Pkwy Ste 130,Pflugerville,78660,NA,NA,unmatched
 3C4E109D-D3B2-4D53-BF8A-9F9F3801CF7C,P:3C4E109D-D3B2-4D53-BF8A-9F9F3801CF7C,NA,NA,NA,Sodalis Oak Hill,7501 W US 290 Hwy,Austin,78736,NA,NA,unmatched
 0DB0B5C5-7451-45F2-97C9-479C91D09811,P:0DB0B5C5-7451-45F2-97C9-479C91D09811,NA,NA,NA,Soho Austin - Second Floor Bar,1011 S Congress Ave Bldg 2,Austin,78704,NA,NA,unmatched
-4E0CDE04-F095-49D6-A4B1-43D78EE8D05A,P:4E0CDE04-F095-49D6-A4B1-43D78EE8D05A,NA,NA,NA,St. Michael's Catholic Preparatory School,2500 Wimberly Ln,Austin,78735,NA,NA,unmatched
 DC0BA246-D568-4674-A4EB-4396F8291907,P:DC0BA246-D568-4674-A4EB-4396F8291907,NA,NA,NA,St. Michael's Catholic Preparatory School,3000 Barton Creek Blvd,Austin,78735,NA,NA,unmatched
 E8FE29EF-D5D2-470B-ADDA-8E17B2518EB1,P:E8FE29EF-D5D2-470B-ADDA-8E17B2518EB1,NA,NA,NA,Taco Palenque,3400 Comsouth Dr Unit 116,Austin,78744,NA,NA,unmatched
 ECF259E8-69A9-4935-841D-4469705A5A49,P:ECF259E8-69A9-4935-841D-4469705A5A49,NA,NA,NA,Taqueria La Chivas,8624 N Lamar Blvd,Austin,78753,NA,NA,unmatched
