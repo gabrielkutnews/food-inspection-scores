@@ -77,8 +77,8 @@ counter can occupy a slot, so a single venue cannot fill the table.
 
 ## The recency window is a hard filter
 
-An establishment must have been inspected within **18 months of the newest inspection in
-the dataset** — not within 18 months of today. Anchoring to the data keeps the window
+An establishment must have been inspected within **12 months of the newest inspection in
+the dataset** (`RECENCY_MONTHS` in `R/common.R`) — not within 12 months of today. Anchoring to the data keeps the window
 stable and the build reproducible; anchoring to the clock silently drops establishments as
 a dataset ages, which is what happened to 132 of them before it was caught.
 

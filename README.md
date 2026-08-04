@@ -194,12 +194,16 @@ being a sample of a tie. That was not true at ≥3, where 8 restaurants tied at 
 should label the table accordingly. Ties on the mean break toward more inspections,
 then recency, and only one counter per operator per address can appear.
 
-**Recency is anchored to the data, not the clock.** The window is 18 months back from
-the **newest inspection in the dataset**, via `recency_cutoff()` in `R/common.R`. It used
-to be 18 months back from `Sys.Date()`, which slid forward daily against a frozen export
-and had silently dropped 132 facilities before it was caught. The map hides older
+**Recency is anchored to the data, not the clock.** The window is `RECENCY_MONTHS` (currently
+**12**) back from the **newest inspection in the dataset**, via `recency_cutoff()` in
+`R/common.R`. It used to be measured from `Sys.Date()`, which slid forward daily against a
+frozen export and had silently dropped 132 facilities before it was caught.
+
+Changing `RECENCY_MONTHS` moves both the map and the ranking tables, and can change which
+restaurants are named — going from 18 to 12 dropped one restaurant from the lowest-scores
+table and added another. Every page states the window it is using. The map hides older
 inspections by default but lets the reader show them, and its label states the actual
-window rather than "last 18 months".
+window rather than a bare "last N months".
 
 **Coverage.** 6,507 of 6,511 facilities are mapped (99.9%). The four that aren't are
 in Austin and failed both geocoders.
