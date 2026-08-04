@@ -14,6 +14,8 @@ establishment inspection export, designed to be embedded in Grove via an iframe.
 ```bash
 Rscript R/download.R      # frozen source; kept for provenance
 Rscript R/portal_fetch.R  # scrape the live portal (opens a Chrome window, ~1 h backfill)
+Rscript R/portal_check.R  # reconcile the scrape against ins.csv -- the completeness proof
+Rscript R/crosswalk.R     # build data/permit_crosswalk.csv (permitID <-> facility_id)
 Rscript R/geocode.R    # network; only geocodes addresses missing from the cache
 Rscript R/prep.R       # writes docs/data/points.json
 Rscript R/rankings.R   # writes docs/rankings.html + data/internal/rankings_*.csv
@@ -23,6 +25,8 @@ Rscript R/rankings.R   # writes docs/rankings.html + data/internal/rankings_*.cs
 |---|---|
 | `R/download.R` | Pulls the city export to `data/ins.csv`. **The source is dead** — frozen 2026-06-15, see below |
 | `R/portal_fetch.R` | Scrapes the city's live inspections portal via headful Chrome + chromote |
+| `R/portal_check.R` | Week-by-week reconciliation of the scrape against `ins.csv`, plus score-0 audit |
+| `R/crosswalk.R` | Matches portal `permitID` to `facility_id`; writes the crosswalk + a review file |
 | `R/common.R` | Shared: city/category derivation, address cleaning, score buckets, dedupe-to-latest |
 | `R/geocode.R` | Address normalisation + Census/ArcGIS geocoding, cached in `data/geocoded_cache.csv` |
 | `R/prep.R` | Builds the map payload |
@@ -147,3 +151,41 @@ the popup says when a pin has been moved.
 
 Cross-check any establishment you name against the city's inspection portal before
 publishing.
+
+## The permit crosswalk
+
+The portal keys establishments by `permitID` (a GUID); the export keys them by
+`facility_id`. **There is no shared key**, so `R/crosswalk.R` matches on name and
+address and writes `data/permit_crosswalk.csv`.
+
+Only one inspection type produces a score on the 100-point scale —
+`2017 FDA Food Inspection` — and that set is *exactly* the set with a nonzero score.
+Those 5,730 permits are the crosswalk universe; the portal's other ~4,300 permits are
+mobile vendors, pools and wholesale, which the export never covered.
+
+| tier | matched | note |
+|---|---|---|
+| `name+street+zip` | 5,310 | 6 of them disambiguated by shared inspection events |
+| `name+num+zip` | 26 | house number only, for suite-formatting differences |
+| `name+zip` | 5 | |
+| `street+zip` + corroborated name | 182 | 149 by name containment, 33 by shared events |
+| **total** | **5,523 / 5,730 (96.4%)** | |
+
+Of the 207 unmatched, **140 first appear after the export froze** — genuinely new
+establishments, given synthetic ids of the form `P:<permitID>`. The other 67 go to
+`data/crosswalk_review.csv` and are never force-matched.
+
+Three rules that matter if you change this:
+
+- **Ambiguity is judged per permit, not per key.** One permit pointing at several
+  facilities would misattribute an inspection; several permits pointing at one facility
+  is normal, because Austin re-issues permits under new numbers when a business renews
+  or changes hands.
+- **The event fingerprint disambiguates, it never accepts.** 16 facilities at the Q2
+  Stadium address share a byte-identical five-inspection fingerprint, so a name-blind
+  fingerprint join would coin-flip between them. Used *within* a name key it is
+  excellent: it correctly separated the two `Elroy & Ross Market` facility_ids whose
+  scores systematically disagree.
+- **Never make the jurisdiction-prefix hyphen optional** to catch `ABIA Amy's Ice Cream`
+  vs `ABIA - Amy's Ice Cream`. It would turn `PF Chang's` into `Chang's` and merge it
+  with any Pflugerville namesake. Tier 4 handles those cases with corroboration instead.
