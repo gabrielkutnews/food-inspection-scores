@@ -144,6 +144,29 @@ elig <- routine |> group_by(facility_id) |>
   mutate(category = categorize(name), venue = venue_of(name)) |>
   filter(n >= MIN_BOTTOM, latest >= cutoff, category == "Restaurant & Food Service")
 
+# display_name() is cosmetic and must stay that way. Proven here across every name in the
+# data, not just the published ones: stripping the city code changes no category and merges
+# no two operators. If a future code is added to the allowlist and it does change something,
+# this fails rather than quietly moving a restaurant on or off a list.
+all_nm <- unique(ins$restaurant_name)
+check("stripping the city code changes no establishment's category",
+      identical(categorize(all_nm), categorize(display_name(all_nm))),
+      paste(head(all_nm[categorize(all_nm) != categorize(display_name(all_nm))], 3), collapse = "; "))
+# NOT checked: that stripping never merges two names. It does -- "PF - Arby's #8675" and
+# "Arby's 8888" both become Arby's -- because chains have branches in several cities. That is
+# harmless here only because display_name() is applied AFTER the one-slot-per-operator dedup,
+# to the ten final rows, so a collision cannot change who is published. The per-page
+# "no two rows read identically" check below is what guards the reader-visible consequence.
+check("stripping only ever removes a leading city code, never anything else",
+      all(display_name(all_nm[!str_detect(all_nm, CITY_CODE_RE)]) ==
+          str_squish(all_nm[!str_detect(all_nm, CITY_CODE_RE)])),
+      "a name with no city code was altered")
+check("stripping is idempotent", identical(display_name(display_name(all_nm)),
+                                           display_name(all_nm)))
+check("stripping never empties a name", all(nzchar(display_name(all_nm))))
+check("the city codes stripped are exactly the jurisdiction codes, minus venues",
+      identical(sort(CITY_CODES), sort(setdiff(names(NAME_PREFIX_CITY), c("ABIA", "COTA")))))
+
 for (pg in list(list(f = "docs/best.html",   dir = "top",    min = MIN_TOP),
                 list(f = "docs/lowest.html", dir = "bottom", min = MIN_BOTTOM))) {
   if (!file.exists(pg$f)) { check(paste(pg$f, "exists"), FALSE); next }
@@ -161,17 +184,26 @@ for (pg in list(list(f = "docs/best.html",   dir = "top",    min = MIN_TOP),
   else elig |> arrange(mean_score, desc(n), desc(latest))) |>
     distinct(venue, .keep_all = TRUE) |> head(10)
 
+  # Pages publish display_name(); the pipeline reasons about the raw name. Compare like
+  # with like, and check the classification below against the RAW name, so a category is
+  # never re-derived from a string the reader sees but the pipeline never used.
   check(sprintf("%s reproduces from source, in order", basename(pg$f)),
-        identical(nm, expect$name))
+        identical(nm, display_name(expect$name)))
   check(sprintf("%s: every entry meets the >=%d routine minimum", basename(pg$f), pg$min),
         all(nn >= pg$min), sprintf("min observed %d", min(nn)))
   check(sprintf("%s: every entry is categorised a restaurant", basename(pg$f)),
-        all(categorize(nm) == "Restaurant & Food Service"),
-        paste(unique(categorize(nm)[categorize(nm) != "Restaurant & Food Service"]), collapse = ", "))
+        all(categorize(expect$name) == "Restaurant & Food Service"),
+        paste(unique(categorize(expect$name)[categorize(expect$name) != "Restaurant & Food Service"]),
+              collapse = ", "))
   check(sprintf("%s: no admin-flagged name published", basename(pg$f)),
-        !any(str_detect(nm, ADMIN_FLAG_RE)))
+        !any(str_detect(nm, ADMIN_FLAG_RE)) && !any(str_detect(expect$name, ADMIN_FLAG_RE)))
   check(sprintf("%s: no duplicate operator", basename(pg$f)),
-        !any(duplicated(venue_of(nm))))
+        !any(duplicated(venue_of(expect$name))))
+  # Stripping the city code can make two different restaurants read identically -- a
+  # Pflugerville and an Austin Wingstop both become "Wingstop". Same name AND same address
+  # would be an unreadable table; same name at a different address is fine.
+  check(sprintf("%s: no two rows read identically", basename(pg$f)),
+        !any(duplicated(paste(nm, vapply(dat, function(r) r$street, character(1))))))
   check(sprintf("%s: no inspector comments in the page", basename(pg$f)),
         !grepl("CFM", html, fixed = TRUE))
   check(sprintf("%s: no unsubstituted {{placeholder}}", basename(pg$f)),

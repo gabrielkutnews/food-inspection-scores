@@ -63,6 +63,23 @@ NAME_PREFIX_CITY <- c(
 # Names carrying an administrative flag rather than a normal establishment name.
 ADMIN_FLAG_RE <- regex("^OOB\\b|INELIGIBLE", ignore_case = TRUE)
 
+# Strip the city code a jurisdiction stamps onto a name -- "PF - Wingstop" -> "Wingstop".
+# For DISPLAY ONLY. Never use it for grouping, categorising or matching: the raw name is the
+# join key everywhere else, and two facilities in different cities can share a bare name.
+#
+# Only the seven true city codes are stripped, from an allowlist rather than a general
+# "^XX - " pattern. A general pattern would eat real names: "7 - Eleven Convenience Store"
+# becomes "Eleven Convenience Store", and "Stop - N - Express" loses its first word.
+#
+# ABIA and COTA are deliberately kept. They are in NAME_PREFIX_CITY but they name a venue,
+# not a city -- the airport and the racetrack -- and the address line cannot convey that,
+# so dropping them would lose information rather than remove a duplicate of it. OOB is
+# likewise untouched: it is an administrative flag, and rankings exclude it outright.
+CITY_CODES <- setdiff(names(NAME_PREFIX_CITY), c("ABIA", "COTA"))
+CITY_CODE_RE <- paste0("^(", paste(CITY_CODES, collapse = "|"), ")\\s*-\\s*")
+
+display_name <- function(name) str_squish(str_replace(name, CITY_CODE_RE, ""))
+
 # The only inspection type scored on the 100-point FDA scale. Verified against 16,879
 # scraped inspections: this type is EXACTLY the set with a nonzero score, and not one of
 # the ~5,800 zeros is of this type. They are mobile-vendor permit checks, pool and spa

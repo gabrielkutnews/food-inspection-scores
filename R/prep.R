@@ -113,6 +113,7 @@ COPY_VALS <- list(
   cutoff     = str_squish(format(cutoff, "%B %e, %Y")),
   generated  = str_squish(format(Sys.Date(), "%B %e, %Y")),
   min_top    = "", min_bottom = "",
+  source     = SOURCE_LINKS,
   n_shown    = format(nrow(out), big.mark = ","),
   n_excluded = format(n_ever - n_window, big.mark = ","),
   n_unmapped = format(n_window - nrow(out), big.mark = ",")

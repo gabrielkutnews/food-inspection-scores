@@ -121,7 +121,8 @@ VALS <- list(
   generated  = str_squish(format(Sys.Date(), "%B %e, %Y")),
   min_top    = MIN_TOP,
   min_bottom = MIN_BOTTOM,
-  n_shown    = "", n_excluded = ""
+  source     = SOURCE_LINKS,
+  n_shown    = "", n_excluded = "", n_unmapped = ""
 )
 
 CSS <- '
@@ -146,19 +147,30 @@ CSS <- '
           text-shadow:0 1px 1px rgba(0,0,0,.28); }
   .note { font-size:12px; color:var(--muted); line-height:1.6; margin-top:18px;
           border-top:1px solid var(--line); padding-top:10px; }
-  .xlinks { margin:14px 0 0; font-size:13px; display:flex; flex-wrap:wrap; gap:8px 16px; }
-  .xlinks a { color:#1976d2; text-decoration:none; font-weight:600; }
-  .xlinks a:hover { text-decoration:underline; }
-  /* Mobile: the two least useful columns collapse, touch targets grow, and 16px type
-     stops iOS zooming the embed when a reader taps. */
+  .note a { color:#1976d2; }
+  .sm-only { display:none; }
+  /* Mobile. Four columns do not fit a 320px phone, so the Inspections column collapses and
+     its value moves into the name cell (.sm-only above). Type stays >=15px: below that iOS
+     zooms the whole embed when a reader taps, and an embed cannot be zoomed back out.
+     Long establishment names wrap rather than force a horizontal scrollbar. */
   @media (max-width:560px) {
     body { padding:11px; }
     h1 { font-size:17px; }
+    .sub { font-size:14px; }
+    .cap { font-size:13.5px; }
     table { font-size:15px; }
-    th,td { padding:11px 7px; }
+    th,td { padding:12px 6px; }
+    th:first-child, td.rank { padding-right:2px; }
     .hide-sm { display:none; }
-    .xlinks { font-size:15px; gap:12px; }
-    .xlinks a { padding:6px 0; display:inline-block; }
+    .sm-only { display:inline; }
+    .addr { font-size:13px; }
+    .nm { overflow-wrap:anywhere; }
+    .note { font-size:13px; }
+  }
+  /* Very narrow phones: the address is the first thing to give, not the score. */
+  @media (max-width:360px) {
+    th,td { padding:11px 4px; }
+    table { font-size:14.5px; }
   }'
 
 JS_TABLE <- '
@@ -175,27 +187,30 @@ function table(rows){
   if(!rows || !rows.length) return "<p class=\'cap\'>No restaurants meet the threshold.</p>";
   return "<table><thead><tr><th></th><th>Restaurant</th>" +
     "<th class=\'num\'>Average</th><th class=\'num hide-sm\'>Inspections</th>" +
-    "<th class=\'num hide-sm\'>Range</th><th class=\'num\'>Latest</th></tr></thead><tbody>" +
+    "<th class=\'num\'>Latest</th></tr></thead><tbody>" +
     rows.map(function(r){
+      // The inspection count is repeated inside the name cell and shown only on narrow
+      // screens, where its own column is hidden. Dropping the column outright would take
+      // away the evidence for the "at least N routine inspections" claim in the caption.
       return "<tr><td class=\'rank\'>"+r.rank+"</td>" +
         "<td><div class=\'nm\'>"+esc(r.name)+"</div>" +
-        "<div class=\'addr\'>"+esc(r.street)+", "+esc(r.city)+"</div></td>" +
+        "<div class=\'addr\'>"+esc(r.street)+", "+esc(r.city) +
+          "<span class=\'sm-only\'> &middot; "+r.n+(r.n==1?" inspection":" inspections")+"</span>" +
+        "</div></td>" +
         "<td class=\'num\'><span class=\'chip\' style=\'background:"+COLORS[bucket(r.mean_score)]+"\'>" +
           r.mean_score.toFixed(1)+"</span></td>" +
         "<td class=\'num hide-sm\'>"+r.n+"</td>" +
-        "<td class=\'num hide-sm\'>"+r.min_score+"&ndash;"+r.max_score+"</td>" +
         "<td class=\'num\'>"+r.latest_score+"<div class=\'addr\'>"+fmtDate(r.latest)+"</div></td></tr>";
     }).join("") + "</tbody></table>";
 }
 document.getElementById("tbl").innerHTML = table(DATA);'
 
-build_page <- function(copy, rows, self_key) {
-  # Cross-links to the other two pages, in the order declared in R/editorial.R.
-  others <- names(EDITORIAL$links)[names(EDITORIAL$links) != self_key]
-  xl <- paste0(vapply(others, function(k) {
-    l <- EDITORIAL$links[[k]]
-    if (!nzchar(l$url)) "" else sprintf('<a href="%s">%s &rarr;</a>', l$url, l$label)
-  }, character(1)), collapse = "\n    ")
+build_page <- function(copy, rows) {
+  # Strip the jurisdiction city code for display only, and only here -- at the last step
+  # before the HTML is written. Everything upstream (grouping, categorising, venue dedup,
+  # the internal CSVs, the verification sheet) keeps the raw name, so the published name can
+  # always be traced back to the record it came from.
+  rows$name <- display_name(rows$name)
 
   tpl <- paste0('<!doctype html>
 <html lang="en">
@@ -211,9 +226,6 @@ build_page <- function(copy, rows, self_key) {
 <div class="sub">', copy$standfirst, '</div>
 <p class="cap">', copy$table_caption, '</p>
 <div id="tbl"></div>
-<div class="xlinks">
-    ', xl, '
-</div>
 <div class="note">', EDITORIAL$method_note, '</div>
 <script>
 var DATA = ', as.character(toJSON(rows, dataframe = "rows", auto_unbox = TRUE, Date = "ISO8601")), ';
@@ -227,8 +239,8 @@ JS_TABLE, '
   fill(tpl, VALS)
 }
 
-writeLines(build_page(EDITORIAL$best,   tables$restaurants_top,    "best"),   "docs/best.html")
-writeLines(build_page(EDITORIAL$lowest, tables$restaurants_bottom, "lowest"), "docs/lowest.html")
+writeLines(build_page(EDITORIAL$best,   tables$restaurants_top),    "docs/best.html")
+writeLines(build_page(EDITORIAL$lowest, tables$restaurants_bottom), "docs/lowest.html")
 
 # The old combined page is replaced by the two above. Leave a redirect rather than a 404,
 # because the URL may already be embedded somewhere.
