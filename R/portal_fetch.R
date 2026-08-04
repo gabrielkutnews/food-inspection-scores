@@ -22,7 +22,7 @@
 # public portal would be using. A window will open; leave it alone while the run
 # proceeds.
 #
-# THREE API BEHAVIOURS THAT WILL BITE IF IGNORED
+# FIVE API BEHAVIOURS THAT WILL BITE IF IGNORED
 #   1. programName MUST be "". Sending "Food" makes the server hang forever -- it is
 #      not a supported value. Filter to Food in R on the returned programName column.
 #      (This cost hours: every hang looked like rate limiting and was not.)
@@ -36,6 +36,14 @@
 #      record count is an exact multiple of 25 ends on that object, not on a short
 #      page. It is only an end-marker at start > 0 -- the same object at start == 0
 #      means the request itself was rejected, which is a real fault.
+#   5. A single query returns AT MOST 225 records (9 pages of 25), no matter how many
+#      match. This is the dangerous one, because it looks exactly like a completed
+#      window: page 9 is full, page 10 returns the end-marker, and the walk stops
+#      "successfully" having silently dropped everything past 225. A first run with
+#      7-day windows hit 225 on 39 of 83 windows and reconciled at only 90% of the
+#      Socrata export over the overlap period. Hence WINDOW_DAYS = 2 (~60 records,
+#      well clear of the cap) and an explicit `capped` state so any recurrence is
+#      visible rather than silent.
 #
 # A short page means "end of this window" ONLY if the request succeeded. A fault
 # returns short or unparseable too, and treating that as end-of-data is exactly how a
@@ -66,20 +74,38 @@ PORTAL      <- "https://inspections.myhealthdepartment.com/aph"
 # the ONLY surviving source, and the city has stopped updating it. Those rows will
 # never gain inspectionType/purpose/comments.
 BACKFILL_MIN <- as.Date("2025-01-01")
-PAGE        <- 25L                      # server cap; asking for more is silently ignored
-WINDOW_DAYS <- 7L                       # one week per window
+PAGE        <- 25L                      # per-response cap; asking for more is ignored
+RESULT_CAP  <- 225L                     # per-QUERY cap (9 pages). See header note 5.
+WINDOW_DAYS <- 2L                       # ~60 records/window, well clear of RESULT_CAP
 RAW_PATH    <- "data/portal_inspections.csv"
 STATUS_PATH <- "data/portal_status.json"
 LOG_PATH    <- "data/portal_scrape_log.csv"
 
 # Jittered pacing. Irregular rather than machine-periodic, and gentle on a public
-# server. Nothing rate-limited at 5-8s spacing in testing, but only a few dozen
-# requests were issued, so these defaults stay conservative.
-PAUSE_MIN   <- 1.2
-PAUSE_MAX   <- 5.0
-BREAK_EVERY <- 25:40      # a longer pause somewhere in this range of requests
-BREAK_MIN   <- 20
+# server.
+#
+# Calibrated the hard way. A ~3.1 s mean survived 667 requests untouched; cutting it to
+# ~1.65 s tripped a per-endpoint 403 block at roughly 1,100 cumulative requests, which
+# cleared after ~10 minutes. So the ceiling is real even though it is generous.
+#
+# The bigger reason to stay slow: this machine egresses via a shared campus NAT
+# (nat-...public.utexas.edu). A block does not just stop us -- it stops every other
+# person behind that gateway from using the city's portal. Do not tune these down
+# without a better reason than impatience.
+PAUSE_MIN   <- 2.0
+PAUSE_MAX   <- 6.0        # ~4 s mean, slower than the run that was never blocked
+BREAK_EVERY <- 30:45
+BREAK_MIN   <- 25
 BREAK_MAX   <- 60
+
+# Per-run ceiling, separate from MAX_REQUESTS. The block appeared around 1,100
+# cumulative requests, so a single sitting stops well short of that and the next run
+# resumes from the status file.
+RUN_BUDGET  <- 600L
+
+# Consecutive CDP timeouts that trigger rebuilding the browser session. A wedged
+# renderer never recovers on its own, and backing off against it just wastes hours.
+RECYCLE_AFTER <- 3L
 MAX_REQUESTS <- 4000L     # hard budget; a full backfill needs ~1,100
 
 BACKOFF     <- c(30, 60, 120)   # seconds, per retry
@@ -94,7 +120,12 @@ PORTAL_COLS <- c("inspectionID", "permitID", "inspectionDate", "score", "inspect
 CHROME_BIN  <- "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 DEBUG_PORT  <- 9222L
 
-# Launch a visible Chrome with the DevTools port open, or reuse one already there.
+# Always launch a FRESH Chrome. Reusing whatever is on the port looked like a free
+# optimisation and was the opposite: across two runs plus some diagnostics, sessions
+# leaked five tabs into one 3-hour-old Chrome, all with the portal's JS live. The
+# renderer contention starved the CDP calls and half of every request began timing out
+# at 45s -- while the very same query answered in 210ms from a clean browser. The
+# symptom looked exactly like server-side rate limiting and was not.
 launch_headful <- function() {
   alive <- function() {
     !is.null(suppressWarnings(tryCatch(
@@ -102,17 +133,24 @@ launch_headful <- function() {
       error = function(e) NULL)))
   }
   if (alive()) {
-    message("  reusing Chrome already listening on port ", DEBUG_PORT)
-    return(invisible(TRUE))
+    message("  killing stale Chrome on port ", DEBUG_PORT)
+    system2("pkill", c("-f", sprintf("remote-debugging-port=%d", DEBUG_PORT)),
+            stdout = FALSE, stderr = FALSE)
+    Sys.sleep(3)
   }
-  prof <- file.path(tempdir(), paste0("chrome-portal-", Sys.getpid()))
+  prof <- file.path(tempdir(),
+                    paste0("chrome-portal-", Sys.getpid(), "-", as.integer(runif(1, 1e6, 9e6))))
   dir.create(prof, showWarnings = FALSE, recursive = TRUE)
   system2(CHROME_BIN,
           c(sprintf("--remote-debugging-port=%d", DEBUG_PORT),
             sprintf("--user-data-dir=%s", shQuote(prof)),
             "--no-first-run", "--no-default-browser-check",
             "--disable-extensions", "--mute-audio", "--window-size=1200,900",
-            shQuote(PORTAL)),
+            # about:blank, NOT the portal. chromote opens its own tab and navigates
+            # there; passing the URL here leaves a second idle tab running the portal's
+            # JS (Sentry, pollers) competing with the session tab for the renderer.
+            # That contention is half of what wedged the CDP calls before.
+            "about:blank"),
           stdout = FALSE, stderr = FALSE, wait = FALSE)
   for (i in 1:30) { Sys.sleep(1); if (alive()) break }
   if (!alive()) stop("Chrome did not open a DevTools port on ", DEBUG_PORT)
@@ -125,6 +163,20 @@ open_session <- function() {
   launch_headful()
   b <- ChromoteSession$new(
     parent = Chromote$new(browser = ChromeRemote$new(host = "127.0.0.1", port = DEBUG_PORT)))
+
+  # Close any other page target so exactly one tab exists. Session recycling and any
+  # interrupted run can otherwise leave tabs behind, and a pile of them running the
+  # portal's JS is what starved the CDP calls into 45s timeouts on an earlier pass.
+  try({
+    others <- fromJSON(sprintf("http://127.0.0.1:%d/json/list", DEBUG_PORT))
+    mine <- b$get_target_id()
+    for (id in others$id[others$type == "page" & others$id != mine]) {
+      suppressWarnings(try(
+        readLines(sprintf("http://127.0.0.1:%d/json/close/%s", DEBUG_PORT, id), warn = FALSE),
+        silent = TRUE))
+    }
+  }, silent = TRUE)
+
   b$Page$navigate(PORTAL, wait_ = TRUE)
 
   # Poll readyState rather than waiting on Page.loadEventFired: the event can fire
@@ -261,6 +313,10 @@ pace <- function() {
   if (.req_n > MAX_REQUESTS) stop("Request budget exhausted (", MAX_REQUESTS, ")")
 }
 
+# Stop cleanly at the per-run ceiling instead of pushing into a block. Completed
+# windows are already in the status file, so the next run picks up where this stopped.
+budget_spent <- function() .req_n >= RUN_BUDGET
+
 # ---- persistence -------------------------------------------------------------
 
 append_raw <- function(df) {
@@ -300,7 +356,9 @@ write_status <- function(st) write_json(st, STATUS_PATH, auto_unbox = TRUE, pret
 
 # Walk offsets until a short page. Any fault aborts the window as `failed` so it can
 # be retried later; it is never mistaken for the end of the data.
-scrape_window <- function(b, from, to) {
+.consec_timeouts <- 0L
+
+scrape_window <- function(from, to) {
   range <- sprintf("%s to %s", format(from), format(to))
   seen  <- character(0)
   total <- 0L
@@ -310,9 +368,24 @@ scrape_window <- function(b, from, to) {
     ok <- FALSE
     for (attempt in seq_len(length(BACKOFF) + 1L)) {
       pace()
-      r <- portal_call(b, range, start)
-      if (r$ok) { ok <- TRUE; break }
+      r <- portal_call(.sess, range, start)
+      if (r$ok) { ok <- TRUE; .consec_timeouts <<- 0L; break }
       log_req(range, start, "fault", 0L, r$note)
+
+      # A CDP timeout is our browser wedging, not the server refusing. Backing off
+      # against it accomplishes nothing -- rebuild the session instead.
+      if (identical(r$note, "cdp_timeout")) {
+        .consec_timeouts <<- .consec_timeouts + 1L
+        if (.consec_timeouts >= RECYCLE_AFTER) {
+          message(sprintf("    %d consecutive CDP timeouts -- rebuilding browser session",
+                          .consec_timeouts))
+          try(.sess$close(), silent = TRUE)
+          Sys.sleep(2)
+          .sess <<- open_session()
+          .consec_timeouts <<- 0L
+          next
+        }
+      }
       if (attempt <= length(BACKOFF)) {
         message(sprintf("    fault (%s), backing off %ds", r$note, BACKOFF[attempt]))
         Sys.sleep(BACKOFF[attempt])
@@ -336,8 +409,13 @@ scrape_window <- function(b, from, to) {
 
     if (n_page < PAGE) break        # genuine end of window: a SUCCESSFUL short page
     start <- start + PAGE
-    if (start > 5000L) {            # a week should never need 200 pages
-      return(list(state = "suspect", n = total, note = "offset_runaway", dup = dup))
+
+    # Hitting the per-query cap is NOT a completed window -- it is a truncated one
+    # that would otherwise look identical to a clean finish. Surface it.
+    if (start >= RESULT_CAP) {
+      return(list(state = "capped", n = total,
+                  note = sprintf("hit %d-result cap; narrow the window", RESULT_CAP),
+                  dup = dup))
     }
   }
   list(state = "done", n = total, note = "", dup = length(seen) - length(unique(seen)))
@@ -345,7 +423,7 @@ scrape_window <- function(b, from, to) {
 
 # ---- modes -------------------------------------------------------------------
 
-run_windows <- function(b, from, to) {
+run_windows <- function(from, to) {
   st <- read_status()
   starts <- seq(from, to, by = WINDOW_DAYS)
   message(sprintf("%d windows of %d days: %s .. %s", length(starts), WINDOW_DAYS,
@@ -362,7 +440,15 @@ run_windows <- function(b, from, to) {
       next
     }
 
-    res <- scrape_window(b, w_from, w_to)
+    if (budget_spent()) {
+      message(sprintf("\nPer-run budget reached (%d requests) at window %d/%d. Stopping here;",
+                      RUN_BUDGET, i, length(starts)))
+      message("re-run to continue from this window. This is deliberate -- pushing past it")
+      message("is what earned a 403 block on a shared campus IP last time.")
+      break
+    }
+
+    res <- scrape_window(w_from, w_to)
     st$windows[[key]] <- list(from = format(w_from), to = format(w_to),
                               state = res$state, n = res$n, dup = res$dup,
                               note = res$note, at = format(Sys.time()))
@@ -417,16 +503,16 @@ mode_probe <- function(b) {
 args <- commandArgs(trailingOnly = TRUE)
 dir.create("data", showWarnings = FALSE)
 
-b <- open_session()
-on.exit({ try(b$close(), silent = TRUE) }, add = TRUE)
+.sess <- open_session()
+on.exit({ try(.sess$close(), silent = TRUE) }, add = TRUE)
 
 if ("--probe" %in% args) {
-  mode_probe(b)
+  mode_probe(.sess)
 
 } else if ("--verify" %in% args) {
   nms <- args[(which(args == "--verify") + 1L):length(args)]
   message("Verify mode: ", length(nms), " establishments")
-  mode_verify(b, nms)
+  mode_verify(.sess, nms)
 
 } else {
   if ("--incremental" %in% args) {
@@ -436,7 +522,7 @@ if ("--probe" %in% args) {
     from <- BACKFILL_MIN
   }
   to <- Sys.Date()
-  st <- run_windows(b, from, to)
+  st <- run_windows(from, to)
 
   dedupe_raw()
 
