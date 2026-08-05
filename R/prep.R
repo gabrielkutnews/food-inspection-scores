@@ -112,6 +112,8 @@ COPY_VALS <- list(
   through    = str_squish(format(data_through(ins), "%B %e, %Y")),
   cutoff     = str_squish(format(cutoff, "%B %e, %Y")),
   generated  = str_squish(format(Sys.Date(), "%B %e, %Y")),
+  through_short = fmt_date_ap(data_through(ins)),
+  cutoff_short  = fmt_date_ap(cutoff),
   min_top    = "", min_bottom = "",
   source     = SOURCE_LINKS,
   n_shown    = format(nrow(out), big.mark = ","),

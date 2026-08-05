@@ -10,6 +10,8 @@
 #
 #   {{through}}    newest inspection in the data, e.g. "August 4, 2026"
 #   {{cutoff}}     start of the recency window,   e.g. "February 4, 2025"
+#   {{through_short}}  the same date, AP style,   e.g. "Aug. 4, 2026"
+#   {{cutoff_short}}   the same date, AP style,   e.g. "Feb. 4, 2025"
 #   {{generated}}  the day the page was built
 #   {{min_top}}    routine-inspection minimum for the best-records table
 #   {{min_bottom}} routine-inspection minimum for the lowest-scores table
@@ -68,7 +70,7 @@ EDITORIAL <- list(
       "<b>{{through}}</b>."),
     table_caption = paste(
       "Highest average scores among restaurants with at least <b>{{min_top}}</b> routine",
-      "inspections.")
+      "inspections. Records run from {{cutoff_short}} to {{through_short}}.")
   ),
 
   # ---- lowest scores (docs/lowest.html) --------------------------------------
@@ -81,7 +83,7 @@ EDITORIAL <- list(
       "<b>{{through}}</b>."),
     table_caption = paste(
       "Lowest average scores among restaurants with at least <b>{{min_bottom}}</b> routine",
-      "inspections.")
+      "inspections. Records run from {{cutoff_short}} to {{through_short}}.")
   ),
 
   # ---- shared footnote, appended to both ranking pages -----------------------

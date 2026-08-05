@@ -28,6 +28,17 @@ recency_cutoff <- function(ins, months = RECENCY_MONTHS) {
   data_through(ins) %m-% months(months)
 }
 
+# AP style: with a specific date, only these months abbreviate, and March through July are
+# always spelled out. Not format(d, "%b"), which would give "Feb" without the period and
+# "Sep" where AP wants "Sept." Used for the short {{cutoff_short}} / {{through_short}} tokens.
+AP_MONTHS <- c("Jan.", "Feb.", "March", "April", "May", "June",
+               "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.")
+
+fmt_date_ap <- function(d) {
+  d <- as_date(d)
+  paste0(AP_MONTHS[month(d)], " ", day(d), ", ", year(d))
+}
+
 # Score buckets. Reds are only ~0.2% of the map, so the UI has to show counts.
 # The two middle bands are purple and blue rather than a red-to-green ramp. That is a
 # deliberate accessibility gain as well as a style choice: red/green is the common

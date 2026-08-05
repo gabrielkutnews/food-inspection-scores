@@ -119,6 +119,8 @@ VALS <- list(
   through    = str_squish(format(data_through(ins), "%B %e, %Y")),
   cutoff     = str_squish(format(cutoff, "%B %e, %Y")),
   generated  = str_squish(format(Sys.Date(), "%B %e, %Y")),
+  through_short = fmt_date_ap(data_through(ins)),
+  cutoff_short  = fmt_date_ap(cutoff),
   min_top    = MIN_TOP,
   min_bottom = MIN_BOTTOM,
   source     = SOURCE_LINKS,

@@ -167,6 +167,14 @@ check("stripping never empties a name", all(nzchar(display_name(all_nm))))
 check("the city codes stripped are exactly the jurisdiction codes, minus venues",
       identical(sort(CITY_CODES), sort(setdiff(names(NAME_PREFIX_CITY), c("ABIA", "COTA")))))
 
+# The captions now print the window as text. A hardcoded date, or a token wired to the wrong
+# value, would state a range the tables do not cover -- so check the printed strings against
+# the dates actually derived from the data.
+check("AP dates abbreviate exactly the six months AP abbreviates",
+      identical(AP_MONTHS[c(1, 2, 8, 9, 10, 11, 12)],
+                c("Jan.", "Feb.", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.")) &&
+      identical(AP_MONTHS[3:7], c("March", "April", "May", "June", "July")))
+
 for (pg in list(list(f = "docs/best.html",   dir = "top",    min = MIN_TOP),
                 list(f = "docs/lowest.html", dir = "bottom", min = MIN_BOTTOM))) {
   if (!file.exists(pg$f)) { check(paste(pg$f, "exists"), FALSE); next }
@@ -208,6 +216,16 @@ for (pg in list(list(f = "docs/best.html",   dir = "top",    min = MIN_TOP),
         !grepl("CFM", html, fixed = TRUE))
   check(sprintf("%s: no unsubstituted {{placeholder}}", basename(pg$f)),
         !grepl("\\{\\{", html))
+  # The caption states the window in words. Confirm both dates are the real ones, and that
+  # no inspection outside the stated range is actually in the table.
+  check(sprintf("%s: caption states the true window", basename(pg$f)),
+        grepl(sprintf("Records run from %s to %s", fmt_date_ap(cutoff),
+                      fmt_date_ap(data_through(ins))), html, fixed = TRUE),
+        sprintf("expected %s to %s", fmt_date_ap(cutoff), fmt_date_ap(data_through(ins))))
+  check(sprintf("%s: no row is dated outside the stated window", basename(pg$f)),
+        all(as_date(vapply(dat, function(r) substr(r$latest, 1, 10), character(1))) >= cutoff &
+            as_date(vapply(dat, function(r) substr(r$latest, 1, 10), character(1))) <=
+              data_through(ins)))
 }
 
 # ---- 6. names published, for hand-verification ----------------------------------
