@@ -102,11 +102,18 @@ document.getElementById("tbl").innerHTML = table(DATA);
 // Harmless if the CMS ignores it -- then the fixed height in the iframe tag still applies.
 function postHeight(){
   if (window.parent === window) return;   // not embedded; nothing to tell
-  var d = document.documentElement;
+  // Measure the BODY, not documentElement. Inside an iframe, documentElement.scrollHeight is
+  // clamped to the frame viewport, so it reports whatever height the parent already set: a
+  // frame opened at 1440px for 637px of content reports 1440 and never shrinks. body height
+  // is content-driven, so it can go down as well as up. Verified: with the frame forced to
+  // 1440, documentElement.scrollHeight said 1440 while the body measured 637.
+  var b = document.body, cs = getComputedStyle(b);
+  var h = b.getBoundingClientRect().height +
+          parseFloat(cs.marginTop || 0) + parseFloat(cs.marginBottom || 0);
   window.parent.postMessage({
     embed: "food-inspection-scores",
     slug: (location.pathname.split("/").pop() || "").replace(".html", ""),
-    height: Math.ceil(Math.max(d.scrollHeight, d.getBoundingClientRect().height))
+    height: Math.ceil(h)
   }, "*");
 }
 postHeight();
