@@ -205,7 +205,31 @@ function table(rows){
         "<td class=\'num\'>"+r.latest_score+"<div class=\'addr\'>"+fmtDate(r.latest)+"</div></td></tr>";
     }).join("") + "</tbody></table>";
 }
-document.getElementById("tbl").innerHTML = table(DATA);'
+document.getElementById("tbl").innerHTML = table(DATA);
+
+// Tell the embedding page how tall this content actually is.
+//
+// A fixed iframe height cannot fit both layouts: at 1280px the rows sit on one line each,
+// at 375px every name and address wraps, so the same table is several hundred pixels taller
+// on a phone. A height chosen to fit the phone leaves dead space on desktop, which is the
+// gap under the embed. This lets the parent resize instead of guessing.
+//
+// Harmless if the CMS ignores it -- then the fixed height in the iframe tag still applies.
+function postHeight(){
+  if (window.parent === window) return;   // not embedded; nothing to tell
+  var d = document.documentElement;
+  window.parent.postMessage({
+    embed: "food-inspection-scores",
+    slug: (location.pathname.split("/").pop() || "").replace(".html", ""),
+    height: Math.ceil(Math.max(d.scrollHeight, d.getBoundingClientRect().height))
+  }, "*");
+}
+postHeight();
+addEventListener("load", postHeight);
+addEventListener("resize", postHeight);
+// Fonts landing late change the wrap points and therefore the height.
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(postHeight);
+if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body);'
 
 build_page <- function(copy, rows) {
   # Strip the jurisdiction city code for display only, and only here -- at the last step
@@ -225,7 +249,6 @@ build_page <- function(copy, rows) {
 </head>
 <body>
 <h1>', copy$headline, '</h1>
-<div class="sub">', copy$standfirst, '</div>
 <p class="cap">', copy$table_caption, '</p>
 <div id="tbl"></div>
 <div class="note">', EDITORIAL$method_note, '</div>

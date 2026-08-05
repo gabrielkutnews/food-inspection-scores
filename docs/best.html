@@ -55,7 +55,6 @@
 </head>
 <body>
 <h1>Austin-area restaurants with the best inspection records</h1>
-<div class="sub">Average score across <b>routine</b> inspections &mdash; not a snapshot of a single visit. Restaurants, cafes and coffee shops only. Inspection records run through <b>August 4, 2026</b>.</div>
 <p class="cap">Highest average scores among restaurants with at least <b>5</b> routine inspections. Records run from Feb. 4, 2025 to Aug. 4, 2026.</p>
 <div id="tbl"></div>
 <div class="note">Follow-up, re-checks and permit-related visits are excluded from the minimum-inspection count. Source: <a href="https://inspections.myhealthdepartment.com/aph/" target="_blank" rel="noopener">Austin Public Health</a> and <a href="https://data.austintexas.gov/Health-and-Community-Services/Food-Establishment-Inspection-Scores/ecmv-9xxi/about_data" target="_blank" rel="noopener">City of Austin Open Data Portal</a>.</div>
@@ -92,6 +91,30 @@ function table(rows){
     }).join("") + "</tbody></table>";
 }
 document.getElementById("tbl").innerHTML = table(DATA);
+
+// Tell the embedding page how tall this content actually is.
+//
+// A fixed iframe height cannot fit both layouts: at 1280px the rows sit on one line each,
+// at 375px every name and address wraps, so the same table is several hundred pixels taller
+// on a phone. A height chosen to fit the phone leaves dead space on desktop, which is the
+// gap under the embed. This lets the parent resize instead of guessing.
+//
+// Harmless if the CMS ignores it -- then the fixed height in the iframe tag still applies.
+function postHeight(){
+  if (window.parent === window) return;   // not embedded; nothing to tell
+  var d = document.documentElement;
+  window.parent.postMessage({
+    embed: "food-inspection-scores",
+    slug: (location.pathname.split("/").pop() || "").replace(".html", ""),
+    height: Math.ceil(Math.max(d.scrollHeight, d.getBoundingClientRect().height))
+  }, "*");
+}
+postHeight();
+addEventListener("load", postHeight);
+addEventListener("resize", postHeight);
+// Fonts landing late change the wrap points and therefore the height.
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(postHeight);
+if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body);
 </script>
 </body>
 </html>

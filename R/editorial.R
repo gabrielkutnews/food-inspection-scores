@@ -60,14 +60,17 @@ EDITORIAL <- list(
     unmapped_note = "{{n_unmapped}} locations could not be placed on the map."
   ),
 
+  # Each ranking page is now headline + caption + table + footnote. The standfirst that used
+  # to sit under the headline was removed at editorial request. It said "Average score across
+  # routine inspections -- not a snapshot of a single visit. Restaurants, cafes and coffee
+  # shops only." The caption still carries "average scores" and "routine", so the only claim
+  # lost outright is the explicit "not a snapshot of a single visit". To restore it, add a
+  # `standfirst` here and put `<div class="sub">` back in build_page() in R/rankings.R.
+
   # ---- best records (docs/best.html) -----------------------------------------
   best = list(
     browser_title = "Austin restaurants with the best inspection records",
     headline      = "Austin-area restaurants with the best inspection records",
-    standfirst    = paste(
-      "Average score across <b>routine</b> inspections &mdash; not a snapshot of a single",
-      "visit. Restaurants, cafes and coffee shops only. Inspection records run through",
-      "<b>{{through}}</b>."),
     table_caption = paste(
       "Highest average scores among restaurants with at least <b>{{min_top}}</b> routine",
       "inspections. Records run from {{cutoff_short}} to {{through_short}}.")
@@ -77,10 +80,6 @@ EDITORIAL <- list(
   lowest = list(
     browser_title = "Austin restaurants with the lowest inspection scores",
     headline      = "Austin-area restaurants with the lowest inspection scores",
-    standfirst    = paste(
-      "Average score across <b>routine</b> inspections &mdash; not a snapshot of a single",
-      "visit. Restaurants, cafes and coffee shops only. Inspection records run through",
-      "<b>{{through}}</b>."),
     table_caption = paste(
       "Lowest average scores among restaurants with at least <b>{{min_bottom}}</b> routine",
       "inspections. Records run from {{cutoff_short}} to {{through_short}}.")
