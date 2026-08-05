@@ -91,24 +91,6 @@ score so you can look each up at
 `inspections.myhealthdepartment.com/aph` and confirm it. These are claims about real
 businesses.
 
-## Embedding in Grove
-
-Publish `docs/` to GitHub Pages (Settings → Pages → `main` / `/docs`), then paste:
-
-```html
-<iframe src="https://USERNAME.github.io/food-inspection-scores/"
-        title="Austin-area food establishment inspection scores"
-        width="100%" height="620" style="border:0;width:100%;max-width:100%"
-        loading="lazy" scrolling="no"></iframe>
-```
-
-The rankings embed separately from `.../rankings.html` (height ~1100).
-
-The page carries `<meta name="viewport">` and sizes itself to the iframe, so it is
-responsive at any width down to 320px. If Grove allows `<script>` tags, pym.js will
-auto-fit the height and remove the inner scrollbar; the fixed height above is the
-safe fallback.
-
 ## Methodology, and what to check before publishing
 
 **One row per establishment**, showing its most recent inspection. Where a facility
@@ -291,35 +273,3 @@ scrape, reachable for reporting, and out of anything feeding the published paylo
 
 11,108 rows still have no inspection type — the pre-2025 span the portal never retained.
 Those are **unknown**, not assumed scored.
-
-## Embedding: three separate pages
-
-```html
-<!-- the map -->
-<iframe src="https://USERNAME.github.io/food-inspection-scores/index.html"
-        title="Austin-area food establishment inspection scores"
-        width="100%" height="620" style="border:0;width:100%;max-width:100%"
-        loading="lazy" scrolling="no"></iframe>
-
-<!-- best inspection records -->
-<iframe src="https://USERNAME.github.io/food-inspection-scores/best.html"
-        title="Austin restaurants with the best inspection records"
-        width="100%" height="900" style="border:0;width:100%;max-width:100%"
-        loading="lazy" scrolling="no"></iframe>
-
-<!-- lowest inspection scores -->
-<iframe src="https://USERNAME.github.io/food-inspection-scores/lowest.html"
-        title="Austin restaurants with the lowest inspection scores"
-        width="100%" height="900" style="border:0;width:100%;max-width:100%"
-        loading="lazy" scrolling="no"></iframe>
-```
-
-The two ranking tables are separate pages so either can run without the other. Each links
-to the map and to its counterpart; set a link's `url` to `""` in `R/editorial.R` to drop it.
-`rankings.html` now redirects to `best.html`, in case that URL is embedded anywhere.
-
-All three carry `<meta name="viewport">` and are responsive to 320px: on a phone the map's
-filter panel collapses behind a button and dismisses when the map is tapped, inputs use
-16px type so iOS does not zoom the embed, touch targets are ≥44px, markers are drawn
-slightly larger because a fingertip is less precise than a cursor, and the ranking tables
-drop their two least useful columns.
