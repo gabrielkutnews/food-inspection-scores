@@ -27,7 +27,22 @@ portal <- read_csv(RAW_PATH, col_types = cols(.default = col_character())) |>
   ) |>
   distinct(inspectionID, .keep_all = TRUE)
 
-ins <- load_inspections()
+# data/ins.csv EXPLICITLY, never the default. load_inspections() defaults to
+# inspections_merged.csv, which already contains the portal rows -- so the reconciliation
+# would compare the scrape against itself for every week after the export froze
+# (2026-05-22). Measured: the 1,115 merged inspections after that date are 100%
+# source=="portal", so those weeks reconciled at ~100% by construction and inflated the
+# audited span from 68 weeks to 79. The frozen export is the only independent source there is.
+ins <- load_inspections("data/ins.csv")
+
+# Hard guard, not just a comment: a reconciliation that includes scraped rows on the
+# "independent" side proves nothing, and it fails silently -- it reports ~100% coverage and
+# looks like success. Refuse to run rather than print a flattering number.
+if ("source" %in% names(ins) && any(ins$source == "portal", na.rm = TRUE)) {
+  stop("portal_check.R must reconcile against the frozen export alone; ",
+       sum(ins$source == "portal", na.rm = TRUE), " portal-sourced rows are on the ",
+       "comparison side, so the scrape would be validating itself.")
+}
 
 message(sprintf("Portal: %d inspections, %s .. %s",
                 nrow(portal), format(min(portal$date)), format(max(portal$date))))
