@@ -38,11 +38,13 @@ CACHE_TYPES <- cols(
 message("Loading inspections...")
 ins <- load_inspections()
 
+# Key built by geocode_query() in R/common.R, never inlined here -- the cache is joined on
+# this string, so a second copy of the expression that drifts makes every lookup miss.
 targets <- ins |>
-  mutate(street_norm = normalize_street(street)) |>
-  distinct(street_norm, city, zip5) |>
+  mutate(street_norm = normalize_street(street),
+         query       = geocode_query(street, city, zip5, address)) |>
   filter(!is.na(street_norm), street_norm != "") |>
-  mutate(query = str_squish(str_c(street_norm, city, "TX", zip5, sep = ", ")))
+  distinct(query, street_norm, city, zip5)
 
 message(sprintf("%d distinct normalised addresses to resolve.", nrow(targets)))
 
@@ -72,11 +74,11 @@ if (nrow(cache) == 0 && file.exists(LEGACY_PATH)) {
 
   seeded <- ins |>
     mutate(street_norm  = normalize_street(street),
+           query        = geocode_query(street, city, zip5, address),
            legacy_key   = str_squish(str_c(address, "Austin", "TX", zip5, sep = ", "))) |>
-    distinct(street_norm, city, zip5, legacy_key) |>
+    distinct(query, street_norm, city, zip5, legacy_key) |>
     inner_join(legacy, by = c("legacy_key" = "full_address")) |>
-    mutate(query = str_squish(str_c(street_norm, city, "TX", zip5, sep = ", ")),
-           source = "prior") |>
+    mutate(source = "prior") |>
     distinct(query, .keep_all = TRUE) |>
     select(all_of(cache_cols))
 
@@ -146,7 +148,7 @@ if (USE_ARCGIS_FALLBACK) {
 
 coverage <- ins |>
   mutate(street_norm = normalize_street(street),
-         query = str_squish(str_c(street_norm, city, "TX", zip5, sep = ", "))) |>
+         query = geocode_query(street, city, zip5, address)) |>
   latest_per_facility() |>
   mutate(mapped = query %in% resolved(cache))
 

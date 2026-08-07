@@ -167,6 +167,25 @@ check("stripping never empties a name", all(nzchar(display_name(all_nm))))
 check("the city codes stripped are exactly the jurisdiction codes, minus venues",
       identical(sort(CITY_CODES), sort(setdiff(names(NAME_PREFIX_CITY), c("ABIA", "COTA")))))
 
+# geocode_query() is the cache key, and the cache holds 4,252 resolved addresses. If the
+# expression changes for a facility that HAS a zip5, every one of those lookups misses and the
+# pipeline silently re-geocodes from scratch against rate-limited services. Pin it against the
+# expression that built the cache, so the failure is a red check rather than a slow surprise.
+gq <- ins |> distinct(facility_id, street, city, zip5, address)
+legacy_key <- str_squish(str_c(normalize_street(gq$street), gq$city, "TX", gq$zip5, sep = ", "))
+new_key    <- geocode_query(gq$street, gq$city, gq$zip5, gq$address)
+haszip     <- !is.na(gq$zip5)
+check("geocode keys are unchanged for every facility that has a ZIP",
+      identical(legacy_key[haszip], new_key[haszip]),
+      sprintf("%d of %d keys moved", sum(legacy_key[haszip] != new_key[haszip], na.rm = TRUE),
+              sum(haszip)))
+check("no facility produces an NA geocode key",
+      !any(is.na(new_key)),
+      sprintf("%d NA keys", sum(is.na(new_key))))
+check("a recovered ZIP is not left duplicated inside the street",
+      !any(str_detect(new_key, "\\b(7\\d{4})\\b.*\\b\\1\\b")),
+      paste(head(new_key[str_detect(new_key, "\\b(7\\d{4})\\b.*\\b\\1\\b")], 2), collapse = "; "))
+
 # The captions now print the window as text. A hardcoded date, or a token wired to the wrong
 # value, would state a range the tables do not cover -- so check the printed strings against
 # the dates actually derived from the data.

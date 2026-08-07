@@ -212,6 +212,51 @@ normalize_street <- function(street) {
   str_squish(a)
 }
 
+# The geocode cache key. Defined ONCE here because the expression was previously inlined in
+# five places (R/geocode.R x3 plus a legacy variant, R/prep.R x1) and the cache is joined on
+# it -- any two of them drifting apart makes every lookup miss silently.
+#
+# The bug this fixes: str_c() propagates NA, so a facility with no zip5 produced a wholly NA
+# key and was never even submitted to the geocoder. That was 4 of 6,720 facilities, and it
+# surfaced to readers as "4 locations could not be placed on the map".
+#
+# CONTRACT, enforced by two checks in R/factcheck.R:
+#   zip5 present -> byte-identical to the old expression. 6,716 cached keys depend on this;
+#                   changing them would silently re-geocode the whole file against
+#                   rate-limited services.
+#   zip5 absent  -> recover a ZIP from the address text if one is hiding there (the city
+#                   sometimes files it into the street field: "2538 Elmont Dr., 78741"),
+#                   otherwise build the key WITHOUT a ZIP. A geocoder resolves
+#                   "13101 Tesla Rd, Austin, TX" perfectly well; NA resolves to nothing.
+geocode_query <- function(street, city, zip5, address = NULL) {
+  zip <- as.character(zip5)
+
+  # Only ever fill a MISSING zip -- never override one the city supplied.
+  need <- is.na(zip) | !nzchar(zip)
+  if (any(need)) {
+    src <- if (is.null(address)) street else coalesce(address, street)
+    zip[need] <- str_extract(src[need], "\\b7\\d{4}\\b")
+  }
+
+  street_norm <- normalize_street(street)
+
+  # Where the ZIP was recovered FROM the street, take it back out, or the key reads
+  # "2538 Elmont Dr., 78741, Austin, TX, 78741" and the geocoder sees a second house number.
+  # Scoped to `need` rows only: stripping unconditionally would rewrite keys for facilities
+  # that legitimately have a trailing number, and those 6,716 keys must not move.
+  if (any(need)) {
+    fixed <- need & !is.na(zip)
+    street_norm[fixed] <- str_squish(str_remove(
+      street_norm[fixed], paste0(",?\\s*\\b", zip[fixed], "\\b\\s*$")))
+  }
+
+  ifelse(
+    is.na(zip),
+    str_squish(str_c(street_norm, city, "TX", sep = ", ")),
+    str_squish(str_c(street_norm, city, "TX", zip, sep = ", "))
+  )
+}
+
 # Coarse facility type from the establishment name.
 #
 # The city publishes no type field, so this is inferred, and "Restaurant & Food

@@ -199,8 +199,8 @@ message(sprintf("Facilities new since the export: %d", length(new_fac)))
 # byte-identical to what it was, or 99.9% coverage silently becomes a re-geocode run.
 cache <- read_csv("data/geocoded_cache.csv",
                   col_types = cols(zip5 = col_character(), .default = col_guess()))
-keys <- out |> distinct(facility_id, street, city, zip5) |>
-  mutate(q = str_squish(str_c(normalize_street(street), city, "TX", zip5, sep = ", ")))
+keys <- out |> distinct(facility_id, street, city, zip5, address) |>
+  mutate(q = geocode_query(street, city, zip5, address))
 old_fac_keys <- keys |> filter(!facility_id %in% new_fac)
 message(sprintf("Geocode keys for established facilities already cached: %d of %d (%.1f%%)",
                 sum(old_fac_keys$q %in% cache$query), nrow(old_fac_keys),

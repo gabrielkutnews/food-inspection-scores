@@ -45,9 +45,13 @@ EDITORIAL <- list(
   # ---- the map (docs/index.html) ----------------------------------------------
   map = list(
     browser_title = "Austin-area food establishment inspection scores",
-    credit_long   = paste(
-      "Most recent inspection per establishment. Includes schools, stores and care",
-      "facilities as well as restaurants, and covers surrounding jurisdictions."),
+    # The footnote bar along the bottom is `byline` followed by the basemap credits. The
+    # basemap credits are hardcoded in docs/index.html, not here, because the OpenStreetMap
+    # and CARTO links are a licence condition of the tiles rather than editorial copy.
+    #
+    # This is plain text, rendered with textContent -- an <a> or <b> added here would print
+    # to the reader as literal angle brackets.
+    byline        = "By: Gabriel Velasquez Neira with AI-assistance from Claude.",
     # The note under the map is `source_line` then a line break then `window_note`.
     # Both are rendered as HTML, so <a> and <b> tags below are live. Keep the dates as
     # {{cutoff}} / {{through}} rather than typing them: they are computed from the data,
@@ -57,7 +61,12 @@ EDITORIAL <- list(
     window_note   = paste(
       "The map only shows establishments with inspections between <b>{{cutoff}}</b> and",
       "<b>{{through}}</b>, the latest available data."),
-    unmapped_note = "{{n_unmapped}} locations could not be placed on the map."
+    # Fallback only. As of the geocode_query() fix in R/common.R every establishment places,
+    # so R/prep.R suppresses this sentence entirely and a reader never sees it. It exists so
+    # that if a future refresh brings in an address that cannot be resolved, the map says so
+    # instead of quietly dropping a facility. "establishments", not "restaurants": the four
+    # that used to fail included Royal Blue Grocery.
+    unmapped_note = "{{n_unmapped}} establishments could not be placed on the map."
   ),
 
   # Each ranking page is now headline + caption + table + footnote. The standfirst that used

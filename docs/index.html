@@ -65,11 +65,15 @@
     top: 10px; right: 10px; width: 232px; background: var(--panel-bg);
     border-radius: 7px; box-shadow: 0 1px 8px rgba(0,0,0,.2); overflow: hidden;
   }
-  .panel h2 {
+  .panel h2, .legend h2 {
     margin: 0; padding: 9px 11px 7px; font-size: 11px; letter-spacing: .06em;
     text-transform: uppercase; color: var(--muted); font-weight: 700;
     border-bottom: 1px solid var(--line);
   }
+  /* The score key. On desktop it is not used at all -- the checkboxes live inside .panel,
+     which is always open. On a phone the panel is collapsed behind the hamburger, so the
+     colours would mean nothing until the reader tapped; the key moves here instead. */
+  .legend { display: none; }
   .panel-body { padding: 7px 11px 10px; }
   .row {
     display: flex; align-items: center; gap: 8px; padding: 4px 0;
@@ -145,9 +149,28 @@
     .r-addr { font-size: 12.5px; }
     #search-clear { font-size: 22px; padding: 8px 10px; }
 
-    /* The full credit runs to five lines on a phone and eats a third of the map. */
-    .credit-long { display: none; }
     .credit { font-size: 10px; padding: 4px 8px; }
+
+    /* Score key, bottom-left and always visible: a reader must be able to tell what the
+       colours mean without tapping anything. The checkboxes are MOVED here (see relocate()
+       in JS), not copied -- a second set would need its own state and the two would drift.
+       Bottom offset clears the credit bar, which the byline can wrap to two lines. */
+    /* `bottom` is a fallback only -- fitLegend() in JS overwrites it with the credit bar's
+       measured height, because that bar grows to two lines on a narrow phone and a fixed
+       offset here would eventually let the two overlap. */
+    .legend {
+      display: block; left: 10px; bottom: 46px; width: 178px;
+      background: var(--panel-bg); border-radius: 7px; box-shadow: 0 1px 8px rgba(0,0,0,.2);
+      overflow: hidden;
+    }
+    .legend h2 { padding: 7px 9px 5px; }
+    .legend #buckets { padding: 2px 9px 5px; }
+    /* Tighter than the panel's rows so the card does not eat a short phone screen, but
+       min-height keeps the 44px touch target the rest of this file holds to. */
+    .legend .row { padding: 4px 0; min-height: 44px; }
+    /* The heading and the divider label the score section, which has left the panel. */
+    .panel h2, .panel .divider { display: none; }
+    .panel { top: 58px; }
     /* Pinch-to-zoom covers this on touch; the buttons only crowd the credit bar. */
     .leaflet-control-zoom { display: none; }
 
@@ -179,6 +202,11 @@
 
 <button id="panel-toggle" class="ui" type="button" aria-label="Show filters" aria-expanded="false">☰</button>
 
+<!-- Mobile-only home for the score checkboxes. Empty on desktop: relocate() in JS moves the
+     single #buckets node in and out of here at the 640px breakpoint, so there is exactly one
+     set of checkboxes and one set of count spans no matter the viewport. -->
+<div class="legend ui" id="legend"><h2>Inspection score</h2></div>
+
 <div class="panel ui" id="panel">
   <h2>Inspection score</h2>
   <div class="panel-body">
@@ -197,8 +225,10 @@
 </div>
 
 <div class="credit ui">
-  <span class="credit-long"><span id="credit-long-text"></span> <span id="gen"></span></span>
-  <!-- Source credit moved into the note under the map, where it carries its links. -->
+  <!-- Byline comes from R/editorial.R. The basemap credits below are hardcoded because the
+       OpenStreetMap and CARTO links are a licence condition of the tiles, not copy to edit.
+       Source credit for the DATA lives in the note under the map, where it carries its links. -->
+  <span id="byline"></span>
   Map &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>,
   &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>.
 </div>
@@ -238,6 +268,22 @@
   // divides by that in flyTo and throws "Invalid LatLng object: (NaN, NaN)".
   // Real embeds hit this: an iframe inside a collapsed tab, or lazy-loaded below
   // the fold, has no size until the reader reveals it.
+  // Sit the mobile score key directly above the credit bar, measuring the bar rather than
+  // hardcoding an offset: the byline wraps to two lines on a narrow phone, and a fixed number
+  // would put the key underneath it the first time that copy gets any longer.
+  //
+  // Defined out here, not inside buildPanel(), because it has to be callable from init() the
+  // moment the byline is written -- that write is what changes the bar's height, and a
+  // ResizeObserver's first callback can land before it.
+  var MQ_SMALL = window.matchMedia('(max-width: 640px)');
+  function fitLegend() {
+    var cr = document.querySelector('.credit'), lg = document.getElementById('legend');
+    if (!cr || !lg) return;
+    lg.style.bottom = MQ_SMALL.matches
+      ? (Math.ceil(cr.getBoundingClientRect().height) + 8) + 'px'
+      : '';
+  }
+
   function mapHasSize() {
     var s = map.getSize();
     return s.x > 0 && s.y > 0;
@@ -354,8 +400,6 @@
       for (var j = 0; j < markers.length; j++) markers[j].setRadius(r);
     });
 
-    // Three dates, stated separately. "Data generated <today>" alone implied the
-    // scores were current as of today when the newest one was 73 days old.
     // State the hard filter plainly. Without this the reader cannot tell that ~1,000
     // establishments are absent because their last inspection is too old.
     // Copy comes from R/editorial.R via the payload, so wording can be changed in plain
@@ -369,12 +413,14 @@
     $('window-note').innerHTML =
       [D.copy_source_line, D.copy_window_note].filter(Boolean).join('<br>');
 
-    $('credit-long-text').textContent = D.copy_credit_long || '';
+    // Byline only. The scope sentence and the "records through / page built" dateline that
+    // used to sit here were removed: the note above already states the record window and
+    // calls it "the latest available data", which is the fact a reader acts on.
+    $('byline').textContent = D.copy_byline || '';
 
-    $('gen').textContent = data.data_through
-      ? 'Inspection records through ' + fmtDate(data.data_through) +
-        '; page built ' + fmtDate(data.generated) + '.'
-      : 'Page built ' + fmtDate(data.generated) + '.';
+    // Re-fit AFTER the byline lands: setting it is what grows the credit bar from one line to
+    // two on a phone, and the mobile score key is positioned off that bar's height.
+    fitLegend();
   }
 
   // ---- filtering -------------------------------------------------------------
@@ -446,6 +492,41 @@
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? 'Hide filters' : 'Show filters');
     });
+
+    // Move the score checkboxes between the collapsible panel (desktop) and the always-visible
+    // corner card (mobile). MOVED, never duplicated: it is the same #buckets node either way,
+    // so the checkbox state, the cnt-* spans and every listener attached above survive the
+    // trip untouched and there is no second copy to fall out of sync.
+    var mq = MQ_SMALL;
+    function relocate() {
+      var buckets = $('buckets');
+      var host = mq.matches ? $('legend') : $('panel').querySelector('.panel-body');
+      if (buckets && host && buckets.parentNode !== host) {
+        // On desktop it must go back FIRST, above the divider, not appended to the end.
+        if (mq.matches) host.appendChild(buckets);
+        else host.insertBefore(buckets, host.firstChild);
+      }
+    }
+    relocate();
+    fitLegend();
+    // Rotating a phone crosses the breakpoint, so listen rather than deciding once at load.
+    // Belt and braces on purpose: matchMedia('change') is the right signal but it did not
+    // fire under a programmatic viewport resize during testing, and `resize` always does.
+    // relocate() is idempotent -- it returns immediately when the node is already correct --
+    // so being called from both, repeatedly, costs nothing.
+    function reflow() { relocate(); fitLegend(); }
+    if (mq.addEventListener) mq.addEventListener('change', reflow);
+    else if (mq.addListener) mq.addListener(reflow);   // Safari < 14
+    window.addEventListener('resize', reflow);
+    window.addEventListener('orientationchange', reflow);
+
+    // Watch the credit bar rather than measuring it once. buildPanel() runs before the byline
+    // is written, so a single measurement catches a one-line bar that then grows to two and
+    // the key ends up 6px UNDER it. This also covers a late-loading font or any future edit
+    // that makes the byline longer.
+    if (window.ResizeObserver) {
+      new ResizeObserver(fitLegend).observe(document.querySelector('.credit'));
+    }
   }
 
   // ---- popup -----------------------------------------------------------------

@@ -36,7 +36,7 @@ cutoff <- recency_cutoff(ins)   # anchored to the data, not to today
 all_pts <- ins |>
   latest_per_facility() |>
   left_join(counts, by = "facility_id") |>
-  mutate(query = str_squish(str_c(normalize_street(street), city, "TX", zip5, sep = ", "))) |>
+  mutate(query = geocode_query(street, city, zip5, address)) |>
   left_join(coords, by = "query")
 
 # The recency window is now a HARD FILTER, not a checkbox the reader can switch off.
@@ -124,7 +124,7 @@ COPY_VALS <- list(
 payload <- list(
   copy_window_note   = fill(EDITORIAL$map$window_note, COPY_VALS),
   copy_unmapped_note = if (n_window > nrow(out)) fill(EDITORIAL$map$unmapped_note, COPY_VALS) else "",
-  copy_credit_long   = fill(EDITORIAL$map$credit_long, COPY_VALS),
+  copy_byline        = fill(EDITORIAL$map$byline, COPY_VALS),
   copy_source_line   = fill(EDITORIAL$map$source_line, COPY_VALS),
   # Three distinct dates, never collapsed into one "generated". The page previously
   # said "Data generated <today>" while describing inspections that stopped 73 days
